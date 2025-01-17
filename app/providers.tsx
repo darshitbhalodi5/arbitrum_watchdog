@@ -1,11 +1,11 @@
 'use client';
-
 import { PrivyProvider } from '@privy-io/react-auth';
 import { WagmiProvider, createConfig, http } from "wagmi";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { arbitrum, arbitrumSepolia } from "viem/chains";
 import { PropsWithChildren } from 'react';
 
+// wagmi configuration for chains
 const wagmiConfig = createConfig({
     chains: [arbitrum, arbitrumSepolia],
     transports: {

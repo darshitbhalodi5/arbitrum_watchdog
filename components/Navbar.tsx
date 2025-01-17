@@ -3,15 +3,12 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePrivy } from '@privy-io/react-auth';
-// import { themeColors } from './Providers';
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const { login, logout, authenticated, user } = usePrivy();
 
-  // Mock whitelist - Replace with your actual whitelist check
   const whitelistedAddresses = [
-    // Add your whitelisted addresses here
     "0xaaF296aC355B938D6263ac1CcbB4ac61c964D176",
   ];
 

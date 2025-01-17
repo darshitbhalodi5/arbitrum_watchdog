@@ -7,10 +7,9 @@ import { ArrowRightIcon } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
 import { useEffect } from 'react';
 
-// Whitelist addresses (move to a config file in production)
+// Whitelist addresses
 const REVIEWER_ADDRESSES = [
     "0xaaF296aC355B938D6263ac1CcbB4ac61c964D176".toLowerCase(),
-    // Add more reviewer addresses
 ];
 
 export default function Home() {
