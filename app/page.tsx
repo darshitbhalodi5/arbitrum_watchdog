@@ -2,6 +2,7 @@
 
 import Navbar from '@/components/Navbar';
 import SubmitterDashboard from '@/components/submitter/SubmitterDashboard';
+import ReviewerDashboard from '@/components/reviewer/ReviewerDashboard';
 import { usePrivy } from '@privy-io/react-auth';
 import { ArrowRightIcon } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
@@ -81,10 +82,7 @@ export default function Home() {
             <div className="flex-1 container mx-auto px-4 py-12">
                 {authenticated ? (
                     isReviewer ? (
-                        <div className="text-center text-white">
-                            <h2 className="text-3xl font-bold mb-4">Reviewer Dashboard</h2>
-                            <p className="text-gray-400">Coming Soon</p>
-                        </div>
+                        <ReviewerDashboard />
                     ) : isSubmitter ? (
                         <SubmitterDashboard />
                     ) : (

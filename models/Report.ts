@@ -22,6 +22,13 @@ const reportSchema = new mongoose.Schema({
         enum: ['pending', 'approved', 'rejected'],
         default: 'pending',
     },
+    severity: {
+        type: String,
+        enum: ['high', 'medium', 'low'],
+    },
+    reviewerComment: {
+        type: String,
+    }
 }, {
     timestamps: true,
 });

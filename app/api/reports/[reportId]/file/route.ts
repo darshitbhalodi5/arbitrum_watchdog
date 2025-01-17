@@ -1,15 +1,25 @@
 import { NextResponse } from 'next/server';
 import { getFileStream } from '@/lib/upload';
 import { Readable } from 'stream';
+import { Report } from '@/models/Report';
+import { connect } from '@/lib/mongodb';
 
 export async function GET(
     request: Request,
-    context: { params: { fileId: string } }
+    { params }: { params: { reportId: string } }
 ) {
     try {
-        const { fileId } = context.params;
+        await connect();
+        const { reportId } = params;
+        const report = await Report.findById(reportId);
+        if (!report) {
+            return NextResponse.json(
+                { error: 'Report not found' },
+                { status: 404 }
+            );
+        }
         
-        const { stream, fileInfo } = await getFileStream(fileId);
+        const { stream, fileInfo } = await getFileStream(report.fileUrl);
         
         // Convert the GridFS stream to a Web Response
         const readable = Readable.from(stream);
@@ -38,14 +48,4 @@ export async function GET(
             { status: 500 }
         );
     }
-}
-
-export async function OPTIONS() {
-    return new NextResponse(null, {
-        headers: {
-            'Access-Control-Allow-Origin': '*',
-            'Access-Control-Allow-Methods': 'GET',
-            'Access-Control-Allow-Headers': 'Content-Type',
-        },
-    });
 } 
