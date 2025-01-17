@@ -20,48 +20,41 @@ export default function Home() {
 
         try {
             if (!authenticated) {
-                console.log("Not authenticated, initiating login...");
                 await login();
                 return;
             }
-
-            // Let the useEffect handle the role check after authentication
-            console.log("Login completed, useEffect will handle role check");
         } catch (error) {
             console.error('Login error:', error);
-            toast.error('Failed to connect wallet. Please try again.');
         }
     };
 
     // Handle role checking after wallet connection
     useEffect(() => {
         const checkRoleAccess = async () => {
-            console.log("Checking role access...");
-            console.log("Auth state:", { authenticated, userAddress: user?.wallet?.address });
-
             if (authenticated && user?.wallet?.address) {
                 const address = user.wallet.address.toLowerCase();
                 const isReviewerAddress = REVIEWER_ADDRESSES.includes(address);
                 
                 // Get the last attempted role from localStorage
                 const attemptedRole = localStorage.getItem('attemptedRole');
-                console.log("Attempted role:", attemptedRole);
-                console.log("Is reviewer address:", isReviewerAddress);
+                
+                if (!attemptedRole) return; // Exit if no attempted role
 
-                if (attemptedRole === 'reviewer' && !isReviewerAddress) {
-                    console.log("Non-reviewer wallet trying to access reviewer role");
-                    await logout();
-                    toast.error('This wallet is not authorized as a reviewer. Please connect a reviewer wallet.');
-                    localStorage.removeItem('attemptedRole');
-                } else if (attemptedRole === 'submitter' && isReviewerAddress) {
-                    console.log("Reviewer wallet trying to access submitter role");
-                    await logout();
-                    toast.error('This is a reviewer wallet. Please connect a different wallet for submitting reports.');
-                    localStorage.removeItem('attemptedRole');
-                } else if (attemptedRole) {
-                    console.log("Role access granted");
-                    toast.success(`Successfully logged in as ${attemptedRole}`);
-                    localStorage.removeItem('attemptedRole');
+                try {
+                    if (attemptedRole === 'reviewer' && !isReviewerAddress) {
+                        localStorage.removeItem('attemptedRole'); // Remove first to prevent duplicate checks
+                        await logout();
+                        toast.error('You are not reviewer. Please login as submitter.');
+                    } else if (attemptedRole === 'submitter' && isReviewerAddress) {
+                        localStorage.removeItem('attemptedRole'); // Remove first to prevent duplicate checks
+                        await logout();
+                        toast.error('You are not submitter. Please login as reviewer.');
+                    } else {
+                        localStorage.removeItem('attemptedRole');
+                    }
+                } catch (error) {
+                    localStorage.removeItem('attemptedRole'); // Clean up on error
+                    console.error('Error during role check:', error);
                 }
             }
         };

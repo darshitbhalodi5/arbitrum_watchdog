@@ -30,9 +30,8 @@ export default function RootLayout({
         <Providers>
           {children}
           <Toaster
-            position="top-right"
+            position="top-center"
             toastOptions={{
-              duration: 5000,
               style: {
                 background: '#2C2D31',
                 color: '#fff',

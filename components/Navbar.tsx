@@ -3,10 +3,13 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { usePrivy } from '@privy-io/react-auth';
+import { ClipboardDocumentIcon, ClipboardDocumentCheckIcon } from '@heroicons/react/24/outline';
+import toast from 'react-hot-toast';
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { login, logout, authenticated, user } = usePrivy();
+  const [isCopied, setIsCopied] = useState(false);
+  const { logout, authenticated, user } = usePrivy();
 
   const whitelistedAddresses = [
     "0xaaF296aC355B938D6263ac1CcbB4ac61c964D176",
@@ -15,6 +18,27 @@ const Navbar = () => {
   const isReviewer = user?.wallet?.address 
     ? whitelistedAddresses.includes(user.wallet.address)
     : false;
+
+  // Function to slice address
+  const truncateAddress = (address: string) => {
+    return `${address.slice(0, 6)}...${address.slice(-4)}`;
+  };
+
+  // Function to copy address
+  const copyAddress = async () => {
+    if (user?.wallet?.address) {
+      try {
+        await navigator.clipboard.writeText(user.wallet.address);
+        setIsCopied(true);
+        toast.success('Address copied to clipboard!');
+        setTimeout(() => setIsCopied(false), 2000);
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } catch (err:any) {
+        console.error("Failed to copy address", err);
+        toast.error('Failed to copy address');
+      }
+    }
+  };
 
   return (
     <nav className="bg-[#2C2D31] shadow-lg border-b border-gray-800">
@@ -31,24 +55,31 @@ const Navbar = () => {
           {/* Desktop Menu */}
           <div className="hidden sm:flex sm:items-center sm:space-x-4">
             {!authenticated ? (
-              <button
-                onClick={() => login()}
-                className="bg-gradient-to-r from-[#FF6B6B] to-[#4ECDC4] text-white px-6 py-2 rounded-md hover:opacity-90 transition-all duration-200 shadow-lg hover:shadow-[#FF6B6B]/20"
-              >
-                Connect Wallet
-              </button>
+              null // Hide connect wallet button
             ) : (
               <>
-                <button
-                  className={`px-6 py-2 rounded-md transition-all duration-200 shadow-lg ${
+                <div
+                  className={`flex items-center gap-2 px-6 py-2 rounded-md transition-all duration-200 shadow-lg ${
                     isReviewer
                       ? "bg-[#4ECDC4] text-white hover:bg-[#45b8b0] hover:shadow-[#4ECDC4]/20"
                       : "bg-[#FF6B6B] text-white hover:bg-[#ff5252] hover:shadow-[#FF6B6B]/20"
                   }`}
                 >
-                    {user?.wallet?.address}
-                  {/* Sign in as {isReviewer ? "Reviewer" : "Submitter"} */}
-                </button>
+                  <span className="font-mono">
+                    {user?.wallet?.address && truncateAddress(user.wallet.address)}
+                  </span>
+                  <button
+                    onClick={copyAddress}
+                    className="hover:opacity-80 transition-opacity"
+                    title="Copy address"
+                  >
+                    {isCopied ? (
+                      <ClipboardDocumentCheckIcon className="w-5 h-5" />
+                    ) : (
+                      <ClipboardDocumentIcon className="w-5 h-5" />
+                    )}
+                  </button>
+                </div>
                 <button
                   onClick={() => logout()}
                   className="text-gray-400 hover:text-[#FFE66D] transition-colors"
@@ -66,7 +97,6 @@ const Navbar = () => {
               className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-[#FFE66D] hover:bg-gray-800/50 transition-all"
             >
               <span className="sr-only">Open main menu</span>
-              {/* Hamburger icon */}
               <svg
                 className="h-6 w-6"
                 fill="none"
@@ -90,23 +120,31 @@ const Navbar = () => {
         <div className="sm:hidden bg-[#2C2D31] border-t border-gray-800">
           <div className="pt-2 pb-3 space-y-1">
             {!authenticated ? (
-              <button
-                onClick={() => login()}
-                className="w-full text-left block px-4 py-2 text-base font-medium text-gray-400 hover:text-[#FFE66D] hover:bg-gray-800/50"
-              >
-                Connect Wallet
-              </button>
+              null // Hide connect wallet button
             ) : (
               <>
-                <button
-                  className={`w-full text-left block px-4 py-2 text-base font-medium ${
+                <div
+                  className={`flex items-center justify-between px-4 py-2 text-base font-medium ${
                     isReviewer
-                      ? "text-[#4ECDC4] hover:text-[#45b8b0]"
-                      : "text-[#FF6B6B] hover:text-[#ff5252]"
-                  } hover:bg-gray-800/50`}
+                      ? "text-[#4ECDC4]"
+                      : "text-[#FF6B6B]"
+                  }`}
                 >
-                  Sign in as {isReviewer ? "Reviewer" : "Submitter"}
-                </button>
+                  <span className="font-mono">
+                    {user?.wallet?.address && truncateAddress(user.wallet.address)}
+                  </span>
+                  <button
+                    onClick={copyAddress}
+                    className="hover:opacity-80 transition-opacity p-1"
+                    title="Copy address"
+                  >
+                    {isCopied ? (
+                      <ClipboardDocumentCheckIcon className="w-5 h-5" />
+                    ) : (
+                      <ClipboardDocumentIcon className="w-5 h-5" />
+                    )}
+                  </button>
+                </div>
                 <button
                   onClick={() => logout()}
                   className="w-full text-left block px-4 py-2 text-base font-medium text-gray-400 hover:text-[#FFE66D] hover:bg-gray-800/50"
