@@ -4,6 +4,15 @@ import { useState, useEffect } from 'react';
 import { EyeIcon, EyeSlashIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
 import { decrypt } from '@/lib/encryption';
+import { usePrivy } from '@privy-io/react-auth';
+
+interface Vote {
+    reviewerAddress: string;
+    vote: 'approved' | 'rejected';
+    severity?: 'high' | 'medium' | 'low';
+    reviewerComment?: string;
+    createdAt: string;
+}
 
 interface Report {
     _id: string;
@@ -13,11 +22,12 @@ interface Report {
     fileUrl: string;
     status: 'pending' | 'approved' | 'rejected';
     severity?: 'high' | 'medium' | 'low';
-    reviewerComment?: string;
+    votes: Vote[];
     createdAt: string;
 }
 
 const ReviewerDashboard = () => {
+    const { user } = usePrivy();
     const [reports, setReports] = useState<Report[]>([]);
     const [selectedReport, setSelectedReport] = useState<Report | null>(null);
     const [showTelegram, setShowTelegram] = useState(false);
@@ -50,10 +60,10 @@ const ReviewerDashboard = () => {
         }
     };
 
-    const handleStatusUpdate = async (status: 'approved' | 'rejected', severity?: 'high' | 'medium' | 'low') => {
-        if (!selectedReport) return;
+    const handleStatusUpdate = async (vote: 'approved' | 'rejected', severity?: 'high' | 'medium' | 'low') => {
+        if (!selectedReport || !user?.wallet?.address) return;
 
-        if (status === 'rejected' && !comment.trim()) {
+        if (vote === 'rejected' && !comment.trim()) {
             toast.error('Please provide a comment for rejection');
             return;
         }
@@ -63,19 +73,24 @@ const ReviewerDashboard = () => {
             const response = await fetch(`/api/reports/${selectedReport._id}/status`, {
                 method: 'PUT',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ status, severity, reviewerComment: comment }),
+                body: JSON.stringify({
+                    vote,
+                    severity,
+                    reviewerComment: comment,
+                    reviewerAddress: user.wallet.address
+                }),
             });
 
             if (!response.ok) throw new Error('Failed to update status');
 
-            toast.success(`Report ${status} successfully`);
+            toast.success('Vote submitted successfully');
             setSelectedReport(null);
             setComment('');
             setShowSeverity(false);
             fetchReports();
         } catch (error) {
             console.error('Error updating status:', error);
-            toast.error('Failed to update status');
+            toast.error('Failed to submit vote');
         } finally {
             setIsSubmitting(false);
         }
@@ -95,6 +110,18 @@ const ReviewerDashboard = () => {
             console.error('Error viewing file:', error);
             toast.error('Failed to view file');
         }
+    };
+
+    const hasVoted = (report: Report) => {
+        return report.votes?.some(vote => 
+            vote.reviewerAddress === user?.wallet?.address
+        ) || false;
+    };
+
+    const getUserVote = (report: Report) => {
+        return report.votes?.find(vote => 
+            vote.reviewerAddress === user?.wallet?.address
+        );
     };
 
     return (
@@ -117,13 +144,18 @@ const ReviewerDashboard = () => {
                             >
                                 <div className="flex justify-between items-start mb-2">
                                     <h3 className="text-lg font-semibold text-white">{report.title}</h3>
-                                    <span className={`px-2 py-1 rounded-full text-xs ${
-                                        report.status === 'approved' ? 'bg-green-500/20 text-green-400' :
-                                        report.status === 'rejected' ? 'bg-red-500/20 text-red-400' :
-                                        'bg-yellow-500/20 text-yellow-400'
-                                    }`}>
-                                        {report.status.charAt(0).toUpperCase() + report.status.slice(1)}
-                                    </span>
+                                    <div className="flex flex-col items-end gap-1">
+                                        <span className={`px-2 py-1 rounded-full text-xs ${
+                                            report.status === 'approved' ? 'bg-green-500/20 text-green-400' :
+                                            report.status === 'rejected' ? 'bg-red-500/20 text-red-400' :
+                                            'bg-yellow-500/20 text-yellow-400'
+                                        }`}>
+                                            {report.status.charAt(0).toUpperCase() + report.status.slice(1)}
+                                        </span>
+                                        <span className="text-xs text-gray-400">
+                                            {report.votes?.length || 0}/3 votes
+                                        </span>
+                                    </div>
                                 </div>
                                 <p className="text-sm text-gray-400 font-mono">
                                     {report.submitterAddress.slice(0, 6)}...{report.submitterAddress.slice(-4)}
@@ -208,20 +240,28 @@ const ReviewerDashboard = () => {
                                 <div className="flex flex-wrap gap-4 mt-6">
                                     {!showSeverity ? (
                                         <>
-                                            <button
-                                                onClick={() => setShowSeverity(true)}
-                                                disabled={isSubmitting}
-                                                className="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 disabled:opacity-50"
-                                            >
-                                                Accept
-                                            </button>
-                                            <button
-                                                onClick={() => handleStatusUpdate('rejected')}
-                                                disabled={isSubmitting}
-                                                className="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 disabled:opacity-50"
-                                            >
-                                                Deny
-                                            </button>
+                                            {!hasVoted(selectedReport) ? (
+                                                <>
+                                                    <button
+                                                        onClick={() => handleStatusUpdate('approved')}
+                                                        className="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
+                                                        disabled={isSubmitting}
+                                                    >
+                                                        Accept
+                                                    </button>
+                                                    <button
+                                                        onClick={() => handleStatusUpdate('rejected')}
+                                                        className="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+                                                        disabled={isSubmitting}
+                                                    >
+                                                        Deny
+                                                    </button>
+                                                </>
+                                            ) : (
+                                                <div className="text-gray-400">
+                                                    You have already voted: {getUserVote(selectedReport)?.vote}
+                                                </div>
+                                            )}
                                         </>
                                     ) : (
                                         <div className="space-x-4">

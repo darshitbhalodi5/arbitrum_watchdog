@@ -10,8 +10,10 @@ import { useEffect } from 'react';
 
 // Whitelist addresses
 const REVIEWER_ADDRESSES = [
-    "0xaaF296aC355B938D6263ac1CcbB4ac61c964D176".toLowerCase(),
-];
+    process.env.NEXT_PUBLIC_REVIEWER_ADDRESS_1,
+    process.env.NEXT_PUBLIC_REVIEWER_ADDRESS_2,
+    process.env.NEXT_PUBLIC_REVIEWER_ADDRESS_3,
+].map(addr => addr?.toLowerCase());
 
 export default function Home() {
     const { authenticated, user, login, logout } = usePrivy();
