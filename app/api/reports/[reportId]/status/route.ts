@@ -4,11 +4,13 @@ import { Report } from '@/models/Report';
 
 export async function PUT(
     request: Request,
-    { params }: { params: { reportId: string } }
+    { params }: {
+        params: Promise<{ reportId: string}>
+      }
 ) {
     try {
         await connect();
-        const { reportId } = params;
+        const reportId  = (await params).reportId;
         const { status, severity, reviewerComment } = await request.json();
 
         const report = await Report.findByIdAndUpdate(
