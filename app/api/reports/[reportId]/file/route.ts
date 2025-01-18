@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { getFileStream } from '@/lib/upload';
 import { Readable } from 'stream';
-import { Report } from '@/models/Report';
+import { ReportModel } from '@/models/Report';
 import { connect } from '@/lib/mongodb';
 
 export async function GET(
@@ -14,7 +14,7 @@ export async function GET(
         console.log("Request",request);
         await connect();
         const reportId  = (await params).reportId;
-        const report = await Report.findById(reportId);
+        const report = await ReportModel.findById(reportId);
         if (!report) {
             return NextResponse.json(
                 { error: 'Report not found' },

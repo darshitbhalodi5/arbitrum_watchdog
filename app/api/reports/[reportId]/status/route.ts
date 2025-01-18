@@ -1,6 +1,21 @@
 import { NextResponse } from 'next/server';
 import { connect } from '@/lib/mongodb';
-import { Report } from '@/models/Report';
+import { ReportModel } from '@/models/Report';
+import { Vote } from '@/types/report';
+
+// Helper function to calculate final status
+function calculateFinalStatus(votes:Vote[]) {
+    const requiredVotes = 3;
+
+    if (votes.length < requiredVotes) {
+        return 'pending';
+    }
+
+    const approvedVotes = votes.filter(v => v.vote === 'approved').length;
+    const rejectedVotes = votes.filter(v => v.vote === 'rejected').length;
+
+    return approvedVotes > rejectedVotes ? 'approved' : 'rejected';
+}
 
 export async function PUT(
     request: Request,
@@ -13,8 +28,7 @@ export async function PUT(
         const reportId = (await params).reportId;
         const { vote, severity, reviewerComment, reviewerAddress } = await request.json();
 
-        // Get the report and ensure votes array exists
-        const report = await Report.findById(reportId);
+        const report = await ReportModel.findById(reportId);
         if (!report) {
             return NextResponse.json(
                 { error: 'Report not found' },
@@ -22,12 +36,10 @@ export async function PUT(
             );
         }
 
-        // Initialize votes array if it doesn't exist
         if (!Array.isArray(report.votes)) {
             report.votes = [];
         }
 
-        // Check if reviewer has already voted
         const existingVoteIndex = report.votes.findIndex(
             v => v.reviewerAddress === reviewerAddress
         );
@@ -40,20 +52,33 @@ export async function PUT(
         };
 
         if (existingVoteIndex !== -1) {
-            // Update existing vote
             report.votes[existingVoteIndex] = newVote;
         } else {
-            // Add new vote
             report.votes.push(newVote);
         }
 
         // Calculate and update final status
-        const newStatus = report.calculateFinalStatus();
-        if (newStatus !== report.status) {
-            report.status = newStatus;
+        report.status = calculateFinalStatus(report.votes);
+
+        // If approved, calculate majority severity
+        if (report.status === 'approved') {
+            const severityCounts = report.votes
+                .filter(v => v.vote === 'approved' && v.severity)
+                .reduce((acc: { [key: string]: number }, vote) => {
+                    if (vote.severity) {
+                        acc[vote.severity] = (acc[vote.severity] || 0) + 1;
+                    }
+                    return acc;
+                }, {});
+
+            const sortedSeverities = Object.entries(severityCounts)
+                .sort((a, b) => b[1] - a[1]);
+
+            if (sortedSeverities.length > 0) {
+                report.severity = sortedSeverities[0][0] as 'high' | 'medium' | 'low';
+            }
         }
 
-        // Save the updated report
         const updatedReport = await report.save();
         return NextResponse.json(updatedReport);
     } catch (error) {

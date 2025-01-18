@@ -6,31 +6,12 @@ import toast from 'react-hot-toast';
 import { decrypt } from '@/lib/encryption';
 import { usePrivy } from '@privy-io/react-auth';
 import VoteDetails from '@/components/common/VoteDetails';
-
-export interface Vote {
-    reviewerAddress: string;
-    vote: 'approved' | 'rejected';
-    severity?: 'high' | 'medium' | 'low';
-    reviewerComment?: string;
-    createdAt: string;
-}
-
-interface Report {
-    _id: string;
-    title: string;
-    telegramHandle: string;
-    submitterAddress: string;
-    fileUrl: string;
-    status: 'pending' | 'approved' | 'rejected';
-    severity?: 'high' | 'medium' | 'low';
-    votes: Vote[];
-    createdAt: string;
-}
+import { IReport } from '@/models/Report';
 
 const ReviewerDashboard = () => {
     const { user } = usePrivy();
-    const [reports, setReports] = useState<Report[]>([]);
-    const [selectedReport, setSelectedReport] = useState<Report | null>(null);
+    const [reports, setReports] = useState<IReport[]>([]);
+    const [selectedReport, setSelectedReport] = useState<IReport | null>(null);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [showTelegram, setShowTelegram] = useState(false);
     const [comment, setComment] = useState('');
@@ -113,13 +94,13 @@ const ReviewerDashboard = () => {
         }
     };
 
-    const hasVoted = (report: Report) => {
+    const hasVoted = (report: IReport) => {
         return report.votes?.some(vote => 
             vote.reviewerAddress === user?.wallet?.address
         ) || false;
     };
 
-    const getUserVote = (report: Report) => {
+    const getUserVote = (report: IReport) => {
         return report.votes?.find(vote => 
             vote.reviewerAddress === user?.wallet?.address
         );
@@ -145,26 +126,28 @@ const ReviewerDashboard = () => {
     };
 
     return (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <h2 className="text-3xl font-bold text-white mb-8">Reviewer Dashboard</h2>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
+            <h2 className="text-2xl sm:text-3xl font-bold text-white mb-4 sm:mb-8">Reviewer Dashboard</h2>
             
-            <div className="flex flex-col lg:flex-row gap-8">
+            <div className="flex flex-col lg:flex-row gap-4 sm:gap-8">
                 {/* Reports List */}
-                <div className={`${selectedReport ? 'lg:w-1/3' : 'w-full'}`}>
-                    <div className="space-y-4">
+                <div className={`${selectedReport ? 'lg:w-1/3' : 'w-full'} ${
+                    selectedReport ? 'hidden lg:block' : 'block'
+                }`}>
+                    <div className="space-y-3 sm:space-y-4">
                         {reports.map((report) => (
                             <button
-                                key={report._id}
+                                key={report._id?.toString()}
                                 onClick={() => setSelectedReport(report)}
-                                className={`w-full p-4 rounded-lg text-left ${
-                                    selectedReport?._id === report._id
+                                className={`w-full p-3 sm:p-4 rounded-lg text-left ${
+                                    selectedReport?._id?.toString() === report._id?.toString()
                                         ? 'bg-[#4ECDC4]/10 border-[#4ECDC4] border'
                                         : 'bg-[#2C2D31] border-gray-800 border hover:border-[#4ECDC4]'
                                 }`}
                             >
-                                <div className="flex justify-between items-start mb-2">
-                                    <h3 className="text-lg font-semibold text-white">{report.title}</h3>
-                                    <div className="flex flex-col items-end gap-1">
+                                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 mb-2">
+                                    <h3 className="text-base sm:text-lg font-semibold text-white">{report.title}</h3>
+                                    <div className="flex items-center sm:flex-col sm:items-end gap-2">
                                         <span className={`px-2 py-1 rounded-full text-xs ${
                                             report.status === 'approved' ? 'bg-green-500/20 text-green-400' :
                                             report.status === 'rejected' ? 'bg-red-500/20 text-red-400' :
@@ -177,7 +160,7 @@ const ReviewerDashboard = () => {
                                         </span>
                                     </div>
                                 </div>
-                                <p className="text-sm text-gray-400 font-mono">
+                                <p className="text-xs sm:text-sm text-gray-400 font-mono">
                                     {report.submitterAddress.slice(0, 6)}...{report.submitterAddress.slice(-4)}
                                 </p>
                             </button>
@@ -185,10 +168,25 @@ const ReviewerDashboard = () => {
                     </div>
                 </div>
 
+                {/* Mobile Back Button */}
+                {selectedReport && (
+                    <div className="lg:hidden mb-4">
+                        <button
+                            onClick={() => setSelectedReport(null)}
+                            className="text-gray-400 hover:text-white flex items-center gap-2"
+                        >
+                            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                            </svg>
+                            Back to Reports
+                        </button>
+                    </div>
+                )}
+
                 {/* Report Detail */}
                 {selectedReport && (
                     <div className="lg:w-2/3">
-                        <div className="bg-[#2C2D31] rounded-lg p-6 border border-gray-800">
+                        <div className="bg-[#2C2D31] rounded-lg p-4 sm:p-6 border border-gray-800">
                             <div className="flex justify-between items-start mb-6">
                                 <h3 className="text-xl font-bold text-white">{selectedReport.title}</h3>
                                 <button
@@ -208,12 +206,11 @@ const ReviewerDashboard = () => {
                                 <div className="flex items-center gap-2">
                                     <span className="text-gray-400">Telegram:</span>
                                     <div className="flex items-center gap-2">
-                                        {decryptedHandles[selectedReport._id] ? (
-                                            <span className="text-[#4ECDC4]">{decryptedHandles[selectedReport._id]}</span>
+                                        {decryptedHandles[selectedReport._id as string] ? (
+                                            <span className="text-[#4ECDC4]">{decryptedHandles[selectedReport._id as string]}</span>
                                         ) : showTitleInput ? (
                                             <div className="flex items-center gap-2">
                                                 <input
-                                                    type="text"
                                                     value={titleInput}
                                                     onChange={(e) => setTitleInput(e.target.value)}
                                                     placeholder="Enter report title to reveal"
@@ -221,7 +218,7 @@ const ReviewerDashboard = () => {
                                                 />
                                                 <button
                                                     onClick={() => handleTelegramReveal(
-                                                        selectedReport._id,
+                                                        selectedReport._id as string,
                                                         selectedReport.telegramHandle,
                                                         selectedReport.title
                                                     )}
@@ -285,11 +282,53 @@ const ReviewerDashboard = () => {
                                 </div>
 
                                 <div className="mt-6 border-t border-gray-800 pt-6">
-                                    <VoteDetails 
-                                        votes={selectedReport.votes} 
-                                        showAll={selectedReport.votes.length === 3}
-                                        currentUserAddress={user?.wallet?.address}
-                                    />
+                                    {/* Only show votes if all reviewers have voted */}
+                                    {selectedReport.votes.length === 3 && (
+                                        <VoteDetails 
+                                            votes={selectedReport.votes.map(vote => ({
+                                                _id: vote._id,
+                                                reviewerAddress: vote.reviewerAddress,
+                                                vote: vote.vote,
+                                                severity: vote.severity,
+                                                reviewerComment: vote.reviewerComment,
+                                                createdAt: vote.createdAt
+                                            }))}
+                                            showAll={true}
+                                            currentUserAddress={user?.wallet?.address}
+                                        />
+                                    )}
+
+                                    {/* Show base payment button only after KYC is completed and user hasn't confirmed payment */}
+                                    {selectedReport.kycStatus === 'completed' && 
+                                        selectedReport.votes.length === 3 && // Only show after all votes are in
+                                        !selectedReport.votes.find(v => 
+                                            v.reviewerAddress === user?.wallet?.address && v.basePaymentSent
+                                        ) && (
+                                        <button
+                                            onClick={async () => {
+                                                try {
+                                                    const response = await fetch(`/api/reports/${selectedReport._id}/payment/base`, {
+                                                        method: 'POST',
+                                                        headers: {
+                                                            'Content-Type': 'application/json'
+                                                        },
+                                                        body: JSON.stringify({ 
+                                                            reviewerAddress: user?.wallet?.address 
+                                                        })
+                                                    });
+                                                    if (!response.ok) throw new Error('Failed to confirm payment');
+                                                    fetchReports();
+                                                    toast.success('Base payment confirmed');
+                                                } catch (error) {
+                                                    console.error('Error confirming payment:', error);
+                                                    toast.error('Failed to confirm payment');
+                                                }
+                                            }}
+                                            className="px-3 py-1 bg-[#4ECDC4] text-white rounded-lg hover:opacity-90 mt-4"
+                                        >
+                                            Confirm Base Payment
+                                        </button>
+                                    )}
                                 </div>
 
                                 <div className="flex flex-wrap gap-4 mt-6">

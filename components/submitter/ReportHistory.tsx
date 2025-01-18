@@ -5,6 +5,7 @@ import { decrypt } from '@/lib/encryption';
 import { EyeIcon } from '@heroicons/react/24/outline';
 import { toast } from 'react-hot-toast';
 import VoteDetails from '@/components/common/VoteDetails';
+import ProgressBar from '@/components/common/ProgressBar';
 
 interface Report {
     _id: string;
@@ -14,6 +15,9 @@ interface Report {
     fileUrl: string;
     status: 'pending' | 'approved' | 'rejected';
     createdAt: string;
+    kycStatus: 'pending' | 'completed';
+    basePaymentStatus: 'pending' | 'completed' | 'rejected';
+    additionalPaymentStatus: 'pending' | 'completed' | 'rejected';
     votes: Array<{
         reviewerAddress: string;
         vote: 'approved' | 'rejected';
@@ -21,6 +25,8 @@ interface Report {
         reviewerComment?: string;
         createdAt: string;
         _id: string;
+        basePaymentSent?: boolean;
+        additionalPaymentSent?: boolean;
     }>;
 }
 
@@ -40,21 +46,21 @@ const ReportHistory = ({ walletAddress }: ReportHistoryProps) => {
     const [decryptedHandles, setDecryptedHandles] = useState<{[key: string]: string}>({});
     const [selectedReport, setSelectedReport] = useState<Report | null>(null);
 
-    useEffect(() => {
-        const fetchReports = async () => {
-            try {
-                const response = await fetch(`/api/reports?address=${walletAddress}`);
-                if (!response.ok) throw new Error('Failed to fetch reports');
-                const data = await response.json();
-                console.log('Fetched reports:', data); // Debug log
-                setReports(data);
-            } catch (error) {
-                console.error('Error fetching reports:', error);
-            } finally {
-                setLoading(false);
-            }
-        };
+    const fetchReports = async () => {
+        try {
+            const response = await fetch(`/api/reports?address=${walletAddress}`);
+            if (!response.ok) throw new Error('Failed to fetch reports');
+            const data = await response.json();
+            console.log('Fetched reports:', data);
+            setReports(data);
+        } catch (error) {
+            console.error('Error fetching reports:', error);
+        } finally {
+            setLoading(false);
+        }
+    };
 
+    useEffect(() => {
         if (walletAddress) {
             fetchReports();
         }
@@ -142,7 +148,7 @@ const ReportHistory = ({ walletAddress }: ReportHistoryProps) => {
     }
 
     return (
-        <div className="space-y-4 sm:space-y-6">
+        <div className="space-y-3 sm:space-y-4">
             {reports.map((report) => (
                 <div
                     key={report._id}
@@ -150,9 +156,9 @@ const ReportHistory = ({ walletAddress }: ReportHistoryProps) => {
                     onClick={() => handleReportClick(report)}
                 >
                     <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 sm:gap-4 mb-4">
-                        <h4 className="text-lg sm:text-xl font-semibold text-white">{report.title}</h4>
+                        <h4 className="text-base sm:text-lg font-semibold text-white">{report.title}</h4>
                         <div className="flex items-center gap-2">
-                            <span className={`px-3 py-1 rounded-full text-xs sm:text-sm ${
+                            <span className={`px-2 py-1 rounded-full text-xs sm:text-sm ${
                                 report.status === 'approved' ? 'bg-green-500/20 text-green-400' :
                                 report.status === 'rejected' ? 'bg-red-500/20 text-red-400' :
                                 'bg-yellow-500/20 text-yellow-400'
@@ -167,8 +173,7 @@ const ReportHistory = ({ walletAddress }: ReportHistoryProps) => {
                         </div>
                     </div>
 
-                    {/* Basic Info */}
-                    <div className="space-y-2 sm:space-y-3 text-sm sm:text-base text-gray-400">
+                    <div className="space-y-2 sm:space-y-3 text-xs sm:text-sm text-gray-400">
                         <div className="flex flex-wrap items-center gap-2">
                             <span>Telegram:</span>
                             <div className="flex items-center gap-2">
@@ -226,15 +231,39 @@ const ReportHistory = ({ walletAddress }: ReportHistoryProps) => {
                             </svg>
                             Download Submitted File
                         </button>
+                        {report.status === 'approved' && (
+                            <div className="mt-4 sm:mt-6">
+                                <ProgressBar
+                                    report={report}
+                                    onKycVerify={async () => {
+                                        try {
+                                            const response = await fetch(`/api/reports/${report._id}/kyc`, {
+                                                method: 'POST'
+                                            });
+                                            if (!response.ok) throw new Error('Failed to verify KYC');
+                                            
+                                            // Refresh reports after KYC verification
+                                            fetchReports();
+                                            toast.success('KYC verification completed');
+                                        } catch (error) {
+                                            console.error('Error verifying KYC:', error);
+                                            toast.error('Failed to verify KYC');
+                                        }
+                                    }}
+                                    isSubmitter={true}
+                                />
+                            </div>
+                        )}
                     </div>
 
-                    {/* Vote Details Section - Show when report is selected and has votes */}
+                    {/* Vote Details Section */}
                     {selectedReport?._id === report._id && report.votes?.length > 0 && (
                         <div className="mt-6 pt-6 border-t border-gray-800">
                             <VoteDetails 
                                 votes={report.votes
                                     .filter(vote => vote && vote.reviewerAddress)
                                     .map(vote => ({
+                                        _id: vote._id,
                                         reviewerAddress: vote.reviewerAddress,
                                         vote: vote.vote === 'approved' ? 'approved' : 'rejected',
                                         severity: vote.severity as 'high' | 'medium' | 'low' | undefined,

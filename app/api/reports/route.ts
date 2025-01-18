@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { connect } from '@/lib/mongodb';
-import { Report } from '@/models/Report';
+import { ReportModel } from '@/models/Report';
 import { uploadFile } from '@/lib/upload';
 
 export async function POST(req: Request) {
@@ -16,7 +16,7 @@ export async function POST(req: Request) {
         // Upload file to S3
         const fileUrl = await uploadFile(file);
 
-        const report = await Report.create({
+        const report = await ReportModel.create({
             title,
             telegramHandle,
             submitterAddress,
@@ -41,7 +41,7 @@ export async function GET(req: Request) {
         const { searchParams } = new URL(req.url);
         const address = searchParams.get('address');
 
-        const reports = await Report.find({ submitterAddress: address })
+        const reports = await ReportModel.find({ submitterAddress: address })
             .sort({ createdAt: -1 });
 
         return NextResponse.json(reports);

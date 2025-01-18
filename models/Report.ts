@@ -1,11 +1,5 @@
 import mongoose, { Document } from 'mongoose';
-
-interface Vote {
-    reviewerAddress: string;
-    vote: 'approved' | 'rejected';
-    severity?: 'high' | 'medium' | 'low';
-    reviewerComment?: string;
-}
+import { Vote } from '@/types/report';
 
 interface IReport extends Document {
     title: string;
@@ -15,10 +9,12 @@ interface IReport extends Document {
     status: 'pending' | 'approved' | 'rejected';
     severity?: 'high' | 'medium' | 'low';
     votes: Vote[];
-    calculateFinalStatus(): 'pending' | 'approved' | 'rejected';
+    kycStatus: 'pending' | 'completed';
+    basePaymentStatus: 'pending' | 'completed' | 'rejected';
+    additionalPaymentStatus: 'pending' | 'completed' | 'rejected';
 }
 
-export const voteSchema = new mongoose.Schema({
+const voteSchema = new mongoose.Schema({
     reviewerAddress: {
         type: String,
         required: true,
@@ -32,12 +28,18 @@ export const voteSchema = new mongoose.Schema({
         type: String,
         enum: ['high', 'medium', 'low'],
     },
-    reviewerComment: {
-        type: String,
+    reviewerComment: String,
+    basePaymentSent: {
+        type: Boolean,
+        default: false
+    },
+    additionalPaymentSent: {
+        type: Boolean,
+        default: false
     }
-}, { timestamps: true });
+});
 
-const reportSchema = new mongoose.Schema<IReport>({
+const reportSchema = new mongoose.Schema({
     title: {
         type: String,
         required: true,
@@ -66,45 +68,29 @@ const reportSchema = new mongoose.Schema<IReport>({
     votes: {
         type: [voteSchema],
         default: [],
+    },
+    kycStatus: {
+        type: String,
+        enum: ['pending', 'completed'],
+        default: 'pending'
+    },
+    basePaymentStatus: {
+        type: String,
+        enum: ['pending', 'completed', 'rejected'],
+        default: 'pending'
+    },
+    additionalPaymentStatus: {
+        type: String,
+        enum: ['pending', 'completed', 'rejected'],
+        default: 'pending'
     }
 }, {
     timestamps: true,
 });
 
-// Method to calculate final status based on votes
-reportSchema.methods.calculateFinalStatus = function(this: IReport) {
-    const requiredVotes = process.env.NEXT_PUBLIC_REVIEWER_ADDRESS_1 && 
-        process.env.NEXT_PUBLIC_REVIEWER_ADDRESS_2 && 
-        process.env.NEXT_PUBLIC_REVIEWER_ADDRESS_3 ? 3 : 0;
-
-    if (this.votes.length < requiredVotes) {
-        return 'pending';
-    }
-
-    const approvedVotes = this.votes.filter(v => v.vote === 'approved').length;
-    const rejectedVotes = this.votes.filter(v => v.vote === 'rejected').length;
-
-    if (approvedVotes > rejectedVotes) {
-        // Calculate severity based on majority
-        const severityCounts = this.votes
-            .filter(v => v.vote === 'approved' && v.severity)
-            .reduce((acc: { [key: string]: number }, vote) => {
-                if (vote.severity) {
-                    acc[vote.severity] = (acc[vote.severity] || 0) + 1;
-                }
-                return acc;
-            }, {});
-
-        const sortedSeverities = Object.entries(severityCounts)
-            .sort((a, b) => b[1] - a[1]);
-
-        if (sortedSeverities.length > 0) {
-            this.severity = sortedSeverities[0][0] as 'high' | 'medium' | 'low';
-        }
-        return 'approved';
-    }
-    return 'rejected';
-};
-
-export const Report = mongoose.models.Report as mongoose.Model<IReport> || 
+// Export the mongoose model
+export const ReportModel = mongoose.models.Report as mongoose.Model<IReport> || 
     mongoose.model<IReport>('Report', reportSchema);
+
+// Export the interface type
+export type { IReport };

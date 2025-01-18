@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server';
 import { connect } from '@/lib/mongodb';
-import { Report } from '@/models/Report';
+import { ReportModel } from '@/models/Report';
 
 export async function GET() {
     try {
         await connect();
-        const reports = await Report.find().sort({ createdAt: -1 });
+        const reports = await ReportModel.find().sort({ createdAt: -1 });
         return NextResponse.json(reports);
     } catch (error) {
         console.error('Error fetching all reports:', error);
