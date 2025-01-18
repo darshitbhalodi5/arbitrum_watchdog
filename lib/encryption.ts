@@ -1,12 +1,18 @@
 import CryptoJS from 'crypto-js';
 
-const ENCRYPTION_KEY = process.env.NEXT_PUBLIC_ENCRYPTION_KEY || 'your-fallback-key';
-
-export const encrypt = (text: string): string => {
-    return CryptoJS.AES.encrypt(text, ENCRYPTION_KEY).toString();
+// Function to generate a consistent encryption key from title
+const generateKeyFromTitle = (title: string): string => {
+    // Create a consistent hash from the title
+    return CryptoJS.SHA256(title).toString();
 };
 
-export const decrypt = (ciphertext: string): string => {
-    const bytes = CryptoJS.AES.decrypt(ciphertext, ENCRYPTION_KEY);
+export const encrypt = (text: string, title: string): string => {
+    const key = generateKeyFromTitle(title);
+    return CryptoJS.AES.encrypt(text, key).toString();
+};
+
+export const decrypt = (ciphertext: string, title: string): string => {
+    const key = generateKeyFromTitle(title);
+    const bytes = CryptoJS.AES.decrypt(ciphertext, key);
     return bytes.toString(CryptoJS.enc.Utf8);
 }; 

@@ -1,12 +1,13 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { EyeIcon, EyeSlashIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { EyeIcon, XMarkIcon } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
 import { decrypt } from '@/lib/encryption';
 import { usePrivy } from '@privy-io/react-auth';
+import VoteDetails from '@/components/common/VoteDetails';
 
-interface Vote {
+export interface Vote {
     reviewerAddress: string;
     vote: 'approved' | 'rejected';
     severity?: 'high' | 'medium' | 'low';
@@ -30,10 +31,14 @@ const ReviewerDashboard = () => {
     const { user } = usePrivy();
     const [reports, setReports] = useState<Report[]>([]);
     const [selectedReport, setSelectedReport] = useState<Report | null>(null);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [showTelegram, setShowTelegram] = useState(false);
     const [comment, setComment] = useState('');
     const [showSeverity, setShowSeverity] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
+    const [titleInput, setTitleInput] = useState('');
+    const [showTitleInput, setShowTitleInput] = useState(false);
+    const [decryptedHandles, setDecryptedHandles] = useState<{[key: string]: string}>({});
 
     useEffect(() => {
         fetchReports();
@@ -44,16 +49,7 @@ const ReviewerDashboard = () => {
             const response = await fetch('/api/reports/all');
             if (!response.ok) throw new Error('Failed to fetch reports');
             const data = await response.json();
-
-            // Decrypt telegram handles
-            const decryptedReports = await Promise.all(
-                data.map(async (report: Report) => ({
-                    ...report,
-                    telegramHandle: await decrypt(report.telegramHandle)
-                }))
-            );
-
-            setReports(decryptedReports);
+            setReports(data);
         } catch (error) {
             console.error('Error fetching reports:', error);
             toast.error('Failed to fetch reports');
@@ -129,6 +125,25 @@ const ReviewerDashboard = () => {
         );
     };
 
+    const handleTelegramReveal = async (reportId: string, encryptedTelegram: string, actualTitle: string) => {
+        if (titleInput.trim() === actualTitle) {
+            try {
+                const decrypted = decrypt(encryptedTelegram, actualTitle);
+                setDecryptedHandles(prev => ({
+                    ...prev,
+                    [reportId]: decrypted
+                }));
+                setShowTitleInput(false);
+                setTitleInput('');
+            } catch (error) {
+                console.error('Failed to decrypt telegram handle:', error);
+                toast.error('Failed to decrypt telegram handle');
+            }
+        } else {
+            toast.error('Incorrect title');
+        }
+    };
+
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <h2 className="text-3xl font-bold text-white mb-8">Reviewer Dashboard</h2>
@@ -193,21 +208,48 @@ const ReviewerDashboard = () => {
                                 <div className="flex items-center gap-2">
                                     <span className="text-gray-400">Telegram:</span>
                                     <div className="flex items-center gap-2">
-                                        {showTelegram ? (
-                                            <span className="text-[#4ECDC4]">{selectedReport.telegramHandle}</span>
+                                        {decryptedHandles[selectedReport._id] ? (
+                                            <span className="text-[#4ECDC4]">{decryptedHandles[selectedReport._id]}</span>
+                                        ) : showTitleInput ? (
+                                            <div className="flex items-center gap-2">
+                                                <input
+                                                    type="text"
+                                                    value={titleInput}
+                                                    onChange={(e) => setTitleInput(e.target.value)}
+                                                    placeholder="Enter report title to reveal"
+                                                    className="bg-[#1A1B1E] text-white rounded px-2 py-1"
+                                                />
+                                                <button
+                                                    onClick={() => handleTelegramReveal(
+                                                        selectedReport._id,
+                                                        selectedReport.telegramHandle,
+                                                        selectedReport.title
+                                                    )}
+                                                    className="text-[#4ECDC4] hover:text-[#45b8b0]"
+                                                >
+                                                    Verify
+                                                </button>
+                                                <button
+                                                    onClick={() => {
+                                                        setShowTitleInput(false);
+                                                        setTitleInput('');
+                                                    }}
+                                                    className="text-gray-400 hover:text-gray-300"
+                                                >
+                                                    Cancel
+                                                </button>
+                                            </div>
                                         ) : (
-                                            <span>••••••••</span>
+                                            <>
+                                                <span>••••••••</span>
+                                                <button
+                                                    onClick={() => setShowTitleInput(true)}
+                                                    className="p-1 hover:bg-gray-700 rounded-full"
+                                                >
+                                                    <EyeIcon className="w-5 h-5 text-gray-400" />
+                                                </button>
+                                            </>
                                         )}
-                                        <button
-                                            onClick={() => setShowTelegram(!showTelegram)}
-                                            className="p-1 hover:bg-gray-700 rounded-full"
-                                        >
-                                            {showTelegram ? (
-                                                <EyeSlashIcon className="w-5 h-5 text-gray-400" />
-                                            ) : (
-                                                <EyeIcon className="w-5 h-5 text-gray-400" />
-                                            )}
-                                        </button>
                                     </div>
                                 </div>
 
@@ -239,6 +281,14 @@ const ReviewerDashboard = () => {
                                         className="w-full bg-[#1A1B1E] text-white rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#4ECDC4] outline-none"
                                         rows={4}
                                         placeholder="Enter your review comments here..."
+                                    />
+                                </div>
+
+                                <div className="mt-6 border-t border-gray-800 pt-6">
+                                    <VoteDetails 
+                                        votes={selectedReport.votes} 
+                                        showAll={selectedReport.votes.length === 3}
+                                        currentUserAddress={user?.wallet?.address}
                                     />
                                 </div>
 

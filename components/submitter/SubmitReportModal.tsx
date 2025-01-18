@@ -22,8 +22,8 @@ const SubmitReportModal = ({ isOpen, onClose, walletAddress }: SubmitReportModal
         setIsSubmitting(true);
 
         try {
-            // Encrypt telegram handle
-            const encryptedTelegram = await encrypt(telegramHandle);
+            // Encrypt telegram handle using title as key
+            const encryptedTelegram = await encrypt(telegramHandle, title);
 
             // Create form data for file upload
             const formData = new FormData();
