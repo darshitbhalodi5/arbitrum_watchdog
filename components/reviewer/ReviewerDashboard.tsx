@@ -68,6 +68,11 @@ const ReviewerDashboard = () => {
             return;
         }
 
+        if (vote === 'approved' && !severity) {
+            setShowSeverity(true);
+            return;
+        }
+
         setIsSubmitting(true);
         try {
             const response = await fetch(`/api/reports/${selectedReport._id}/status`, {
@@ -238,9 +243,9 @@ const ReviewerDashboard = () => {
                                 </div>
 
                                 <div className="flex flex-wrap gap-4 mt-6">
-                                    {!showSeverity ? (
+                                    {!hasVoted(selectedReport) ? (
                                         <>
-                                            {!hasVoted(selectedReport) ? (
+                                            {!showSeverity ? (
                                                 <>
                                                     <button
                                                         onClick={() => handleStatusUpdate('approved')}
@@ -258,31 +263,48 @@ const ReviewerDashboard = () => {
                                                     </button>
                                                 </>
                                             ) : (
-                                                <div className="text-gray-400">
-                                                    You have already voted: {getUserVote(selectedReport)?.vote}
-                                                </div>
+                                                <>
+                                                    <div className="w-full">
+                                                        <p className="text-gray-400 mb-3">Select severity level:</p>
+                                                        <div className="space-x-4">
+                                                            <button
+                                                                onClick={() => handleStatusUpdate('approved', 'high')}
+                                                                className="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
+                                                                disabled={isSubmitting}
+                                                            >
+                                                                High
+                                                            </button>
+                                                            <button
+                                                                onClick={() => handleStatusUpdate('approved', 'medium')}
+                                                                className="px-6 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600"
+                                                                disabled={isSubmitting}
+                                                            >
+                                                                Medium
+                                                            </button>
+                                                            <button
+                                                                onClick={() => handleStatusUpdate('approved', 'low')}
+                                                                className="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
+                                                                disabled={isSubmitting}
+                                                            >
+                                                                Low
+                                                            </button>
+                                                            <button
+                                                                onClick={() => setShowSeverity(false)}
+                                                                className="px-6 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600"
+                                                                disabled={isSubmitting}
+                                                            >
+                                                                Cancel
+                                                            </button>
+                                                        </div>
+                                                    </div>
+                                                </>
                                             )}
                                         </>
                                     ) : (
-                                        <div className="space-x-4">
-                                            <button
-                                                onClick={() => handleStatusUpdate('approved', 'high')}
-                                                className="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600"
-                                            >
-                                                High
-                                            </button>
-                                            <button
-                                                onClick={() => handleStatusUpdate('approved', 'medium')}
-                                                className="px-6 py-2 bg-yellow-500 text-white rounded-lg hover:bg-yellow-600"
-                                            >
-                                                Medium
-                                            </button>
-                                            <button
-                                                onClick={() => handleStatusUpdate('approved', 'low')}
-                                                className="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600"
-                                            >
-                                                Low
-                                            </button>
+                                        <div className="text-gray-400">
+                                            You have already voted: {getUserVote(selectedReport)?.vote}
+                                            {getUserVote(selectedReport)?.severity && 
+                                                ` (Severity: ${getUserVote(selectedReport)?.severity})`}
                                         </div>
                                     )}
                                 </div>
