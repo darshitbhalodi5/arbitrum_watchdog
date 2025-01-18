@@ -5,12 +5,13 @@ import { ReportModel } from '@/models/Report';
 // Export the POST method handler with correct naming
 export const POST = async (
     request: Request,
-    { params }: { params: { reportId: string } }
+    { params }: { params: Promise<{ reportId: string }> }
 ) => {
     try {
         await connect();
+        const reportId = (await params).reportId;
         const { reviewerAddress } = await request.json();
-        const report = await ReportModel.findById(params.reportId);
+        const report = await ReportModel.findById(reportId);
         
         if (!report) {
             return NextResponse.json(

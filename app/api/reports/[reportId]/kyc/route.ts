@@ -4,11 +4,12 @@ import { ReportModel } from '@/models/Report';
 
 export async function POST(
     request: Request,
-    { params }: { params: { reportId: string } }
+    { params }: { params: Promise<{ reportId: string }> }
 ) {
     try {
         await connect();
-        const report = await ReportModel.findById(params.reportId);
+        const reportId = (await params).reportId;
+        const report = await ReportModel.findById(reportId);
         
         if (!report) {
             return NextResponse.json(
