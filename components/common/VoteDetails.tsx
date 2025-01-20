@@ -1,26 +1,37 @@
-import { Vote } from "@/types/report";
+// import { Vote } from "@/types/report";
+import { IReport } from "@/models/Report";
+
+interface Vote {
+    _id: string;
+    reviewerAddress: string;
+    vote: 'approved' | 'rejected';
+    severity?: 'high' | 'medium' | 'low';
+    reviewerComment?: string;
+    createdAt: string;
+}
 
 interface VoteDetailsProps {
-    votes: Vote[];
-    showAll: boolean;
+    votes?: Vote[];
+    report?: IReport;
+    showAll?: boolean;
     currentUserAddress?: string;
 }
 
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
-const VoteDetails = ({ votes, showAll, currentUserAddress }: VoteDetailsProps) => {
-    console.log('VoteDetails received votes:', votes); // Debug log
+const VoteDetails = ({ votes, report, showAll, currentUserAddress }: VoteDetailsProps) => {
+    const votesToDisplay = report?.votes || votes || [];
 
-    if (!votes || votes.length === 0) {
-        console.log('No votes to display'); // Debug log
+    if (votesToDisplay.length === 0) {
         return null;
     }
 
-    // Only show votes if showAll is true or if it's the current user's vote
-    const votesToShow = showAll 
-        ? votes 
-        : votes.filter(vote => vote.reviewerAddress === currentUserAddress);
+    // Filter votes if not showing all and currentUserAddress is provided
+    const filteredVotes = showAll 
+        ? votesToDisplay 
+        : currentUserAddress 
+            ? votesToDisplay.filter(vote => vote.reviewerAddress === currentUserAddress)
+            : votesToDisplay;
 
-    if (votesToShow.length === 0) return null;
+    if (filteredVotes.length === 0) return null;
 
     return (
         <div className="mt-4 space-y-3">
@@ -28,7 +39,7 @@ const VoteDetails = ({ votes, showAll, currentUserAddress }: VoteDetailsProps) =
                 {showAll ? 'All Votes' : 'Your Vote'}
             </h4>
             <div className="space-y-3 sm:space-y-4">
-                {votesToShow.map((vote, index) => (
+                {filteredVotes.map((vote, index) => (
                     <div 
                         key={index} 
                         className="bg-[#1A1B1E] rounded-lg p-3 sm:p-4 border border-gray-800"

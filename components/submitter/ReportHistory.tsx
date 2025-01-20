@@ -6,6 +6,7 @@ import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 import { toast } from 'react-hot-toast';
 import VoteDetails from '@/components/common/VoteDetails';
 import ProgressBar from '@/components/common/ProgressBar';
+import QuestionAnswer from '@/components/common/QuestionAnswer';
 
 interface Report {
     _id: string;
@@ -247,16 +248,7 @@ const ReportHistory = ({ walletAddress }: ReportHistoryProps) => {
                     {selectedReport?._id === report._id && report.votes?.length > 0 && (
                         <div className="mt-6 pt-6 border-t border-gray-800">
                             <VoteDetails 
-                                votes={report.votes
-                                    .filter(vote => vote && vote.reviewerAddress)
-                                    .map(vote => ({
-                                        _id: vote._id,
-                                        reviewerAddress: vote.reviewerAddress,
-                                        vote: vote.vote === 'approved' ? 'approved' : 'rejected',
-                                        severity: vote.severity as 'high' | 'medium' | 'low' | undefined,
-                                        reviewerComment: vote.reviewerComment,
-                                        createdAt: vote.createdAt
-                                    }))}
+                                votes={report.votes}
                                 showAll={true}
                             />
                         </div>
@@ -282,6 +274,17 @@ const ReportHistory = ({ walletAddress }: ReportHistoryProps) => {
                     )}
                 </div>
             ))}
+            {selectedReport && (
+                <div className="mt-6">
+                    <VoteDetails 
+                        votes={selectedReport.votes}
+                        showAll={true}
+                    />
+                    <div className="mt-6">
+                        <QuestionAnswer reportId={selectedReport._id} isReviewer={false} />
+                    </div>
+                </div>
+            )}
         </div>
     );
 };

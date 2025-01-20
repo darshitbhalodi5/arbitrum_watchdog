@@ -6,6 +6,7 @@ import toast from 'react-hot-toast';
 import { decrypt } from '@/lib/encryption';
 import { usePrivy } from '@privy-io/react-auth';
 import VoteDetails from '@/components/common/VoteDetails';
+import QuestionAnswer from '@/components/common/QuestionAnswer';
 import { IReport } from '@/models/Report';
 
 const ReviewerDashboard = () => {
@@ -20,7 +21,7 @@ const ReviewerDashboard = () => {
     const [titleInput, setTitleInput] = useState('');
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [showTitleInput, setShowTitleInput] = useState(false);
-    const [decryptedHandles, setDecryptedHandles] = useState<{[key: string]: string}>({});
+    const [decryptedHandles, setDecryptedHandles] = useState<{ [key: string]: string }>({});
     const [showTelegramPrompt, setShowTelegramPrompt] = useState(false);
 
     useEffect(() => {
@@ -102,7 +103,7 @@ const ReviewerDashboard = () => {
     };
 
     const getUserVote = (report: IReport) => {
-        return report.votes?.find(vote => 
+        return report.votes?.find(vote =>
             vote.reviewerAddress === user?.wallet?.address
         );
     };
@@ -138,31 +139,28 @@ const ReviewerDashboard = () => {
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
             <h2 className="text-2xl sm:text-3xl font-bold text-white mb-4 sm:mb-8">Reviewer Dashboard</h2>
-            
+
             <div className="flex flex-col lg:flex-row gap-4 sm:gap-8">
                 {/* Reports List */}
-                <div className={`${selectedReport ? 'lg:w-1/3' : 'w-full'} ${
-                    selectedReport ? 'hidden lg:block' : 'block'
-                }`}>
+                <div className={`${selectedReport ? 'lg:w-1/3' : 'w-full'} ${selectedReport ? 'hidden lg:block' : 'block'
+                    }`}>
                     <div className="space-y-3 sm:space-y-4">
                         {reports.map((report) => (
                             <button
                                 key={report._id?.toString()}
                                 onClick={() => setSelectedReport(report)}
-                                className={`w-full p-3 sm:p-4 rounded-lg text-left ${
-                                    selectedReport?._id?.toString() === report._id?.toString()
+                                className={`w-full p-3 sm:p-4 rounded-lg text-left ${selectedReport?._id?.toString() === report._id?.toString()
                                         ? 'bg-[#4ECDC4]/10 border-[#4ECDC4] border'
                                         : 'bg-[#2C2D31] border-gray-800 border hover:border-[#4ECDC4]'
-                                }`}
+                                    }`}
                             >
                                 <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 mb-2">
                                     <h3 className="text-base sm:text-lg font-semibold text-white">{report.title}</h3>
                                     <div className="flex items-center sm:flex-col sm:items-end gap-2">
-                                        <span className={`px-2 py-1 rounded-full text-xs ${
-                                            report.status === 'approved' ? 'bg-green-500/20 text-green-400' :
-                                            report.status === 'rejected' ? 'bg-red-500/20 text-red-400' :
-                                            'bg-yellow-500/20 text-yellow-400'
-                                        }`}>
+                                        <span className={`px-2 py-1 rounded-full text-xs ${report.status === 'approved' ? 'bg-green-500/20 text-green-400' :
+                                                report.status === 'rejected' ? 'bg-red-500/20 text-red-400' :
+                                                    'bg-yellow-500/20 text-yellow-400'
+                                            }`}>
                                             {report.status.charAt(0).toUpperCase() + report.status.slice(1)}
                                         </span>
                                         <span className="text-xs text-gray-400">
@@ -253,11 +251,10 @@ const ReviewerDashboard = () => {
                                         <div className="space-y-2">
                                             <div className="flex items-center gap-2">
                                                 <span>Your vote:</span>
-                                                <span className={`px-2 py-1 rounded-full text-xs ${
-                                                    getUserVote(selectedReport)?.vote === 'approved' 
-                                                        ? 'bg-green-500/20 text-green-400' 
+                                                <span className={`px-2 py-1 rounded-full text-xs ${getUserVote(selectedReport)?.vote === 'approved'
+                                                        ? 'bg-green-500/20 text-green-400'
                                                         : 'bg-red-500/20 text-red-400'
-                                                }`}>
+                                                    }`}>
                                                     {getUserVote(selectedReport)?.vote}
                                                 </span>
                                                 {getUserVote(selectedReport)?.severity && (
@@ -287,15 +284,14 @@ const ReviewerDashboard = () => {
                                 {selectedReport.votes.length === 3 && (
                                     <div className="mt-4 space-y-3 bg-[#1A1B1E] p-4 rounded-lg">
                                         <h4 className="text-white font-semibold mb-2">Payment Status</h4>
-                                        
+
                                         {/* KYC Status */}
                                         <div className="flex items-center gap-2">
                                             <span className="text-gray-400">KYC Status:</span>
-                                            <span className={`px-2 py-1 rounded-full text-xs ${
-                                                selectedReport.kycStatus === 'completed'
+                                            <span className={`px-2 py-1 rounded-full text-xs ${selectedReport.kycStatus === 'completed'
                                                     ? 'bg-green-500/20 text-green-400'
                                                     : 'bg-yellow-500/20 text-yellow-400'
-                                            }`}>
+                                                }`}>
                                                 {selectedReport.kycStatus.charAt(0).toUpperCase() + selectedReport.kycStatus.slice(1)}
                                             </span>
                                         </div>
@@ -303,13 +299,12 @@ const ReviewerDashboard = () => {
                                         {/* Base Payment Status */}
                                         <div className="flex items-center gap-2">
                                             <span className="text-gray-400">Base Payment:</span>
-                                            <span className={`px-2 py-1 rounded-full text-xs ${
-                                                selectedReport.basePaymentStatus === 'completed'
+                                            <span className={`px-2 py-1 rounded-full text-xs ${selectedReport.basePaymentStatus === 'completed'
                                                     ? 'bg-green-500/20 text-green-400'
                                                     : selectedReport.basePaymentStatus === 'rejected'
-                                                    ? 'bg-red-500/20 text-red-400'
-                                                    : 'bg-yellow-500/20 text-yellow-400'
-                                            }`}>
+                                                        ? 'bg-red-500/20 text-red-400'
+                                                        : 'bg-yellow-500/20 text-yellow-400'
+                                                }`}>
                                                 {selectedReport.basePaymentStatus.charAt(0).toUpperCase() + selectedReport.basePaymentStatus.slice(1)}
                                             </span>
                                             {/* Show confirmed reviewers count for base payment */}
@@ -322,15 +317,14 @@ const ReviewerDashboard = () => {
                                         {selectedReport.status === 'approved' && (
                                             <div className="flex items-center gap-2">
                                                 <span className="text-gray-400">Additional Payment:</span>
-                                                <span className={`px-2 py-1 rounded-full text-xs ${
-                                                    selectedReport.additionalPaymentStatus === 'completed'
+                                                <span className={`px-2 py-1 rounded-full text-xs ${selectedReport.additionalPaymentStatus === 'completed'
                                                         ? 'bg-green-500/20 text-green-400'
                                                         : selectedReport.additionalPaymentStatus === 'rejected'
-                                                        ? 'bg-red-500/20 text-red-400'
-                                                        : 'bg-yellow-500/20 text-yellow-400'
-                                                }`}>
-                                                    {selectedReport.additionalPaymentStatus.charAt(0).toUpperCase() + 
-                                                     selectedReport.additionalPaymentStatus.slice(1)}
+                                                            ? 'bg-red-500/20 text-red-400'
+                                                            : 'bg-yellow-500/20 text-yellow-400'
+                                                    }`}>
+                                                    {selectedReport.additionalPaymentStatus.charAt(0).toUpperCase() +
+                                                        selectedReport.additionalPaymentStatus.slice(1)}
                                                 </span>
                                                 {/* Show confirmed reviewers count for additional payment */}
                                                 <span className="text-xs text-gray-400">
@@ -364,56 +358,52 @@ const ReviewerDashboard = () => {
                                             Any Doubt? Click to connect
                                         </button>
                                     )}
+                                    <div className="mt-6">
+                                        <QuestionAnswer reportId={selectedReport._id?.toString() || ''} isReviewer={true} />
+                                    </div>
                                 </div>
 
                                 <div className="mt-6 border-t border-gray-800 pt-6">
                                     {/* Only show votes if all reviewers have voted */}
                                     {selectedReport.votes.length === 3 && (
-                                        <VoteDetails 
-                                            votes={selectedReport.votes.map(vote => ({
-                                                _id: vote._id,
-                                                reviewerAddress: vote.reviewerAddress,
-                                                vote: vote.vote,
-                                                severity: vote.severity,
-                                                reviewerComment: vote.reviewerComment,
-                                                createdAt: vote.createdAt
-                                            }))}
+                                        <VoteDetails
+                                            votes={selectedReport.votes}
                                             showAll={true}
                                             currentUserAddress={user?.wallet?.address}
                                         />
                                     )}
 
                                     {/* Show base payment button only after KYC is completed and user hasn't confirmed payment */}
-                                    {selectedReport.kycStatus === 'completed' && 
+                                    {selectedReport.kycStatus === 'completed' &&
                                         selectedReport.votes.length === 3 && // Only show after all votes are in
-                                        !selectedReport.votes.find(v => 
+                                        !selectedReport.votes.find(v =>
                                             v.reviewerAddress === user?.wallet?.address && v.basePaymentSent
                                         ) && (
-                                        <button
-                                            onClick={async () => {
-                                                try {
-                                                    const response = await fetch(`/api/reports/${selectedReport._id}/payment/base`, {
-                                                        method: 'POST',
-                                                        headers: {
-                                                            'Content-Type': 'application/json'
-                                                        },
-                                                        body: JSON.stringify({ 
-                                                            reviewerAddress: user?.wallet?.address 
-                                                        })
-                                                    });
-                                                    if (!response.ok) throw new Error('Failed to confirm payment');
-                                                    fetchReports();
-                                                    toast.success('Base payment confirmed');
-                                                } catch (error) {
-                                                    console.error('Error confirming payment:', error);
-                                                    toast.error('Failed to confirm payment');
-                                                }
-                                            }}
-                                            className="px-3 py-1 bg-[#4ECDC4] text-white rounded-lg hover:opacity-90 mt-4"
-                                        >
-                                            Confirm Base Payment
-                                        </button>
-                                    )}
+                                            <button
+                                                onClick={async () => {
+                                                    try {
+                                                        const response = await fetch(`/api/reports/${selectedReport._id}/payment/base`, {
+                                                            method: 'POST',
+                                                            headers: {
+                                                                'Content-Type': 'application/json'
+                                                            },
+                                                            body: JSON.stringify({
+                                                                reviewerAddress: user?.wallet?.address
+                                                            })
+                                                        });
+                                                        if (!response.ok) throw new Error('Failed to confirm payment');
+                                                        fetchReports();
+                                                        toast.success('Base payment confirmed');
+                                                    } catch (error) {
+                                                        console.error('Error confirming payment:', error);
+                                                        toast.error('Failed to confirm payment');
+                                                    }
+                                                }}
+                                                className="px-3 py-1 bg-[#4ECDC4] text-white rounded-lg hover:opacity-90 mt-4"
+                                            >
+                                                Confirm Base Payment
+                                            </button>
+                                        )}
 
                                     {!hasVoted(selectedReport) ? (
                                         <div className="flex flex-wrap gap-4">
@@ -516,6 +506,19 @@ const ReviewerDashboard = () => {
                     </div>
                 </div>
             )}
+
+            {/* {selectedReport && (
+                <div className="mt-6">
+                    <VoteDetails
+                        votes={selectedReport.votes}
+                        showAll={true}
+                        currentUserAddress={user?.wallet?.address}
+                    />
+                    <div className="mt-6">
+                        <QuestionAnswer reportId={selectedReport._id?.toString() || ''} isReviewer={true} />
+                    </div>
+                </div>
+            )} */}
         </div>
     );
 };
