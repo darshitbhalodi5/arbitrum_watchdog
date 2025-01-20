@@ -6,14 +6,12 @@ import { connect } from '@/lib/mongodb';
 
 export async function GET(
     request: Request,
-    { params }: {
-        params: Promise<{ reportId : string}>
-      }
+    { params }: { params: Promise<{ reportId: string }> | { reportId: string } }
 ) {
     try {
-        console.log("Request",request);
         await connect();
-        const reportId  = (await params).reportId;
+        const reportId = 'then' in params ? (await params).reportId : params.reportId;
+        
         const report = await ReportModel.findById(reportId);
         if (!report) {
             return NextResponse.json(
@@ -21,7 +19,8 @@ export async function GET(
                 { status: 404 }
             );
         }
-        
+
+        // Use the fileUrl from the report to get the file
         const { stream, fileInfo } = await getFileStream(report.fileUrl);
         
         // Convert the GridFS stream to a Web Response
@@ -40,8 +39,6 @@ export async function GET(
                 'Content-Type': fileInfo.contentType || 'application/octet-stream',
                 'Content-Disposition': `attachment; filename="${fileInfo.filename}"`,
                 'Content-Length': fileInfo.length.toString(),
-                'Access-Control-Allow-Origin': '*',
-                'Access-Control-Allow-Methods': 'GET',
             },
         });
     } catch (error) {

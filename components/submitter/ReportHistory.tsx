@@ -39,6 +39,7 @@ const ReportHistory = ({ walletAddress }: ReportHistoryProps) => {
     const [loading, setLoading] = useState(true);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [revealedHandles, setRevealedHandles] = useState<{ [key: string]: boolean }>({});
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [titleInput, setTitleInput] = useState('');
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [showTitleInput, setShowTitleInput] = useState(false);
@@ -74,13 +75,14 @@ const ReportHistory = ({ walletAddress }: ReportHistoryProps) => {
         }));
     };
 
-    const handleFileView = async (fileId: string) => {
+    const handleFileView = async (reportId: string, e: React.MouseEvent) => {
+        e.stopPropagation(); // Prevent report card click
         try {
-            const response = await fetch(`/api/reports/${fileId}`, {
+            const response = await fetch(`/api/reports/${reportId}/file`, {
                 method: 'GET',
                 headers: {
-                    'Accept': '*/*',
-                },
+                    'Accept': 'application/octet-stream',
+                }
             });
 
             if (!response.ok) {
@@ -88,16 +90,12 @@ const ReportHistory = ({ walletAddress }: ReportHistoryProps) => {
             }
 
             const blob = await response.blob();
-            const contentDisposition = response.headers.get('Content-Disposition');
-            const filename = contentDisposition?.split('filename=')[1]?.replace(/"/g, '') || 'download';
-            
-            // Create a URL for the blob
             const url = window.URL.createObjectURL(blob);
             
             // Create a temporary link and click it
             const link = document.createElement('a');
             link.href = url;
-            link.download = filename;
+            link.download = 'report-file';
             document.body.appendChild(link);
             link.click();
             
@@ -106,32 +104,24 @@ const ReportHistory = ({ walletAddress }: ReportHistoryProps) => {
                 document.body.removeChild(link);
                 window.URL.revokeObjectURL(url);
             }, 100);
+
+            toast.success('File download started');
         } catch (error) {
             console.error('Error downloading file:', error);
-            alert('Failed to download file. Please try again.');
+            toast.error('Failed to download file');
         }
     };
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const handleTelegramReveal = async (reportId: string, encryptedTelegram: string, actualTitle: string) => {
-        if (titleInput.trim() === actualTitle) {
-            try {
-                // Decrypt using the title as the key
-                const decrypted = decrypt(encryptedTelegram, actualTitle);
-                
-                // Update the decrypted handles state
-                setDecryptedHandles(prev => ({
-                    ...prev,
-                    [reportId]: decrypted
-                }));
-                setShowTitleInput(false);
-                setTitleInput('');
-            } catch (error) {
-                console.error('Failed to decrypt telegram handle:', error);
-                toast.error('Failed to decrypt telegram handle');
-            }
-        } else {
-            toast.error('Incorrect title');
+    const handleTelegramReveal = (reportId: string, encryptedTelegram: string, title: string) => {
+        try {
+            const decrypted = decrypt(encryptedTelegram, title);
+            setDecryptedHandles(prev => ({
+                ...prev,
+                [reportId]: decrypted
+            }));
+        } catch (error) {
+            console.error('Failed to decrypt telegram handle:', error);
+            toast.error('Failed to decrypt telegram handle');
         }
     };
 
@@ -179,40 +169,14 @@ const ReportHistory = ({ walletAddress }: ReportHistoryProps) => {
                             <div className="flex items-center gap-2">
                                 {decryptedHandles[report._id] ? (
                                     <span className="text-[#4ECDC4]">{decryptedHandles[report._id]}</span>
-                                ) : showTitleInput ? (
-                                    <div className="flex items-center gap-2">
-                                        <input
-                                            type="text"
-                                            value={titleInput}
-                                            onChange={(e) => setTitleInput(e.target.value)}
-                                            placeholder="Enter report title to reveal"
-                                            className="bg-[#1A1B1E] text-white rounded px-2 py-1"
-                                        />
-                                        <button
-                                            onClick={() => handleTelegramReveal(
-                                                report._id,
-                                                report.telegramHandle,
-                                                report.title
-                                            )}
-                                            className="text-[#4ECDC4] hover:text-[#45b8b0]"
-                                        >
-                                            Verify
-                                        </button>
-                                        <button
-                                            onClick={() => {
-                                                setShowTitleInput(false);
-                                                setTitleInput('');
-                                            }}
-                                            className="text-gray-400 hover:text-gray-300"
-                                        >
-                                            Cancel
-                                        </button>
-                                    </div>
                                 ) : (
                                     <>
                                         <span>••••••••</span>
                                         <button
-                                            onClick={() => setShowTitleInput(true)}
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleTelegramReveal(report._id, report.telegramHandle, report.title);
+                                            }}
                                             className="p-1 hover:bg-gray-700 rounded-full"
                                         >
                                             <EyeIcon className="w-5 h-5 text-gray-400" />
@@ -223,7 +187,7 @@ const ReportHistory = ({ walletAddress }: ReportHistoryProps) => {
                         </div>
                         <p>Submitted: {new Date(report.createdAt).toLocaleDateString()}</p>
                         <button
-                            onClick={() => handleFileView(report.fileUrl)}
+                            onClick={(e) => handleFileView(report._id, e)}
                             className="text-[#4ECDC4] hover:underline focus:outline-none inline-flex items-center gap-2"
                         >
                             <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">

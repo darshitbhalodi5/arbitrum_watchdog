@@ -8,10 +8,11 @@ import toast from 'react-hot-toast';
 interface SubmitReportModalProps {
     isOpen: boolean;
     onClose: () => void;
+    onSubmit: () => void;
     walletAddress: string;
 }
 
-const SubmitReportModal = ({ isOpen, onClose, walletAddress }: SubmitReportModalProps) => {
+const SubmitReportModal = ({ isOpen, onClose, onSubmit, walletAddress }: SubmitReportModalProps) => {
     const [title, setTitle] = useState('');
     const [telegramHandle, setTelegramHandle] = useState('');
     const [file, setFile] = useState<File | null>(null);
@@ -45,6 +46,10 @@ const SubmitReportModal = ({ isOpen, onClose, walletAddress }: SubmitReportModal
             }
 
             toast.success('Report submitted successfully');
+            setTitle('');
+            setTelegramHandle('');
+            setFile(null);
+            onSubmit(); // Call onSubmit to trigger refresh
             onClose();
         } catch (error) {
             console.error('Error submitting report:', error);

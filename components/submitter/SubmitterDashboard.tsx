@@ -8,6 +8,12 @@ import { usePrivy } from '@privy-io/react-auth';
 const SubmitterDashboard = () => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const { user } = usePrivy();
+    const [refreshTrigger, setRefreshTrigger] = useState(0);
+
+    const handleReportSubmitted = () => {
+        setRefreshTrigger(prev => prev + 1);
+        setIsModalOpen(false);
+    };
 
     return (
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8">
@@ -28,6 +34,7 @@ const SubmitterDashboard = () => {
             <SubmitReportModal 
                 isOpen={isModalOpen} 
                 onClose={() => setIsModalOpen(false)}
+                onSubmit={handleReportSubmitted}
                 walletAddress={user?.wallet?.address || ''}
             />
 
@@ -35,7 +42,10 @@ const SubmitterDashboard = () => {
                 <h3 className="text-xl sm:text-2xl font-semibold text-white mb-4 sm:mb-6">
                     Your Report History
                 </h3>
-                <ReportHistory walletAddress={user?.wallet?.address || ''} />
+                <ReportHistory 
+                    walletAddress={user?.wallet?.address || ''} 
+                    key={refreshTrigger}
+                />
             </div>
         </div>
     );
