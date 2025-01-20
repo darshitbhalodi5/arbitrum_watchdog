@@ -6,11 +6,11 @@ import { connect } from '@/lib/mongodb';
 
 export async function GET(
     request: Request,
-    { params }: { params: Promise<{ reportId: string }> | { reportId: string } }
+    { params }: { params: Promise<{ reportId: string }> }
 ) {
     try {
         await connect();
-        const reportId = 'then' in params ? (await params).reportId : params.reportId;
+        const reportId = (await params).reportId;
         
         const report = await ReportModel.findById(reportId);
         if (!report) {
