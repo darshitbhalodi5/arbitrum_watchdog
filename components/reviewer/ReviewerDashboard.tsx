@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { EyeIcon, XMarkIcon } from '@heroicons/react/24/outline';
+import { XMarkIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
 import { decrypt } from '@/lib/encryption';
 import { usePrivy } from '@privy-io/react-auth';
@@ -18,8 +18,10 @@ const ReviewerDashboard = () => {
     const [showSeverity, setShowSeverity] = useState(false);
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [titleInput, setTitleInput] = useState('');
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [showTitleInput, setShowTitleInput] = useState(false);
     const [decryptedHandles, setDecryptedHandles] = useState<{[key: string]: string}>({});
+    const [showTelegramPrompt, setShowTelegramPrompt] = useState(false);
 
     useEffect(() => {
         fetchReports();
@@ -114,8 +116,9 @@ const ReviewerDashboard = () => {
                     ...prev,
                     [reportId]: decrypted
                 }));
-                setShowTitleInput(false);
+                setShowTelegramPrompt(false);
                 setTitleInput('');
+                toast.success('Telegram handle revealed');
             } catch (error) {
                 console.error('Failed to decrypt telegram handle:', error);
                 toast.error('Failed to decrypt telegram handle');
@@ -123,6 +126,14 @@ const ReviewerDashboard = () => {
         } else {
             toast.error('Incorrect title');
         }
+    };
+
+    const handleTelegramHide = (reportId: string) => {
+        setDecryptedHandles(prev => {
+            const newHandles = { ...prev };
+            delete newHandles[reportId];
+            return newHandles;
+        });
     };
 
     return (
@@ -203,53 +214,6 @@ const ReviewerDashboard = () => {
                             </div>
 
                             <div className="space-y-4">
-                                <div className="flex items-center gap-2">
-                                    <span className="text-gray-400">Telegram:</span>
-                                    <div className="flex items-center gap-2">
-                                        {decryptedHandles[selectedReport._id as string] ? (
-                                            <span className="text-[#4ECDC4]">{decryptedHandles[selectedReport._id as string]}</span>
-                                        ) : showTitleInput ? (
-                                            <div className="flex items-center gap-2">
-                                                <input
-                                                    value={titleInput}
-                                                    onChange={(e) => setTitleInput(e.target.value)}
-                                                    placeholder="Enter report title to reveal"
-                                                    className="bg-[#1A1B1E] text-white rounded px-2 py-1"
-                                                />
-                                                <button
-                                                    onClick={() => handleTelegramReveal(
-                                                        selectedReport._id as string,
-                                                        selectedReport.telegramHandle,
-                                                        selectedReport.title
-                                                    )}
-                                                    className="text-[#4ECDC4] hover:text-[#45b8b0]"
-                                                >
-                                                    Verify
-                                                </button>
-                                                <button
-                                                    onClick={() => {
-                                                        setShowTitleInput(false);
-                                                        setTitleInput('');
-                                                    }}
-                                                    className="text-gray-400 hover:text-gray-300"
-                                                >
-                                                    Cancel
-                                                </button>
-                                            </div>
-                                        ) : (
-                                            <>
-                                                <span>••••••••</span>
-                                                <button
-                                                    onClick={() => setShowTitleInput(true)}
-                                                    className="p-1 hover:bg-gray-700 rounded-full"
-                                                >
-                                                    <EyeIcon className="w-5 h-5 text-gray-400" />
-                                                </button>
-                                            </>
-                                        )}
-                                    </div>
-                                </div>
-
                                 <div>
                                     <span className="text-gray-400">Submitter:</span>
                                     <span className="ml-2 text-white font-mono">
@@ -279,6 +243,32 @@ const ReviewerDashboard = () => {
                                         rows={4}
                                         placeholder="Enter your review comments here..."
                                     />
+                                </div>
+
+                                <div className="mt-4">
+                                    {decryptedHandles[selectedReport._id as string] ? (
+                                        <div className="bg-[#1A1B1E] p-4 rounded-lg">
+                                            <div className="flex items-center justify-between mb-2">
+                                                <p className="text-gray-400">Submitter&apos;s Telegram:</p>
+                                                <button
+                                                    onClick={() => handleTelegramHide(selectedReport._id as string)}
+                                                    className="p-1 hover:bg-gray-700 rounded-full transition-colors"
+                                                    title="Hide telegram handle"
+                                                >
+                                                    <EyeSlashIcon className="w-5 h-5 text-gray-400 hover:text-gray-300" />
+                                                </button>
+                                            </div>
+                                            <p className="text-[#4ECDC4] font-mono">{decryptedHandles[selectedReport._id as string]}</p>
+                                        </div>
+                                    ) : (
+                                        <button
+                                            onClick={() => setShowTelegramPrompt(true)}
+                                            className="text-[#4ECDC4] hover:text-[#45b8b0] flex items-center gap-2 transition-colors"
+                                        >
+                                            {/* <EyeIcon className="w-5 h-5" /> */}
+                                            Any Doubt? Click to connect
+                                        </button>
+                                    )}
                                 </div>
 
                                 <div className="mt-6 border-t border-gray-800 pt-6">
@@ -402,6 +392,43 @@ const ReviewerDashboard = () => {
                     </div>
                 )}
             </div>
+
+            {/* Telegram Prompt Modal */}
+            {showTelegramPrompt && (
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
+                    <div className="bg-[#2C2D31] rounded-lg p-6 max-w-md w-full">
+                        <h3 className="text-white font-semibold mb-4">Enter Report Title to Connect</h3>
+                        <input
+                            type="text"
+                            value={titleInput}
+                            onChange={(e) => setTitleInput(e.target.value)}
+                            placeholder="Enter the report title"
+                            className="w-full bg-[#1A1B1E] text-white rounded-lg px-4 py-2 mb-4"
+                        />
+                        <div className="flex justify-end gap-3">
+                            <button
+                                onClick={() => {
+                                    setShowTelegramPrompt(false);
+                                    setTitleInput('');
+                                }}
+                                className="px-4 py-2 text-gray-400 hover:text-white"
+                            >
+                                Cancel
+                            </button>
+                            <button
+                                onClick={() => handleTelegramReveal(
+                                    selectedReport?._id?.toString() || "",
+                                    selectedReport?.telegramHandle || "",
+                                    selectedReport?.title || ""
+                                )}
+                                className="px-4 py-2 bg-[#4ECDC4] text-white rounded-lg hover:opacity-90"
+                            >
+                                Verify
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
         </div>
     );
 };
