@@ -96,10 +96,9 @@ const ReviewerDashboard = () => {
         }
     };
 
-    const hasVoted = (report: IReport) => {
-        return report.votes?.some(vote => 
-            vote.reviewerAddress === user?.wallet?.address
-        ) || false;
+    const hasVoted = (report: IReport | null) => {
+        if (!report || !user?.wallet?.address) return false;
+        return report.votes.some(vote => vote.reviewerAddress === user?.wallet?.address);
     };
 
     const getUserVote = (report: IReport) => {
@@ -234,16 +233,113 @@ const ReviewerDashboard = () => {
                                     </button>
                                 </div>
 
-                                <div className="mt-6">
-                                    <label className="block text-gray-400 mb-2">Review Comment</label>
-                                    <textarea
-                                        value={comment}
-                                        onChange={(e) => setComment(e.target.value)}
-                                        className="w-full bg-[#1A1B1E] text-white rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#4ECDC4] outline-none"
-                                        rows={4}
-                                        placeholder="Enter your review comments here..."
-                                    />
-                                </div>
+                                {/* Only show comment box if user hasn't voted */}
+                                {!hasVoted(selectedReport) && (
+                                    <div className="mt-6">
+                                        <label className="block text-gray-400 mb-2">Review Comment</label>
+                                        <textarea
+                                            value={comment}
+                                            onChange={(e) => setComment(e.target.value)}
+                                            className="w-full bg-[#1A1B1E] text-white rounded-lg px-4 py-3 focus:ring-2 focus:ring-[#4ECDC4] outline-none"
+                                            rows={4}
+                                            placeholder="Enter your review comments here..."
+                                        />
+                                    </div>
+                                )}
+
+                                {/* Show vote status if user has voted */}
+                                {hasVoted(selectedReport) && (
+                                    <div className="text-gray-400">
+                                        <div className="space-y-2">
+                                            <div className="flex items-center gap-2">
+                                                <span>Your vote:</span>
+                                                <span className={`px-2 py-1 rounded-full text-xs ${
+                                                    getUserVote(selectedReport)?.vote === 'approved' 
+                                                        ? 'bg-green-500/20 text-green-400' 
+                                                        : 'bg-red-500/20 text-red-400'
+                                                }`}>
+                                                    {getUserVote(selectedReport)?.vote}
+                                                </span>
+                                                {getUserVote(selectedReport)?.severity && (
+                                                    <span className="text-xs">
+                                                        (Severity: {getUserVote(selectedReport)?.severity})
+                                                    </span>
+                                                )}
+                                            </div>
+                                            {getUserVote(selectedReport)?.reviewerComment && (
+                                                <div className="bg-[#1A1B1E] p-3 rounded-lg mt-2">
+                                                    <p className="text-sm text-gray-400 mb-1">Your Review:</p>
+                                                    <p className="text-white text-sm">
+                                                        {getUserVote(selectedReport)?.reviewerComment}
+                                                    </p>
+                                                </div>
+                                            )}
+                                        </div>
+                                        {selectedReport.votes.length < 3 && (
+                                            <p className="mt-3 text-sm text-yellow-400">
+                                                Waiting for other reviewers ({selectedReport.votes.length}/3 votes)
+                                            </p>
+                                        )}
+                                    </div>
+                                )}
+
+                                {/* Add KYC and Payment Status section */}
+                                {selectedReport.votes.length === 3 && (
+                                    <div className="mt-4 space-y-3 bg-[#1A1B1E] p-4 rounded-lg">
+                                        <h4 className="text-white font-semibold mb-2">Payment Status</h4>
+                                        
+                                        {/* KYC Status */}
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-gray-400">KYC Status:</span>
+                                            <span className={`px-2 py-1 rounded-full text-xs ${
+                                                selectedReport.kycStatus === 'completed'
+                                                    ? 'bg-green-500/20 text-green-400'
+                                                    : 'bg-yellow-500/20 text-yellow-400'
+                                            }`}>
+                                                {selectedReport.kycStatus.charAt(0).toUpperCase() + selectedReport.kycStatus.slice(1)}
+                                            </span>
+                                        </div>
+
+                                        {/* Base Payment Status */}
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-gray-400">Base Payment:</span>
+                                            <span className={`px-2 py-1 rounded-full text-xs ${
+                                                selectedReport.basePaymentStatus === 'completed'
+                                                    ? 'bg-green-500/20 text-green-400'
+                                                    : selectedReport.basePaymentStatus === 'rejected'
+                                                    ? 'bg-red-500/20 text-red-400'
+                                                    : 'bg-yellow-500/20 text-yellow-400'
+                                            }`}>
+                                                {selectedReport.basePaymentStatus.charAt(0).toUpperCase() + selectedReport.basePaymentStatus.slice(1)}
+                                            </span>
+                                            {/* Show confirmed reviewers count for base payment */}
+                                            <span className="text-xs text-gray-400">
+                                                ({selectedReport.votes.filter(v => v.basePaymentSent).length}/3 confirmed)
+                                            </span>
+                                        </div>
+
+                                        {/* Additional Payment Status - Only show if report is approved */}
+                                        {selectedReport.status === 'approved' && (
+                                            <div className="flex items-center gap-2">
+                                                <span className="text-gray-400">Additional Payment:</span>
+                                                <span className={`px-2 py-1 rounded-full text-xs ${
+                                                    selectedReport.additionalPaymentStatus === 'completed'
+                                                        ? 'bg-green-500/20 text-green-400'
+                                                        : selectedReport.additionalPaymentStatus === 'rejected'
+                                                        ? 'bg-red-500/20 text-red-400'
+                                                        : 'bg-yellow-500/20 text-yellow-400'
+                                                }`}>
+                                                    {selectedReport.additionalPaymentStatus.charAt(0).toUpperCase() + 
+                                                     selectedReport.additionalPaymentStatus.slice(1)}
+                                                </span>
+                                                {/* Show confirmed reviewers count for additional payment */}
+                                                <span className="text-xs text-gray-400">
+                                                    ({selectedReport.votes.filter(v => v.additionalPaymentSent).length}/3 confirmed)
+                                                </span>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
 
                                 <div className="mt-4">
                                     {decryptedHandles[selectedReport._id as string] ? (
@@ -265,7 +361,6 @@ const ReviewerDashboard = () => {
                                             onClick={() => setShowTelegramPrompt(true)}
                                             className="text-[#4ECDC4] hover:text-[#45b8b0] flex items-center gap-2 transition-colors"
                                         >
-                                            {/* <EyeIcon className="w-5 h-5" /> */}
                                             Any Doubt? Click to connect
                                         </button>
                                     )}
@@ -319,11 +414,9 @@ const ReviewerDashboard = () => {
                                             Confirm Base Payment
                                         </button>
                                     )}
-                                </div>
 
-                                <div className="flex flex-wrap gap-4 mt-6">
                                     {!hasVoted(selectedReport) ? (
-                                        <>
+                                        <div className="flex flex-wrap gap-4">
                                             {!showSeverity ? (
                                                 <>
                                                     <button
@@ -378,41 +471,8 @@ const ReviewerDashboard = () => {
                                                     </div>
                                                 </>
                                             )}
-                                        </>
-                                    ) : (
-                                        <div className="text-gray-400">
-                                            <div className="space-y-2">
-                                                <div className="flex items-center gap-2">
-                                                    <span>Your vote:</span>
-                                                    <span className={`px-2 py-1 rounded-full text-xs ${
-                                                        getUserVote(selectedReport)?.vote === 'approved' 
-                                                            ? 'bg-green-500/20 text-green-400' 
-                                                            : 'bg-red-500/20 text-red-400'
-                                                    }`}>
-                                                        {getUserVote(selectedReport)?.vote}
-                                                    </span>
-                                                    {getUserVote(selectedReport)?.severity && (
-                                                        <span className="text-xs">
-                                                            (Severity: {getUserVote(selectedReport)?.severity})
-                                                        </span>
-                                                    )}
-                                                </div>
-                                                {getUserVote(selectedReport)?.reviewerComment && (
-                                                    <div className="bg-[#1A1B1E] p-3 rounded-lg mt-2">
-                                                        <p className="text-sm text-gray-400 mb-1">Your Review:</p>
-                                                        <p className="text-white text-sm">
-                                                            {getUserVote(selectedReport)?.reviewerComment}
-                                                        </p>
-                                                    </div>
-                                                )}
-                                            </div>
-                                            {selectedReport.votes.length < 3 && (
-                                                <p className="mt-3 text-sm text-yellow-400">
-                                                    Waiting for other reviewers ({selectedReport.votes.length}/3 votes)
-                                                </p>
-                                            )}
                                         </div>
-                                    )}
+                                    ) : null}
                                 </div>
                             </div>
                         </div>
