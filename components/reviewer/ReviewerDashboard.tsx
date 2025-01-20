@@ -381,9 +381,36 @@ const ReviewerDashboard = () => {
                                         </>
                                     ) : (
                                         <div className="text-gray-400">
-                                            You have already voted: {getUserVote(selectedReport)?.vote}
-                                            {getUserVote(selectedReport)?.severity && 
-                                                ` (Severity: ${getUserVote(selectedReport)?.severity})`}
+                                            <div className="space-y-2">
+                                                <div className="flex items-center gap-2">
+                                                    <span>Your vote:</span>
+                                                    <span className={`px-2 py-1 rounded-full text-xs ${
+                                                        getUserVote(selectedReport)?.vote === 'approved' 
+                                                            ? 'bg-green-500/20 text-green-400' 
+                                                            : 'bg-red-500/20 text-red-400'
+                                                    }`}>
+                                                        {getUserVote(selectedReport)?.vote}
+                                                    </span>
+                                                    {getUserVote(selectedReport)?.severity && (
+                                                        <span className="text-xs">
+                                                            (Severity: {getUserVote(selectedReport)?.severity})
+                                                        </span>
+                                                    )}
+                                                </div>
+                                                {getUserVote(selectedReport)?.reviewerComment && (
+                                                    <div className="bg-[#1A1B1E] p-3 rounded-lg mt-2">
+                                                        <p className="text-sm text-gray-400 mb-1">Your Review:</p>
+                                                        <p className="text-white text-sm">
+                                                            {getUserVote(selectedReport)?.reviewerComment}
+                                                        </p>
+                                                    </div>
+                                                )}
+                                            </div>
+                                            {selectedReport.votes.length < 3 && (
+                                                <p className="mt-3 text-sm text-yellow-400">
+                                                    Waiting for other reviewers ({selectedReport.votes.length}/3 votes)
+                                                </p>
+                                            )}
                                         </div>
                                     )}
                                 </div>
