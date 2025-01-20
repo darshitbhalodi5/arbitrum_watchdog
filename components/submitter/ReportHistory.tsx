@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { decrypt } from '@/lib/encryption';
-import { EyeIcon } from '@heroicons/react/24/outline';
+import { EyeIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 import { toast } from 'react-hot-toast';
 import VoteDetails from '@/components/common/VoteDetails';
 import ProgressBar from '@/components/common/ProgressBar';
@@ -112,16 +112,26 @@ const ReportHistory = ({ walletAddress }: ReportHistoryProps) => {
         }
     };
 
-    const handleTelegramReveal = (reportId: string, encryptedTelegram: string, title: string) => {
-        try {
-            const decrypted = decrypt(encryptedTelegram, title);
-            setDecryptedHandles(prev => ({
-                ...prev,
-                [reportId]: decrypted
-            }));
-        } catch (error) {
-            console.error('Failed to decrypt telegram handle:', error);
-            toast.error('Failed to decrypt telegram handle');
+    const handleTelegramToggle = (reportId: string, encryptedTelegram: string, title: string) => {
+        if (decryptedHandles[reportId]) {
+            // If already revealed, hide it
+            setDecryptedHandles(prev => {
+                const newHandles = { ...prev };
+                delete newHandles[reportId];
+                return newHandles;
+            });
+        } else {
+            // If hidden, reveal it
+            try {
+                const decrypted = decrypt(encryptedTelegram, title);
+                setDecryptedHandles(prev => ({
+                    ...prev,
+                    [reportId]: decrypted
+                }));
+            } catch (error) {
+                console.error('Failed to decrypt telegram handle:', error);
+                toast.error('Failed to decrypt telegram handle');
+            }
         }
     };
 
@@ -168,18 +178,31 @@ const ReportHistory = ({ walletAddress }: ReportHistoryProps) => {
                             <span>Telegram:</span>
                             <div className="flex items-center gap-2">
                                 {decryptedHandles[report._id] ? (
-                                    <span className="text-[#4ECDC4]">{decryptedHandles[report._id]}</span>
+                                    <div className="flex items-center gap-2">
+                                        <span className="text-[#4ECDC4]">{decryptedHandles[report._id]}</span>
+                                        <button
+                                            onClick={(e) => {
+                                                e.stopPropagation();
+                                                handleTelegramToggle(report._id, report.telegramHandle, report.title);
+                                            }}
+                                            className="p-1 hover:bg-gray-700 rounded-full"
+                                            title="Hide telegram handle"
+                                        >
+                                            <EyeSlashIcon className="w-5 h-5 text-gray-400 hover:text-gray-300" />
+                                        </button>
+                                    </div>
                                 ) : (
                                     <>
                                         <span>••••••••</span>
                                         <button
                                             onClick={(e) => {
                                                 e.stopPropagation();
-                                                handleTelegramReveal(report._id, report.telegramHandle, report.title);
+                                                handleTelegramToggle(report._id, report.telegramHandle, report.title);
                                             }}
                                             className="p-1 hover:bg-gray-700 rounded-full"
+                                            title="Show telegram handle"
                                         >
-                                            <EyeIcon className="w-5 h-5 text-gray-400" />
+                                            <EyeIcon className="w-5 h-5 text-gray-400 hover:text-gray-300" />
                                         </button>
                                     </>
                                 )}
