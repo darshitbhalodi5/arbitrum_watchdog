@@ -11,12 +11,14 @@ const Navbar = () => {
   const [isCopied, setIsCopied] = useState(false);
   const { logout, authenticated, user } = usePrivy();
 
-  const whitelistedAddresses = [
-    "0xaaF296aC355B938D6263ac1CcbB4ac61c964D176",
+  const reviewerAddresses = [
+    process.env.NEXT_PUBLIC_REVIEWER_ADDRESS_1,
+    process.env.NEXT_PUBLIC_REVIEWER_ADDRESS_2,
+    process.env.NEXT_PUBLIC_REVIEWER_ADDRESS_3,
   ];
 
   const isReviewer = user?.wallet?.address 
-    ? whitelistedAddresses.includes(user.wallet.address)
+    ? reviewerAddresses.includes(user.wallet.address)
     : false;
 
   // Function to slice address
@@ -32,8 +34,7 @@ const Navbar = () => {
         setIsCopied(true);
         toast.success('Address copied to clipboard!');
         setTimeout(() => setIsCopied(false), 2000);
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } catch (err:any) {
+      } catch (err) {
         console.error("Failed to copy address", err);
         toast.error('Failed to copy address');
       }
@@ -47,7 +48,7 @@ const Navbar = () => {
           <div className="flex-shrink-0 flex items-center">
             <Link href="/" className="text-2xl font-bold text-white group">
               <span className="bg-gradient-to-r from-[#FF6B6B] to-[#4ECDC4] bg-clip-text text-transparent">
-                WATCHDOG
+                Truence
               </span>
             </Link>
           </div>
@@ -55,7 +56,7 @@ const Navbar = () => {
           {/* Desktop Menu */}
           <div className="hidden sm:flex sm:items-center sm:space-x-4">
             {!authenticated ? (
-              null // Hide connect wallet button
+              null
             ) : (
               <>
                 <div
@@ -120,7 +121,7 @@ const Navbar = () => {
         <div className="sm:hidden bg-[#2C2D31] border-t border-gray-800">
           <div className="pt-2 pb-3 space-y-1">
             {!authenticated ? (
-              null // Hide connect wallet button
+              null
             ) : (
               <>
                 <div

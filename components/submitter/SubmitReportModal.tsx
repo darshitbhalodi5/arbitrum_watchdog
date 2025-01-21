@@ -1,16 +1,9 @@
 'use client';
 
 import { useState } from 'react';
-// import { usePrivy } from '@privy-io/react-auth';
 import { encrypt } from '@/lib/encryption';
 import toast from 'react-hot-toast';
-
-interface SubmitReportModalProps {
-    isOpen: boolean;
-    onClose: () => void;
-    onSubmit: () => void;
-    walletAddress: string;
-}
+import { SubmitReportModalProps } from '@/types/report-submission'
 
 const SubmitReportModal = ({ isOpen, onClose, onSubmit, walletAddress }: SubmitReportModalProps) => {
     const [title, setTitle] = useState('');
