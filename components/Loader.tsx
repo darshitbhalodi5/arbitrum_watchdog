@@ -1,4 +1,8 @@
-export default function Loading() {
+interface LoadingProps {
+  message?: string;
+}
+
+export default function Loading({ message = "Your report is on its way, hold tight!" }: LoadingProps) {
     return (
       <div className="flex flex-col items-center justify-center min-h-[400px] p-8 relative">
         {/* Loading spinner */}
@@ -15,13 +19,7 @@ export default function Loading() {
   
         {/* Loading text */}
         <div className="text-center">
-          <h3 className="text-xl font-medium text-[#00ff95] mb-2">
-            Loading
-            <span className="animate-pulse">.</span>
-            <span className="animate-pulse delay-100">.</span>
-            <span className="animate-pulse delay-200">.</span>
-          </h3>
-          <p className="text-gray-400">Your report is on its way, hold tight!</p>
+          <p className="text-gray-400">{message}</p>
         </div>
       </div>
     )
