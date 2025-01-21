@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { XMarkIcon, EyeSlashIcon } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
 import { decrypt } from '@/lib/encryption';
@@ -39,11 +39,7 @@ const ReviewerDashboard = () => {
     const [decryptedHandles, setDecryptedHandles] = useState<{ [key: string]: string }>({});
     const [showTelegramPrompt, setShowTelegramPrompt] = useState(false);
 
-    useEffect(() => {
-        fetchReports();
-    }, []);
-
-    const fetchReports = async () => {
+    const fetchReports = useCallback(async () => {
         try {
             const response = await fetch('/api/reports/all');
             if (!response.ok) throw new Error('Failed to fetch reports');
@@ -66,7 +62,11 @@ const ReviewerDashboard = () => {
             console.error('Error fetching reports:', error);
             toast.error('Failed to fetch reports');
         }
-    };
+    },[user?.wallet?.address]);
+
+    useEffect(() => {
+        fetchReports();
+    }, [fetchReports]);
 
     const handleStatusUpdate = async (vote: 'approved' | 'rejected', severity?: 'high' | 'medium' | 'low') => {
         if (!selectedReport || !user?.wallet?.address) return;

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useCallback } from 'react';
 import { usePrivy } from '@privy-io/react-auth';
 import toast from 'react-hot-toast';
 
@@ -26,13 +26,7 @@ export default function QuestionAnswer({ reportId, isReviewer, kycStatus }: Prop
   const [selectedQuestion, setSelectedQuestion] = useState<Question | null>(null);
   const { user } = usePrivy();
 
-  useEffect(() => {
-    if (reportId && user?.wallet?.address) {
-      fetchQuestions();
-    }
-  }, [reportId, user?.wallet?.address]);
-
-  const fetchQuestions = async () => {
+  const fetchQuestions = useCallback (async () => {
     try {
       const response = await fetch(
         `/api/questions?reportId=${reportId}&userAddress=${user?.wallet?.address}&isReviewer=${isReviewer}`
@@ -43,7 +37,11 @@ export default function QuestionAnswer({ reportId, isReviewer, kycStatus }: Prop
       console.error('Error fetching questions:', error);
       toast.error('Failed to fetch questions');
     }
-  };
+  },[reportId, user?.wallet?.address, isReviewer]);
+
+  useEffect(() => {
+      fetchQuestions();
+  }, [fetchQuestions]);
 
   const handleAskQuestion = async () => {
     if (!newQuestion.trim()) return;
