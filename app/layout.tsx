@@ -15,8 +15,8 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Watchdog",
-  description: "Decentralized Review Platform",
+  title: "Truence",
+  description: "Decentralized Content Review Platform",
 };
 
 export default function RootLayout({
