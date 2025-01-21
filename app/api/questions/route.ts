@@ -1,18 +1,29 @@
 import { NextResponse } from 'next/server';
 import {connect} from '@/lib/mongodb';
 import Question from '@/models/Question';
+import { ReportModel } from '@/models/Report';
 
 // POST /api/questions - Create a new question
 export async function POST(req: Request) {
   try {
     await connect();
     const body = await req.json();
-    const { reportId, question, askedBy } = body;
+    const { reportId, question, askedBy, isSubmitterQuestion } = body;
 
+    // Get report to check if it exists and get reviewer addresses
+    const report = await ReportModel.findById(reportId);
+    if (!report) {
+      return NextResponse.json({ error: 'Report not found' }, { status: 404 });
+    }
+
+    // Create the question
     const newQuestion = await Question.create({
       reportId,
       question,
-      askedBy
+      askedBy,
+      isSubmitterQuestion: isSubmitterQuestion || false,
+      // If it's a submitter question, add all reviewer addresses to notifiedReviewers
+      notifiedReviewers: isSubmitterQuestion ? report.votes.map(v => v.reviewerAddress) : []
     });
 
     return NextResponse.json(newQuestion, { status: 201 });
@@ -36,15 +47,17 @@ export async function GET(req: Request) {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    let query: any = { reportId };
+    const query: any = { reportId };
     
-    // If user is a reviewer, only show their own questions
-    // If user is a submitter, show questions asked to them
     if (isReviewer) {
-      query = { ...query, askedBy: userAddress };
+      // For reviewers, show questions they asked or submitter questions
+      query.$or = [
+        { askedBy: userAddress },
+        { isSubmitterQuestion: true }
+      ];
     } else {
-      // For submitter, find questions where they are the submitter
-      query = { ...query, $or: [{ answeredBy: userAddress }, { answeredBy: null }] };
+      // For submitters, show all questions for their report
+      query.reportId = reportId;
     }
 
     const questions = await Question.find(query).sort({ createdAt: -1 });

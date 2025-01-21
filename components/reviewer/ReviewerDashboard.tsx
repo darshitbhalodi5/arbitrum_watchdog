@@ -18,10 +18,14 @@ interface Question {
     status: 'pending' | 'answered';
     createdAt: string;
     isRead?: boolean;
+    isSubmitterQuestion?: boolean;
+    notifiedReviewers?: string[];
 }
 
 interface IReportWithQuestions extends IReport {
     hasUnreadAnswers?: boolean;
+    hasNewQuestions?: boolean;
+    hasKycUpdate?: boolean;
 }
 
 const ReviewerDashboard = () => {
@@ -45,19 +49,26 @@ const ReviewerDashboard = () => {
             if (!response.ok) throw new Error('Failed to fetch reports');
             const data = await response.json();
 
-            // Check for unread answers for each report
-            const reportsWithAnswers = await Promise.all(data.map(async (report: IReport) => {
+            // Check for unread answers and new questions for each report
+            const reportsWithNotifications = await Promise.all(data.map(async (report: IReport) => {
                 const questionsResponse = await fetch(
                     `/api/questions?reportId=${report._id}&userAddress=${user?.wallet?.address}&isReviewer=true`
                 );
                 const questions = await questionsResponse.json();
+                
                 return {
                     ...report,
-                    hasUnreadAnswers: questions.some((q: Question) => q.answer && !q.isRead)
+                    hasUnreadAnswers: questions.some((q: Question) => q.answer && !q.isRead),
+                    hasNewQuestions: questions.some((q: Question) => 
+                        q.isSubmitterQuestion && 
+                        !q.answer && 
+                        !(q.notifiedReviewers || []).includes(user?.wallet?.address || '')
+                    ),
+                    hasKycUpdate: report.kycStatus === 'completed' && report.status === 'pending'
                 };
             }));
             
-            setReports(reportsWithAnswers);
+            setReports(reportsWithNotifications);
         } catch (error) {
             console.error('Error fetching reports:', error);
             toast.error('Failed to fetch reports');
@@ -185,9 +196,17 @@ const ReviewerDashboard = () => {
                                 <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 mb-2">
                                     <div className="flex items-start gap-2">
                                         <h3 className="text-base sm:text-lg font-semibold text-white">{report.title}</h3>
-                                        {report.hasUnreadAnswers && (
-                                            <span className="animate-pulse w-2 h-2 bg-[#FF6B6B] rounded-full mt-2"></span>
-                                        )}
+                                        <div className="flex gap-1">
+                                            {report.hasUnreadAnswers && (
+                                                <span className="animate-pulse w-2 h-2 bg-[#FF6B6B] rounded-full mt-2" title="New answers available"></span>
+                                            )}
+                                            {report.hasNewQuestions && (
+                                                <span className="animate-pulse w-2 h-2 bg-[#4ECDC4] rounded-full mt-2" title="New questions from submitter"></span>
+                                            )}
+                                            {report.hasKycUpdate && (
+                                                <span className="animate-pulse w-2 h-2 bg-yellow-500 rounded-full mt-2" title="KYC completed"></span>
+                                            )}
+                                        </div>
                                     </div>
                                     <div className="flex items-center sm:flex-col sm:items-end gap-2">
                                         <span className={`px-2 py-1 rounded-full text-xs ${

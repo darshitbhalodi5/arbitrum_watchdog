@@ -16,11 +16,11 @@ const questionSchema = new mongoose.Schema({
   },
   askedBy: {
     type: String,
-    required: true // reviewer's wallet address
+    required: true // reviewer's or submitter's wallet address
   },
   answeredBy: {
     type: String,
-    default: null // submitter's wallet address
+    default: null // reviewer's or submitter's wallet address
   },
   status: {
     type: String,
@@ -34,6 +34,10 @@ const questionSchema = new mongoose.Schema({
   isSubmitterQuestion: {
     type: Boolean,
     default: false
+  },
+  notifiedReviewers: {
+    type: [String],
+    default: []
   },
   createdAt: {
     type: Date,
