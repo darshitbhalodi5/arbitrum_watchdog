@@ -1,5 +1,5 @@
 import { NextResponse } from 'next/server';
-import dbConnect from '@/lib/dbConnect';
+import { connect } from '@/lib/mongodb';
 import Question from '@/models/Question';
 
 // PATCH /api/questions/[id] - Answer a question or mark as read
@@ -8,7 +8,7 @@ export async function PATCH(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
-    await dbConnect();
+    await connect();
     const body = await req.json();
     const { answer, answeredBy, markAsRead } = body;
     const id = (await params).id;

@@ -1,14 +1,14 @@
-// import { Vote } from "@/types/report";
 import { IReport } from "@/models/Report";
+import { Vote } from "@/types/report"
 
-interface Vote {
-    _id: string;
-    reviewerAddress: string;
-    vote: 'approved' | 'rejected';
-    severity?: 'high' | 'medium' | 'low';
-    reviewerComment?: string;
-    createdAt: string;
-}
+// interface Vote {
+//     _id: string;
+//     reviewerAddress: string;
+//     vote: 'approved' | 'rejected';
+//     severity?: 'high' | 'medium' | 'low';
+//     reviewerComment?: string;
+//     createdAt: string;
+// }
 
 interface VoteDetailsProps {
     votes?: Vote[];

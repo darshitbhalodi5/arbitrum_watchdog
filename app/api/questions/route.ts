@@ -1,11 +1,11 @@
 import { NextResponse } from 'next/server';
-import dbConnect from '@/lib/dbConnect';
+import {connect} from '@/lib/mongodb';
 import Question from '@/models/Question';
 
 // POST /api/questions - Create a new question
 export async function POST(req: Request) {
   try {
-    await dbConnect();
+    await connect();
     const body = await req.json();
     const { reportId, question, askedBy } = body;
 
@@ -25,7 +25,7 @@ export async function POST(req: Request) {
 // GET /api/questions - Get questions for a report
 export async function GET(req: Request) {
   try {
-    await dbConnect();
+    await connect();
     const { searchParams } = new URL(req.url);
     const reportId = searchParams.get('reportId');
     const userAddress = searchParams.get('userAddress');

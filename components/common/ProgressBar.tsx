@@ -1,10 +1,5 @@
-import { Report, Vote } from "@/types/report";
-
-interface ProgressBarProps {
-    report: Report;
-    onKycVerify: () => void;
-    isSubmitter: boolean;
-}
+import { Vote } from "@/types/report";
+import { ProgressBarProps } from "@/types/progressbar"
 
 const ProgressBar = ({ report, onKycVerify, isSubmitter }: ProgressBarProps) => {
     const steps = [
