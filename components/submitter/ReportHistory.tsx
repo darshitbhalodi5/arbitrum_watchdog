@@ -8,6 +8,17 @@ import VoteDetails from '@/components/common/VoteDetails';
 import ProgressBar from '@/components/common/ProgressBar';
 import QuestionAnswer from '@/components/common/QuestionAnswer';
 
+interface Question {
+    _id: string;
+    question: string;
+    answer: string | null;
+    askedBy: string;
+    answeredBy: string | null;
+    status: 'pending' | 'answered';
+    createdAt: string;
+    isRead?: boolean;
+}
+
 interface Report {
     _id: string;
     title: string;
@@ -29,6 +40,7 @@ interface Report {
         basePaymentSent?: boolean;
         additionalPaymentSent?: boolean;
     }>;
+    hasUnreadQuestions?: boolean;
 }
 
 interface ReportHistoryProps {
@@ -53,8 +65,20 @@ const ReportHistory = ({ walletAddress }: ReportHistoryProps) => {
             const response = await fetch(`/api/reports?address=${walletAddress}`);
             if (!response.ok) throw new Error('Failed to fetch reports');
             const data = await response.json();
-            console.log('Fetched reports:', data);
-            setReports(data);
+            
+            // Check for unread questions for each report
+            const reportsWithQuestions = await Promise.all(data.map(async (report: Report) => {
+                const questionsResponse = await fetch(
+                    `/api/questions?reportId=${report._id}&userAddress=${walletAddress}&isReviewer=false`
+                );
+                const questions: Question[] = await questionsResponse.json();
+                return {
+                    ...report,
+                    hasUnreadQuestions: questions.some(q => !q.answer && !q.isRead)
+                };
+            }));
+            
+            setReports(reportsWithQuestions);
         } catch (error) {
             console.error('Error fetching reports:', error);
         } finally {
@@ -157,7 +181,12 @@ const ReportHistory = ({ walletAddress }: ReportHistoryProps) => {
                     onClick={() => handleReportClick(report)}
                 >
                     <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 sm:gap-4 mb-4">
-                        <h4 className="text-base sm:text-lg font-semibold text-white">{report.title}</h4>
+                        <div className="flex items-start gap-2">
+                            <h4 className="text-base sm:text-lg font-semibold text-white">{report.title}</h4>
+                            {report.hasUnreadQuestions && (
+                                <span className="animate-pulse w-2 h-2 bg-[#FF6B6B] rounded-full mt-2"></span>
+                            )}
+                        </div>
                         <div className="flex items-center gap-2">
                             <span className={`px-2 py-1 rounded-full text-xs sm:text-sm ${
                                 report.status === 'approved' ? 'bg-green-500/20 text-green-400' :
@@ -272,19 +301,17 @@ const ReportHistory = ({ walletAddress }: ReportHistoryProps) => {
                             </button>
                         </div>
                     )}
-                </div>
-            ))}
-            {selectedReport && (
-                <div className="mt-6">
-                    <VoteDetails 
-                        votes={selectedReport.votes}
-                        showAll={true}
-                    />
+
+                    {/* Questions & Answers Section */}
                     <div className="mt-6">
-                        <QuestionAnswer reportId={selectedReport._id} isReviewer={false} />
+                        <QuestionAnswer 
+                            reportId={report._id} 
+                            isReviewer={false}
+                            kycStatus={report.kycStatus}
+                        />
                     </div>
                 </div>
-            )}
+            ))}
         </div>
     );
 };

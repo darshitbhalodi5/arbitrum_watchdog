@@ -10,14 +10,16 @@ interface Question {
   answeredBy: string | null;
   status: 'pending' | 'answered';
   createdAt: string;
+  isRead?: boolean;
 }
 
 interface Props {
   reportId: string;
   isReviewer: boolean;
+  kycStatus?: 'pending' | 'completed';
 }
 
-export default function QuestionAnswer({ reportId, isReviewer }: Props) {
+export default function QuestionAnswer({ reportId, isReviewer, kycStatus }: Props) {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [newQuestion, setNewQuestion] = useState('');
   const [newAnswer, setNewAnswer] = useState('');
@@ -25,14 +27,16 @@ export default function QuestionAnswer({ reportId, isReviewer }: Props) {
   const { user } = usePrivy();
 
   useEffect(() => {
-    if (reportId) {
+    if (reportId && user?.wallet?.address) {
       fetchQuestions();
     }
-  }, [reportId]);
+  }, [reportId, user?.wallet?.address]);
 
   const fetchQuestions = async () => {
     try {
-      const response = await fetch(`/api/questions?reportId=${reportId}`);
+      const response = await fetch(
+        `/api/questions?reportId=${reportId}&userAddress=${user?.wallet?.address}&isReviewer=${isReviewer}`
+      );
       const data = await response.json();
       setQuestions(data);
     } catch (error) {
@@ -91,32 +95,93 @@ export default function QuestionAnswer({ reportId, isReviewer }: Props) {
     }
   };
 
+  const markQuestionAsRead = async (questionId: string) => {
+    try {
+      await fetch(`/api/questions/${questionId}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ markAsRead: true })
+      });
+    } catch (error) {
+      console.error('Error marking question as read:', error);
+    }
+  };
+
+  const handleQuestionSelect = (question: Question) => {
+    if (!isReviewer && !question.answer) {
+      setSelectedQuestion(question);
+      if (!question.isRead) {
+        markQuestionAsRead(question._id);
+        // Update local state to reflect the change
+        setQuestions(prevQuestions => 
+          prevQuestions.map(q => 
+            q._id === question._id ? { ...q, isRead: true } : q
+          )
+        );
+      }
+    }
+  };
+
   return (
     <div className="mt-6 border-t border-gray-800 pt-6">
-      <h4 className="text-white font-semibold text-sm sm:text-base mb-4">Questions & Answers</h4>
+      <div className="flex items-center justify-between mb-4">
+        <h4 className="text-white font-semibold text-sm sm:text-base">Questions & Answers</h4>
+        {!isReviewer && questions.some(q => !q.answer && !q.isRead) && (
+          <div className="flex items-center">
+            <span className="animate-pulse w-2 h-2 bg-[#FF6B6B] rounded-full mr-2"></span>
+            <span className="text-[#FF6B6B] text-sm">New questions</span>
+          </div>
+        )}
+      </div>
       
       {/* Chat Messages */}
       <div className="space-y-4 mb-4 max-h-[400px] overflow-y-auto">
         {questions.map((q) => (
-          <div key={q._id} className="space-y-3">
+          <div 
+            key={q._id} 
+            className={`p-3 rounded-lg ${!isReviewer && selectedQuestion?._id === q._id 
+              ? 'bg-[#4ECDC4]/5 border border-[#4ECDC4]/20' 
+              : 'hover:bg-[#2C2D31]'
+            }`}
+            onClick={() => handleQuestionSelect(q)}
+          >
             {/* Question */}
-            <div className="flex items-start gap-3 justify-end">
-              <div className="bg-[#4ECDC4]/10 rounded-lg p-3 max-w-[80%]">
-                <p className="text-[#4ECDC4] text-sm">{q.question}</p>
-                <span className="text-xs text-gray-500 mt-1 block">
+            <div className="flex items-start gap-3 justify-end mb-3">
+              <div className="bg-[#4ECDC4]/10 rounded-lg p-3 w-full">
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <p className="text-xs text-gray-500 mb-1">
+                      {isReviewer ? "Your Question:" : "Question from Reviewer:"}
+                    </p>
+                    <p className="text-[#4ECDC4] text-sm">{q.question}</p>
+                  </div>
+                  {!isReviewer && !q.answer && !q.isRead && (
+                    <span className="w-2 h-2 bg-[#FF6B6B] rounded-full flex-shrink-0 mt-1"></span>
+                  )}
+                </div>
+                <span className="text-xs text-gray-500 mt-2 block">
                   {new Date(q.createdAt).toLocaleString()}
                 </span>
               </div>
             </div>
 
             {/* Answer (if exists) */}
-            {q.answer && (
-              <div className="flex items-start gap-3">
-                <div className="bg-[#1A1B1E] rounded-lg p-3 max-w-[80%] border border-gray-800">
+            {q.answer ? (
+              <div className="flex items-start gap-3 ml-6">
+                <div className="bg-[#1A1B1E] rounded-lg p-3 w-full border border-gray-800">
+                  <p className="text-xs text-gray-500 mb-1">
+                    {isReviewer ? "Submitter's Answer:" : "Your Answer:"}
+                  </p>
                   <p className="text-gray-300 text-sm">{q.answer}</p>
-                  <span className="text-xs text-gray-500 mt-1 block">
+                  <span className="text-xs text-gray-500 mt-2 block">
                     {new Date(q.createdAt).toLocaleString()}
                   </span>
+                </div>
+              </div>
+            ) : !isReviewer && selectedQuestion?._id === q._id && (
+              <div className="flex items-start gap-3 ml-6">
+                <div className="bg-[#1A1B1E] rounded-lg p-3 w-full border border-gray-800 border-dashed">
+                  <p className="text-xs text-gray-500">Type your answer below</p>
                 </div>
               </div>
             )}
@@ -144,34 +209,59 @@ export default function QuestionAnswer({ reportId, isReviewer }: Props) {
             </button>
           </div>
         ) : (
-          questions.some(q => !q.answer) && (
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={newAnswer}
-                onChange={(e) => setNewAnswer(e.target.value)}
-                placeholder="Type your answer..."
-                className="flex-1 bg-[#1A1B1E] text-white rounded-lg px-4 py-2 border border-gray-800 focus:ring-2 focus:ring-[#4ECDC4] outline-none text-sm"
-                onKeyPress={(e) => {
-                  if (e.key === 'Enter' && selectedQuestion) {
-                    handleAnswerQuestion(selectedQuestion._id);
-                  }
-                }}
-                onClick={() => {
-                  const unansweredQuestion = questions.find(q => !q.answer);
-                  if (unansweredQuestion) {
-                    setSelectedQuestion(unansweredQuestion);
-                  }
-                }}
-              />
-              <button
-                onClick={() => selectedQuestion && handleAnswerQuestion(selectedQuestion._id)}
-                className="px-4 py-2 bg-[#4ECDC4] text-white rounded-lg hover:opacity-90 text-sm"
-              >
-                Send
-              </button>
-            </div>
-          )
+          <>
+            {questions.some(q => !q.answer) ? (
+              <div className="flex flex-col gap-2">
+                {selectedQuestion && (
+                  <div className="bg-[#1A1B1E] p-3 rounded-lg border border-gray-800">
+                    <p className="text-sm text-gray-400 mb-1">Replying to:</p>
+                    <p className="text-sm text-[#4ECDC4]">{selectedQuestion.question}</p>
+                  </div>
+                )}
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={newAnswer}
+                    onChange={(e) => setNewAnswer(e.target.value)}
+                    placeholder={selectedQuestion ? "Type your answer..." : "Select a question to answer..."}
+                    className="flex-1 bg-[#1A1B1E] text-white rounded-lg px-4 py-2 border border-gray-800 focus:ring-2 focus:ring-[#4ECDC4] outline-none text-sm"
+                    onKeyPress={(e) => {
+                      if (e.key === 'Enter' && selectedQuestion) {
+                        handleAnswerQuestion(selectedQuestion._id);
+                      }
+                    }}
+                    disabled={!selectedQuestion}
+                  />
+                  <button
+                    onClick={() => selectedQuestion && handleAnswerQuestion(selectedQuestion._id)}
+                    className={`px-4 py-2 bg-[#4ECDC4] text-white rounded-lg transition-opacity ${selectedQuestion ? 'hover:opacity-90' : 'opacity-50 cursor-not-allowed'}`}
+                    disabled={!selectedQuestion}
+                  >
+                    Send
+                  </button>
+                </div>
+              </div>
+            ) : kycStatus === 'completed' ? (
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  value={newQuestion}
+                  onChange={(e) => setNewQuestion(e.target.value)}
+                  placeholder="Ask a question to reviewers..."
+                  className="flex-1 bg-[#1A1B1E] text-white rounded-lg px-4 py-2 border border-gray-800 focus:ring-2 focus:ring-[#4ECDC4] outline-none text-sm"
+                  onKeyPress={(e) => e.key === 'Enter' && handleAskQuestion()}
+                />
+                <button
+                  onClick={handleAskQuestion}
+                  className="px-4 py-2 bg-[#4ECDC4] text-white rounded-lg hover:opacity-90 text-sm"
+                >
+                  Send
+                </button>
+              </div>
+            ) : questions.length === 0 && (
+              <p className="text-sm text-gray-400">Complete KYC verification to ask questions to reviewers.</p>
+            )}
+          </>
         )}
       </div>
     </div>

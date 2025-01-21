@@ -2,24 +2,32 @@ import { NextResponse } from 'next/server';
 import dbConnect from '@/lib/dbConnect';
 import Question from '@/models/Question';
 
-// PATCH /api/questions/[id] - Answer a question
+// PATCH /api/questions/[id] - Answer a question or mark as read
 export async function PATCH(
   req: Request,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     await dbConnect();
     const body = await req.json();
-    const { answer, answeredBy } = body;
-
-    const question = await Question.findById(params.id);
+    const { answer, answeredBy, markAsRead } = body;
+    const id = (await params).id;
+    const question = await Question.findById(id);
     if (!question) {
       return NextResponse.json({ error: 'Question not found' }, { status: 404 });
     }
 
-    question.answer = answer;
-    question.answeredBy = answeredBy;
-    question.status = 'answered';
+    // If markAsRead is true, only update isRead status
+    if (markAsRead) {
+      question.isRead = true;
+    } else {
+      // Otherwise, handle answer update
+      question.answer = answer;
+      question.answeredBy = answeredBy;
+      question.status = 'answered';
+      question.isRead = true; // Mark as read when answered
+    }
+
     await question.save();
 
     return NextResponse.json(question);

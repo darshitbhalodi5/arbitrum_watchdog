@@ -9,10 +9,25 @@ import VoteDetails from '@/components/common/VoteDetails';
 import QuestionAnswer from '@/components/common/QuestionAnswer';
 import { IReport } from '@/models/Report';
 
+interface Question {
+    _id: string;
+    question: string;
+    answer: string | null;
+    askedBy: string;
+    answeredBy: string | null;
+    status: 'pending' | 'answered';
+    createdAt: string;
+    isRead?: boolean;
+}
+
+interface IReportWithQuestions extends IReport {
+    hasUnreadAnswers?: boolean;
+}
+
 const ReviewerDashboard = () => {
     const { user } = usePrivy();
-    const [reports, setReports] = useState<IReport[]>([]);
-    const [selectedReport, setSelectedReport] = useState<IReport | null>(null);
+    const [reports, setReports] = useState<IReportWithQuestions[]>([]);
+    const [selectedReport, setSelectedReport] = useState<IReportWithQuestions | null>(null);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const [showTelegram, setShowTelegram] = useState(false);
     const [comment, setComment] = useState('');
@@ -33,7 +48,20 @@ const ReviewerDashboard = () => {
             const response = await fetch('/api/reports/all');
             if (!response.ok) throw new Error('Failed to fetch reports');
             const data = await response.json();
-            setReports(data);
+
+            // Check for unread answers for each report
+            const reportsWithAnswers = await Promise.all(data.map(async (report: IReport) => {
+                const questionsResponse = await fetch(
+                    `/api/questions?reportId=${report._id}&userAddress=${user?.wallet?.address}&isReviewer=true`
+                );
+                const questions = await questionsResponse.json();
+                return {
+                    ...report,
+                    hasUnreadAnswers: questions.some((q: Question) => q.answer && !q.isRead)
+                };
+            }));
+            
+            setReports(reportsWithAnswers);
         } catch (error) {
             console.error('Error fetching reports:', error);
             toast.error('Failed to fetch reports');
@@ -97,12 +125,12 @@ const ReviewerDashboard = () => {
         }
     };
 
-    const hasVoted = (report: IReport | null) => {
+    const hasVoted = (report: IReportWithQuestions | null) => {
         if (!report || !user?.wallet?.address) return false;
         return report.votes.some(vote => vote.reviewerAddress === user?.wallet?.address);
     };
 
-    const getUserVote = (report: IReport) => {
+    const getUserVote = (report: IReportWithQuestions) => {
         return report.votes?.find(vote =>
             vote.reviewerAddress === user?.wallet?.address
         );
@@ -142,25 +170,31 @@ const ReviewerDashboard = () => {
 
             <div className="flex flex-col lg:flex-row gap-4 sm:gap-8">
                 {/* Reports List */}
-                <div className={`${selectedReport ? 'lg:w-1/3' : 'w-full'} ${selectedReport ? 'hidden lg:block' : 'block'
-                    }`}>
+                <div className={`${selectedReport ? 'lg:w-1/3' : 'w-full'} ${selectedReport ? 'hidden lg:block' : 'block'}`}>
                     <div className="space-y-3 sm:space-y-4">
                         {reports.map((report) => (
                             <button
                                 key={report._id?.toString()}
                                 onClick={() => setSelectedReport(report)}
-                                className={`w-full p-3 sm:p-4 rounded-lg text-left ${selectedReport?._id?.toString() === report._id?.toString()
-                                        ? 'bg-[#4ECDC4]/10 border-[#4ECDC4] border'
-                                        : 'bg-[#2C2D31] border-gray-800 border hover:border-[#4ECDC4]'
-                                    }`}
+                                className={`w-full p-3 sm:p-4 rounded-lg text-left ${
+                                    selectedReport?._id?.toString() === report._id?.toString()
+                                    ? 'bg-[#4ECDC4]/10 border-[#4ECDC4] border'
+                                    : 'bg-[#2C2D31] border-gray-800 border hover:border-[#4ECDC4]'
+                                }`}
                             >
                                 <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 mb-2">
-                                    <h3 className="text-base sm:text-lg font-semibold text-white">{report.title}</h3>
+                                    <div className="flex items-start gap-2">
+                                        <h3 className="text-base sm:text-lg font-semibold text-white">{report.title}</h3>
+                                        {report.hasUnreadAnswers && (
+                                            <span className="animate-pulse w-2 h-2 bg-[#FF6B6B] rounded-full mt-2"></span>
+                                        )}
+                                    </div>
                                     <div className="flex items-center sm:flex-col sm:items-end gap-2">
-                                        <span className={`px-2 py-1 rounded-full text-xs ${report.status === 'approved' ? 'bg-green-500/20 text-green-400' :
-                                                report.status === 'rejected' ? 'bg-red-500/20 text-red-400' :
-                                                    'bg-yellow-500/20 text-yellow-400'
-                                            }`}>
+                                        <span className={`px-2 py-1 rounded-full text-xs ${
+                                            report.status === 'approved' ? 'bg-green-500/20 text-green-400' :
+                                            report.status === 'rejected' ? 'bg-red-500/20 text-red-400' :
+                                            'bg-yellow-500/20 text-yellow-400'
+                                        }`}>
                                             {report.status.charAt(0).toUpperCase() + report.status.slice(1)}
                                         </span>
                                         <span className="text-xs text-gray-400">

@@ -28,12 +28,26 @@ export async function GET(req: Request) {
     await dbConnect();
     const { searchParams } = new URL(req.url);
     const reportId = searchParams.get('reportId');
+    const userAddress = searchParams.get('userAddress');
+    const isReviewer = searchParams.get('isReviewer') === 'true';
 
-    if (!reportId) {
-      return NextResponse.json({ error: 'Report ID is required' }, { status: 400 });
+    if (!reportId || !userAddress) {
+      return NextResponse.json({ error: 'Report ID and user address are required' }, { status: 400 });
     }
 
-    const questions = await Question.find({ reportId }).sort({ createdAt: -1 });
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    let query: any = { reportId };
+    
+    // If user is a reviewer, only show their own questions
+    // If user is a submitter, show questions asked to them
+    if (isReviewer) {
+      query = { ...query, askedBy: userAddress };
+    } else {
+      // For submitter, find questions where they are the submitter
+      query = { ...query, $or: [{ answeredBy: userAddress }, { answeredBy: null }] };
+    }
+
+    const questions = await Question.find(query).sort({ createdAt: -1 });
     return NextResponse.json(questions);
   } catch (error) {
     console.error('Error fetching questions:', error);
