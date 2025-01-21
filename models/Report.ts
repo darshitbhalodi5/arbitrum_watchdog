@@ -1,5 +1,5 @@
 import mongoose, { Document } from 'mongoose';
-import { Vote } from '@/types/report';
+import { Vote } from '@/types/vote';
 
 interface IReport extends Document {
     title: string;

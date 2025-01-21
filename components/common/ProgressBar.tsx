@@ -1,4 +1,4 @@
-import { Vote } from "@/types/report";
+import { Vote } from "@/types/vote";
 import { ProgressBarProps } from "@/types/progressbar"
 
 const ProgressBar = ({ report, onKycVerify, isSubmitter }: ProgressBarProps) => {

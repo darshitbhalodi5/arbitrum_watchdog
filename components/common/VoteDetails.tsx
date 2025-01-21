@@ -1,21 +1,4 @@
-import { IReport } from "@/models/Report";
-import { Vote } from "@/types/report"
-
-// interface Vote {
-//     _id: string;
-//     reviewerAddress: string;
-//     vote: 'approved' | 'rejected';
-//     severity?: 'high' | 'medium' | 'low';
-//     reviewerComment?: string;
-//     createdAt: string;
-// }
-
-interface VoteDetailsProps {
-    votes?: Vote[];
-    report?: IReport;
-    showAll?: boolean;
-    currentUserAddress?: string;
-}
+import { VoteDetailsProps } from "@/types/vote"
 
 const VoteDetails = ({ votes, report, showAll, currentUserAddress }: VoteDetailsProps) => {
     const votesToDisplay = report?.votes || votes || [];

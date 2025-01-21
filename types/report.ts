@@ -1,14 +1,4 @@
-export interface Vote {
-    reviewerAddress: string;
-    vote: 'approved' | 'rejected';
-    severity?: 'high' | 'medium' | 'low';
-    reviewerComment?: string;
-    basePaymentSent?: boolean;
-    additionalPaymentSent?: boolean;
-    createdAt: string;
-    _id: string;
-}
-
+import { Vote } from "@/types/vote"
 export interface Report {
     _id: string;
     title: string;

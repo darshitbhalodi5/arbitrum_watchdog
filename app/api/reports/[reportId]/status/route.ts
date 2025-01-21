@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { connect } from '@/lib/mongodb';
 import { ReportModel } from '@/models/Report';
-import { Vote } from '@/types/report';
+import { Vote } from '@/types/vote';
 
 // Helper function to calculate final status
 function calculateFinalStatus(votes:Vote[]) {
