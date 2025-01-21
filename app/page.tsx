@@ -1,8 +1,8 @@
 'use client';
 
 import Navbar from '@/components/Navbar';
-import SubmitterDashboard from '@/components/submitter/SubmitterDashboard';
-import ReviewerDashboard from '@/components/reviewer/ReviewerDashboard';
+import SubmitterDashboard from '@/app/submitter/page';
+import ReviewerDashboard from '@/app/reviewer/page';
 import { usePrivy } from '@privy-io/react-auth';
 import { ArrowRightIcon } from '@heroicons/react/24/outline';
 import toast from 'react-hot-toast';
