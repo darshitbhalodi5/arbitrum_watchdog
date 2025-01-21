@@ -7,6 +7,8 @@ import { toast } from 'react-hot-toast';
 import VoteDetails from '@/components/common/VoteDetails';
 import ProgressBar from '@/components/common/ProgressBar';
 import QuestionAnswer from '@/components/common/QuestionAnswer';
+import NoReports from '../NoReport';
+import Loading from '../Loader';
 
 interface Question {
     _id: string;
@@ -165,11 +167,11 @@ const ReportHistory = ({ walletAddress }: ReportHistoryProps) => {
     };
 
     if (loading) {
-        return <div className="text-gray-400">Loading reports...</div>;
+        return <Loading />;
     }
 
     if (reports.length === 0) {
-        return <div className="text-gray-400">No reports submitted yet.</div>;
+        return <NoReports />;
     }
 
     return (
