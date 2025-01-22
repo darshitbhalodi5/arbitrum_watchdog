@@ -23,12 +23,12 @@ const ProgressBar = ({ report, onKycVerify, isSubmitter }: ProgressBarProps) => 
         {
             title: 'Base Payment',
             status: report.basePaymentStatus,
-            statusText: getPaymentStatusText(report.basePaymentStatus, report.votes)
+            statusText: getBasePaymentStatusText(report.basePaymentStatus, report.votes)
         },
         {
             title: 'Additional Payment',
             status: report.additionalPaymentStatus,
-            statusText: getPaymentStatusText(report.additionalPaymentStatus, report.votes)
+            statusText: getAdditionalPaymentStatusText(report.additionalPaymentStatus, report.votes)
         }
     ];
 
@@ -61,11 +61,19 @@ const ProgressBar = ({ report, onKycVerify, isSubmitter }: ProgressBarProps) => 
     );
 };
 
-function getPaymentStatusText(status: string, votes: Vote[]) {
+function getBasePaymentStatusText(status: string, votes: Vote[]) {
     if (status === 'completed') return 'Payment Completed';
     if (status === 'rejected') return 'Payment Rejected';
     
-    const completedCount = votes.filter(v => v.basePaymentSent || v.additionalPaymentSent).length;
+    const completedCount = votes.filter(v => v.basePaymentSent).length;
+    return `${completedCount}/3 Confirmed`;
+}
+
+function getAdditionalPaymentStatusText(status: string, votes: Vote[]) {
+    if (status === 'completed') return 'Payment Completed';
+    if (status === 'rejected') return 'Payment Rejected';
+    
+    const completedCount = votes.filter(v => v.additionalPaymentSent).length;
     return `${completedCount}/3 Confirmed`;
 }
 

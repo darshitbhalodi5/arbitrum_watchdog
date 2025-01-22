@@ -458,6 +458,38 @@ const ReviewerDashboard = () => {
                                             </button>
                                         )}
 
+                                    {/* Show additional payment button only after base payment is completed and user hasn't confirmed additional payment */}
+                                    {selectedReport.basePaymentStatus === 'completed' &&
+                                        selectedReport.status === 'approved' &&
+                                        !selectedReport.votes.find(v =>
+                                            v.reviewerAddress === user?.wallet?.address && v.additionalPaymentSent
+                                        ) && (
+                                            <button
+                                                onClick={async () => {
+                                                    try {
+                                                        const response = await fetch(`/api/reports/${selectedReport._id}/payment/additional`, {
+                                                            method: 'POST',
+                                                            headers: {
+                                                                'Content-Type': 'application/json'
+                                                            },
+                                                            body: JSON.stringify({
+                                                                reviewerAddress: user?.wallet?.address
+                                                            })
+                                                        });
+                                                        if (!response.ok) throw new Error('Failed to confirm additional payment');
+                                                        fetchReports();
+                                                        toast.success('Additional payment confirmed');
+                                                    } catch (error) {
+                                                        console.error('Error confirming additional payment:', error);
+                                                        toast.error('Failed to confirm additional payment');
+                                                    }
+                                                }}
+                                                className="px-3 py-1 bg-[#4ECDC4] text-white rounded-lg hover:opacity-90 mt-4 ml-2"
+                                            >
+                                                Confirm Additional Payment
+                                            </button>
+                                        )}
+
                                     {!hasVoted(selectedReport) ? (
                                         <div className="flex flex-wrap gap-4">
                                             {!showSeverity ? (
