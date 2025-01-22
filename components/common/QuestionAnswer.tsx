@@ -18,10 +18,9 @@ interface Question {
 interface Props {
   reportId: string;
   isReviewer: boolean;
-  kycStatus?: 'pending' | 'completed';
 }
 
-export default function QuestionAnswer({ reportId, isReviewer, kycStatus }: Props) {
+export default function QuestionAnswer({ reportId, isReviewer }: Props) {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [newQuestion, setNewQuestion] = useState('');
   const [newAnswer, setNewAnswer] = useState('');
@@ -115,7 +114,7 @@ export default function QuestionAnswer({ reportId, isReviewer, kycStatus }: Prop
   const handleQuestionSelect = (question: Question) => {
     // For reviewers, allow selecting submitter questions to answer
     // For submitters, only allow selecting unanswered reviewer questions
-    if ((isReviewer && question.isSubmitterQuestion) || (!isReviewer && !question.isSubmitterQuestion && !question.answer)) {
+    if ((isReviewer && question.isSubmitterQuestion && !question.answer) || (!isReviewer && !question.isSubmitterQuestion && !question.answer)) {
       setSelectedQuestion(question);
       if (!question.isRead) {
         markQuestionAsRead(question._id);
@@ -214,7 +213,30 @@ export default function QuestionAnswer({ reportId, isReviewer, kycStatus }: Prop
 
       {/* Input Area */}
       <div className="mt-4">
-        {isReviewer ? (
+        {selectedQuestion ? (
+          <div className="flex flex-col gap-2">
+            <div className="bg-[#1A1B1E] p-3 rounded-lg border border-gray-800">
+              <p className="text-sm text-gray-400 mb-1">Replying to:</p>
+              <p className="text-sm text-[#4ECDC4]">{selectedQuestion.question}</p>
+            </div>
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={newAnswer}
+                onChange={(e) => setNewAnswer(e.target.value)}
+                placeholder="Type your answer..."
+                className="flex-1 bg-[#1A1B1E] text-white rounded-lg px-4 py-2 border border-gray-800 focus:ring-2 focus:ring-[#4ECDC4] outline-none text-sm"
+                onKeyPress={(e) => e.key === 'Enter' && handleAnswerQuestion(selectedQuestion._id)}
+              />
+              <button
+                onClick={() => handleAnswerQuestion(selectedQuestion._id)}
+                className="px-4 py-2 bg-[#4ECDC4] text-white rounded-lg hover:opacity-90 text-sm"
+              >
+                Send
+              </button>
+            </div>
+          </div>
+        ) : (
           <div className="flex gap-2">
             <input
               type="text"
@@ -231,56 +253,6 @@ export default function QuestionAnswer({ reportId, isReviewer, kycStatus }: Prop
               Send
             </button>
           </div>
-        ) : (
-          <>
-            {selectedQuestion ? (
-              <div className="flex flex-col gap-2">
-                <div className="bg-[#1A1B1E] p-3 rounded-lg border border-gray-800">
-                  <p className="text-sm text-gray-400 mb-1">Replying to:</p>
-                  <p className="text-sm text-[#4ECDC4]">{selectedQuestion.question}</p>
-                </div>
-                <div className="flex gap-2">
-                  <input
-                    type="text"
-                    value={newAnswer}
-                    onChange={(e) => setNewAnswer(e.target.value)}
-                    placeholder="Type your answer..."
-                    className="flex-1 bg-[#1A1B1E] text-white rounded-lg px-4 py-2 border border-gray-800 focus:ring-2 focus:ring-[#4ECDC4] outline-none text-sm"
-                    onKeyPress={(e) => {
-                      if (e.key === 'Enter') {
-                        handleAnswerQuestion(selectedQuestion._id);
-                      }
-                    }}
-                  />
-                  <button
-                    onClick={() => handleAnswerQuestion(selectedQuestion._id)}
-                    className="px-4 py-2 bg-[#4ECDC4] text-white rounded-lg hover:opacity-90 text-sm"
-                  >
-                    Send
-                  </button>
-                </div>
-              </div>
-            ) : kycStatus === 'completed' ? (
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  value={newQuestion}
-                  onChange={(e) => setNewQuestion(e.target.value)}
-                  placeholder="Ask a question to reviewers..."
-                  className="flex-1 bg-[#1A1B1E] text-white rounded-lg px-4 py-2 border border-gray-800 focus:ring-2 focus:ring-[#4ECDC4] outline-none text-sm"
-                  onKeyPress={(e) => e.key === 'Enter' && handleAskQuestion()}
-                />
-                <button
-                  onClick={handleAskQuestion}
-                  className="px-4 py-2 bg-[#4ECDC4] text-white rounded-lg hover:opacity-90 text-sm"
-                >
-                  Send
-                </button>
-              </div>
-            ) : questions.length === 0 && (
-              <p className="text-sm text-gray-400">Complete KYC verification to ask questions to reviewers.</p>
-            )}
-          </>
         )}
       </div>
     </div>
