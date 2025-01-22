@@ -338,7 +338,6 @@ const ReportHistory = ({ walletAddress }: ReportHistoryProps) => {
             <QuestionAnswer
               reportId={report._id}
               isReviewer={false}
-              kycStatus={report.kycStatus}
             />
           </div>
         </div>
