@@ -1,10 +1,16 @@
-'use client';
+"use client";
 
-import { useState } from 'react';
-import Link from 'next/link';
-import { usePrivy } from '@privy-io/react-auth';
-import { ClipboardDocumentIcon, ClipboardDocumentCheckIcon } from '@heroicons/react/24/outline';
-import toast from 'react-hot-toast';
+import { useState } from "react";
+import Link from "next/link";
+import { usePrivy } from "@privy-io/react-auth";
+import {
+  ClipboardDocumentIcon,
+  ClipboardDocumentCheckIcon,
+} from "@heroicons/react/24/outline";
+import toast from "react-hot-toast";
+import Image from "next/image";
+import Icon from "@/public/assets/symbol.png";
+import TextSymbol from "@/public/assets/logo.png";
 
 const Navbar = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -17,7 +23,7 @@ const Navbar = () => {
     process.env.NEXT_PUBLIC_REVIEWER_ADDRESS_3,
   ];
 
-  const isReviewer = user?.wallet?.address 
+  const isReviewer = user?.wallet?.address
     ? reviewerAddresses.includes(user.wallet.address)
     : false;
 
@@ -32,48 +38,39 @@ const Navbar = () => {
       try {
         await navigator.clipboard.writeText(user.wallet.address);
         setIsCopied(true);
-        toast.success('Address copied to clipboard!');
+        toast.success("Address copied to clipboard!");
         setTimeout(() => setIsCopied(false), 2000);
       } catch (err) {
         console.error("Failed to copy address", err);
-        toast.error('Failed to copy address');
+        toast.error("Failed to copy address");
       }
     }
   };
 
   return (
-    <nav className="bg-[#2C2D31] shadow-lg border-b border-gray-800">
+    <nav className="relative z-20 border-b border-blue-500/20 bg-black/30 backdrop-blur-md">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
           <div className="flex-shrink-0 flex items-center">
-            <Link href="/" className="text-2xl font-bold text-white group">
-              <span className="bg-gradient-to-r from-[#FF6B6B] to-[#4ECDC4] bg-clip-text text-transparent">
-                Truence
-              </span>
+            <Link href="/" className="flex items-center space-x-2">
+              <Image src={Icon} alt="Icon" className="h-8 w-8" />
+              <Image src={TextSymbol} alt="Text Logo" className="h-8 w-32" />
             </Link>
           </div>
 
           {/* Desktop Menu */}
           <div className="hidden sm:flex sm:items-center sm:space-x-4">
-            {!authenticated ? (
-              null
-            ) : (
-              <>
+            {!authenticated ? null : (
+              <div className="flex items-center space-x-4">
                 <div
-                  className={`flex items-center gap-2 px-6 py-2 rounded-md transition-all duration-200 shadow-lg ${
-                    isReviewer
-                      ? "bg-[#4ECDC4] text-white hover:bg-[#45b8b0] hover:shadow-[#4ECDC4]/20"
-                      : "bg-[#FF6B6B] text-white hover:bg-[#ff5252] hover:shadow-[#FF6B6B]/20"
-                  }`}
+                  className="px-4 py-2 rounded-md bg-blue-500/10 border border-blue-500/20 
+                            text-blue-400 hover:bg-blue-500/20 transition-all duration-200"
                 >
                   <span className="font-mono">
-                    {user?.wallet?.address && truncateAddress(user.wallet.address)}
+                    {user?.wallet?.address &&
+                      truncateAddress(user.wallet.address)}
                   </span>
-                  <button
-                    onClick={copyAddress}
-                    className="hover:opacity-80 transition-opacity"
-                    title="Copy address"
-                  >
+                  <button onClick={copyAddress} className="ml-2">
                     {isCopied ? (
                       <ClipboardDocumentCheckIcon className="w-5 h-5" />
                     ) : (
@@ -83,11 +80,11 @@ const Navbar = () => {
                 </div>
                 <button
                   onClick={() => logout()}
-                  className="text-gray-400 hover:text-[#FFE66D] transition-colors"
+                  className="text-gray-400 hover:text-white transition-colors"
                 >
                   Disconnect
                 </button>
-              </>
+              </div>
             )}
           </div>
 
@@ -108,7 +105,11 @@ const Navbar = () => {
                   strokeLinecap="round"
                   strokeLinejoin="round"
                   strokeWidth={2}
-                  d={isMobileMenuOpen ? "M6 18L18 6M6 6l12 12" : "M4 6h16M4 12h16M4 18h16"}
+                  d={
+                    isMobileMenuOpen
+                      ? "M6 18L18 6M6 6l12 12"
+                      : "M4 6h16M4 12h16M4 18h16"
+                  }
                 />
               </svg>
             </button>
@@ -120,19 +121,16 @@ const Navbar = () => {
       {isMobileMenuOpen && (
         <div className="sm:hidden bg-[#2C2D31] border-t border-gray-800">
           <div className="pt-2 pb-3 space-y-1">
-            {!authenticated ? (
-              null
-            ) : (
+            {!authenticated ? null : (
               <>
                 <div
                   className={`flex items-center justify-between px-4 py-2 text-base font-medium ${
-                    isReviewer
-                      ? "text-[#4ECDC4]"
-                      : "text-[#FF6B6B]"
+                    isReviewer ? "text-[#4ECDC4]" : "text-[#FF6B6B]"
                   }`}
                 >
                   <span className="font-mono">
-                    {user?.wallet?.address && truncateAddress(user.wallet.address)}
+                    {user?.wallet?.address &&
+                      truncateAddress(user.wallet.address)}
                   </span>
                   <button
                     onClick={copyAddress}
@@ -161,4 +159,4 @@ const Navbar = () => {
   );
 };
 
-export default Navbar; 
+export default Navbar;
