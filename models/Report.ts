@@ -2,6 +2,7 @@ import mongoose, { Document } from 'mongoose';
 import { Vote } from '@/types/vote';
 
 interface IReport extends Document {
+    _id: string;
     title: string;
     telegramHandle: string;
     submitterAddress: string;
@@ -12,6 +13,7 @@ interface IReport extends Document {
     kycStatus: 'pending' | 'completed';
     basePaymentStatus: 'pending' | 'completed' | 'rejected';
     additionalPaymentStatus: 'pending' | 'completed' | 'rejected';
+    createdAt: string;
 }
 
 const voteSchema = new mongoose.Schema({

@@ -176,9 +176,6 @@ export default function QuestionAnswer({ reportId, isReviewer }: Props) {
                     <span className="w-2 h-2 bg-[#FF6B6B] rounded-full flex-shrink-0 mt-1"></span>
                   )}
                 </div>
-                <span className="text-xs text-gray-500 mt-2 block">
-                  {new Date(q.createdAt).toLocaleString()}
-                </span>
               </div>
             </div>
 
@@ -192,9 +189,6 @@ export default function QuestionAnswer({ reportId, isReviewer }: Props) {
                       (q.isSubmitterQuestion ? "Reviewer's Answer:" : "Your Answer:")}
                   </p>
                   <p className="text-gray-300 text-sm">{q.answer}</p>
-                  <span className="text-xs text-gray-500 mt-2 block">
-                    {new Date(q.createdAt).toLocaleString()}
-                  </span>
                 </div>
               </div>
             ) : (

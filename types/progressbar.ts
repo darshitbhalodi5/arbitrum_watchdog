@@ -2,6 +2,6 @@ import { Report } from "@/types/report"
 
 export interface ProgressBarProps {
     report: Report;
-    onKycVerify: () => void;
+    onKycVerify?: () => void | Promise<void>;
     isSubmitter: boolean;
 }
