@@ -16,27 +16,27 @@ import SpiralImage from "@/public/assets/spiral.png"
 
 export default function LandingPage() {
     return (
-        <div className="min-h-screen bg-[#0A0B0C] text-white">
+        <div className="min-h-screen bg-[#0A0B0C] text-white font-secondary">
             <Navbar />
 
             {/* Hero Section */}
             <section className="text-center py-16 px-4 relative">
                 <div className="max-w-4xl mx-auto">
-                    <h1 className="text-5xl md:text-6xl font-light mb-4">Welcome to Truence</h1>
+                    <h1 className="text-5xl md:text-6xl font-light mb-4 font-primary">Welcome to Truence</h1>
                     <p className="text-gray-400">Introducing the Integrity of DAO Funds</p>
                 </div>
 
                 {/* Login Options */}
                 <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto mt-12">
                     <div className="bg-[#1A1B1E]/50 p-6 rounded-lg backdrop-blur">
-                        <h3 className="text-xl mb-2">Login as Reviewer</h3>
+                        <h3 className="text-xl mb-2 font-primary font-light">Login as Reviewer</h3>
                         <p className="text-sm text-gray-400 mb-4">Review and validate submitted content. Only authorized reviewer wallets can access this role.</p>
                         <Link href="/reviewer-login" className="inline-block px-6 py-2 bg-[#4ECDC4] text-black rounded-lg hover:bg-[#4ECDC4]/90">
                             Login as Reviewer
                         </Link>
                     </div>
                     <div className="bg-[#1A1B1E]/50 p-6 rounded-lg backdrop-blur">
-                        <h3 className="text-xl mb-2">Login as Submitter</h3>
+                        <h3 className="text-xl mb-2 font-primary font-light">Login as Submitter</h3>
                         <p className="text-sm text-gray-400 mb-4">Submit content for review. Reviewer wallets cannot access this role.</p>
                         <Link href="/submitter-login" className="inline-block px-6 py-2 bg-[#4ECDC4] text-black rounded-lg hover:bg-[#4ECDC4]/90">
                             Login as Submitter
@@ -48,7 +48,7 @@ export default function LandingPage() {
             {/* Mission Section */}
             <section className="py-16 px-4">
                 <div className="max-w-4xl mx-auto">
-                    <h2 className="text-4xl mb-6">The Mission</h2>
+                    <h2 className="text-4xl mb-6 font-primary">The Mission</h2>
                     <p className="text-gray-400 mb-8">The Arbitrum DAO has distributed over $50 million ARB tokens to fund ecosystem initiatives. However, there have been instances of misused tokens and we need accountability to ensure the long-term success of the DAO. The Truence Program incentivizes the community to protect DAO funds and to identify grant spending misuse or fraud.</p>
                     <Image
                         src={MissionGraphic}
@@ -63,7 +63,7 @@ export default function LandingPage() {
             {/* What is Truence Section */}
             <section className="py-16 px-4 bg-[#1A1B1E]/30">
                 <div className="max-w-4xl mx-auto">
-                    <h2 className="text-4xl mb-12">What is Truence?</h2>
+                    <h2 className="text-4xl mb-12 font-primary">What is Truence?</h2>
                     <p className="text-gray-400 mb-12 text-lg">Truence is a grant review bounty program designed to:</p>
                     <div className="grid md:grid-cols-2 gap-12">
                         <div className="text-center flex flex-col items-center">
@@ -119,7 +119,7 @@ export default function LandingPage() {
             {/* How It Works Section */}
             <section className="py-16 px-4">
                 <div className="max-w-4xl mx-auto">
-                    <h2 className="text-4xl mb-16 text-[#FFFAE0] font-light">How It Works</h2>
+                    <h2 className="text-4xl mb-16 text-[#FFFAE0] font-light font-primary">How It Works</h2>
                     <div className="grid md:grid-cols-3 gap-8 relative">
                         {/* Connecting Lines */}
                         <div className="hidden md:block absolute top-[22px] w-full">
@@ -199,7 +199,7 @@ export default function LandingPage() {
             {/* Why Truence Matters Section */}
             <section className="py-16 px-4 bg-[#1A1B1E]/30">
                 <div className="max-w-4xl mx-auto">
-                    <h2 className="text-4xl mb-12 text-[#FFFAE0] font-light">Why Truence Matters</h2>
+                    <h2 className="text-4xl mb-12 text-[#FFFAE0] font-light font-primary">Why Truence Matters</h2>
                     <div className="grid md:grid-cols-3 gap-8">
                         {/* Recover Card */}
                         <div className="relative group">
@@ -294,7 +294,7 @@ export default function LandingPage() {
             {/* Reward Structure Section */}
             <section className="py-16 px-4">
                 <div className="max-w-4xl mx-auto">
-                    <h2 className="text-4xl mb-6 text-[#FFFAE0] font-light">Reward Structure</h2>
+                    <h2 className="text-4xl mb-6 text-[#FFFAE0] font-light font-primary">Reward Structure</h2>
                     <div className="bg-[#1A1B1E]/20 rounded-lg p-4 text-center mb-12">
                         <p className="text-gray-400 text-sm">Community members are rewarded based on the severity of the misuse</p>
                     </div>

@@ -1,22 +1,12 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
+import { primaryFont, secondaryFont } from './fonts'
 import "./globals.css";
 import { Providers } from "./providers";
 import { Toaster } from 'react-hot-toast';
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
-
 export const metadata: Metadata = {
   title: "Truence",
-  description: "Decentralized Content Review Platform",
+  description: "Introducing the Integrity of DAO Funds",
 };
 
 export default function RootLayout({
@@ -25,8 +15,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body className={`${geistSans.variable} ${geistMono.variable} antialiased`}>
+    <html lang="en" className={`${primaryFont.variable} ${secondaryFont.variable} antialiased`}>
+      <body className="font-secondary bg-[#0A0B0C]">
         <Providers>
           {children}
           <Toaster
