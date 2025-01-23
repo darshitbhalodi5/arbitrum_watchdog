@@ -77,9 +77,10 @@ export default function LandingPage({ onRoleSelect }: LandingPageProps) {
                     }
                     className="rounded-lg overflow-hidden relative cursor-pointer group"
                     style={{
-                      background:
-                        "linear-gradient(180deg, rgba(6, 26, 34, 0.4) 0%, rgba(12, 75, 100, 0.2) 100%)",
-                      backdropFilter: "blur(20px)",
+                      background: "#020C1099",
+                      border: "1px solid",
+                      backdropFilter: "blur(80px)",
+                      boxShadow: "0px 4px 50.5px 0px #96F1FF21 inset",
                     }}
                   >
                     <div className="absolute inset-0 bg-gradient-to-b from-[#4ECDC4]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
@@ -188,7 +189,7 @@ export default function LandingPage({ onRoleSelect }: LandingPageProps) {
             ].map((item, index) => (
               <div key={index} className="flex flex-col items-start">
                 <div
-                  className="w-24 h-24 rounded-full relative flex items-center justify-center mb-8 group bg-gradient-to-b from-[rgba(6,26,34,0.08)] to-[rgba(12,75,100,0.2)] backdrop-blur-xl"
+                  className="w-16 h-16 rounded-full relative flex items-center justify-center mb-8 group bg-gradient-to-b from-[rgba(6,26,34,0.08)] to-[rgba(12,75,100,0.2)] backdrop-blur-xl"
                   style={{
                     border: "0.5px solid #CCFFFD",
                     background: "#09181B",
@@ -269,10 +270,10 @@ export default function LandingPage({ onRoleSelect }: LandingPageProps) {
             ].map((item, index) => (
               <div key={index} className="text-left relative">
                 <div className="justify-center content-center">
-                <span className="text-[#ffffff] text-lg font-light mb-6 block">
-                < CircleDot className="inline-block mr-[1rem] text-[#FBFCA4]"/>
-                  {item.step}
-                </span>
+                  <span className="text-[#ffffff] text-lg font-light mb-6 block">
+                    <CircleDot className="inline-block mr-[1rem] text-[#FBFCA4]" />
+                    {item.step}
+                  </span>
                 </div>
                 <h4
                   className="text-2xl mb-4 font-light bg-clip-text text-transparent"
@@ -304,52 +305,79 @@ export default function LandingPage({ onRoleSelect }: LandingPageProps) {
           >
             Why Truence Matters
           </h2>
-          <div className="grid md:grid-cols-3 gap-8">
-            {[
-              {
-                image: RecoverSection,
-                title: "Recover Misused Funds",
-                description:
-                  "Strengthen DAO finances by identifying and recovering misallocated resources.",
-              },
-              {
-                image: PreventSection,
-                title: "Prevent Misconduct",
-                description:
-                  "Transparent reporting and public accountability deter bad actors.",
-              },
-              {
-                image: EmpowerSection,
-                title: "Empower the Community",
-                description:
-                  "Give contributors the tools and incentives to uphold the integrity of the Arbitrum ecosystem.",
-              },
-            ].map((card, index) => (
-              <div key={index} className="relative">
-                <div className="rounded-lg p-6 bg-gradient-to-b from-[rgba(6,26,34,0.08)] to-[rgba(12,75,100,0.2)] backdrop-blur-xl border border-[#4ECDC4]/20">
-                  <div className="mb-8 relative h-48 flex items-center justify-center">
-                    <Image
-                      src={card.image || "/placeholder.svg"}
-                      alt={card.title}
-                      width={200}
-                      height={200}
-                      className="object-contain"
-                    />
-                  </div>
+          <div className="grid grid-cols-3 gap-8">
+            <div className="relative">
+              <div className="rounded-lg bg-gradient-to-b from-[rgba(6,26,34,0.08)] to-[rgba(12,75,100,0.2)] backdrop-blur-xl border border-[#4ECDC4]/20">
+                <div className="h-48 flex items-start justify-start">
+                  <Image
+                    src={RecoverSection}
+                    alt="Recover Misused Funds"
+                    width={300}
+                    height={300}
+                    className="object-contain"
+                  />
+                </div>
+                <div className="p-6">
                   <h3 className="text-[#B0E9FF] text-xl font-light mb-3">
-                    {card.title}
+                    Recover Misused Funds
                   </h3>
                   <p className="text-[#ffffff] text-sm leading-relaxed">
-                    {card.description}
+                    Strengthen DAO finances by identifying and recovering
+                    misallocated resources.
                   </p>
                 </div>
               </div>
-            ))}
+            </div>
+            <div className="relative">
+              <div className="rounded-lg bg-gradient-to-b from-[rgba(6,26,34,0.08)] to-[rgba(12,75,100,0.2)] backdrop-blur-xl border border-[#4ECDC4]/20">
+                <div className="h-48 flex items-start justify-center">
+                  <Image
+                    src={PreventSection}
+                    alt="Prevent Misconduct"
+                    width={300}
+                    height={300}
+                    className="object-contain"
+                  />
+                </div>
+                <div className="p-6">
+                  <h3 className="text-[#B0E9FF] text-xl font-light mb-3">
+                    Prevent Misconduct
+                  </h3>
+                  <p className="text-[#ffffff] text-sm leading-relaxed">
+                    Transparent reporting and public accountability deter bad
+                    actors.
+                  </p>
+                </div>
+              </div>
+            </div>
+            <div className="relative">
+              <div className="rounded-lg bg-gradient-to-b from-[rgba(6,26,34,0.08)] to-[rgba(12,75,100,0.2)] backdrop-blur-xl border border-[#4ECDC4]/20">
+                <div className="h-48 flex items-start justify-end">
+                  <Image
+                    src={EmpowerSection}
+                    alt="Empower the Community"
+                    width={300}
+                    height={300}
+                    className="object-contain"
+                  />
+                </div>
+                <div className="p-6">
+                  <h3 className="text-[#B0E9FF] text-xl font-light mb-3">
+                    Empower the Community
+                  </h3>
+                  <p className="text-[#ffffff] text-sm leading-relaxed">
+                    Give contributors the tools and incentives to uphold the
+                    integrity of the Arbitrum ecosystem.
+                  </p>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
       {/* Reward Structure Section */}
+
       <section className="py-24 px-4 bg-gradient-to-b from-[#000203] to-[#011116]">
         <div className="w-[90%] mx-auto max-w-6xl">
           <h2
@@ -377,6 +405,7 @@ export default function LandingPage({ onRoleSelect }: LandingPageProps) {
             </div>
           </div>
           <div className="relative flex justify-center items-center min-h-[600px]">
+            {/* Spiral Image */}
             <div className="absolute inset-0 flex items-center justify-center">
               <Image
                 src={SpiralImage || "/placeholder.svg"}
@@ -387,6 +416,7 @@ export default function LandingPage({ onRoleSelect }: LandingPageProps) {
               />
             </div>
 
+            {/* Labels with lines */}
             {[
               {
                 position: "top-12 left-0",
@@ -394,6 +424,8 @@ export default function LandingPage({ onRoleSelect }: LandingPageProps) {
                 title: "High Severity",
                 reward: "30,000 ARB + 5%",
                 cap: "of recovered funds (capped at $100k)",
+                linePosition:
+                  "absolute top-[4rem] left-[12rem] w-[16rem] h-[1px] bg-[#FAFFC8]",
               },
               {
                 position: "right-0 top-1/2 -translate-y-1/2",
@@ -401,6 +433,8 @@ export default function LandingPage({ onRoleSelect }: LandingPageProps) {
                 title: "Medium Severity",
                 reward: "10,000 ARB + 5%",
                 cap: "of recovered funds (capped at $50k)",
+                linePosition:
+                  "absolute top-[4rem] right-[14rem] w-[14rem] h-[1px] bg-[#FAFFC8]",
               },
               {
                 position: "bottom-12 left-0",
@@ -408,14 +442,23 @@ export default function LandingPage({ onRoleSelect }: LandingPageProps) {
                 title: "Low Severity",
                 reward: "1,000 ARB + 5%",
                 cap: "of recovered funds (capped at $10k)",
+                linePosition:
+                  "absolute bottom-[4rem] left-[12rem] w-[16rem] h-[1px] bg-[#FAFFC8]",
               },
             ].map((item, index) => (
               <div
                 key={index}
                 className={`absolute ${item.position} flex flex-col items-start justify-center gap-2`}
               >
+                {/* Line connecting to spiral */}
+                <div className={item.linePosition}></div>
+                {/* Label */}
                 <div className="w-8 h-8 flex items-center justify-center bg-[#00000052] border-0.5 border-solid rounded-full border-[#FAFFC8A6] shadow-[0px_4px_29.8px_0px_#FFFFFF33_inset]">
-                  <item.icon className="text-[#4ECDC4]" width={20} height={20} />
+                  <item.icon
+                    className="text-[#FFFAD1]"
+                    width={20}
+                    height={20}
+                  />
                 </div>
                 <div className="text-left">
                   <h3
@@ -476,7 +519,7 @@ export default function LandingPage({ onRoleSelect }: LandingPageProps) {
 
       {/* Updated Footer */}
       <footer className="py-8 px-4 text-center">
-        <p className="text-gray-600 text-sm">
+        <p className="text-[#ffffff] text-sm">
           Copyright © 2024 Truence. All rights reserved.
         </p>
       </footer>
