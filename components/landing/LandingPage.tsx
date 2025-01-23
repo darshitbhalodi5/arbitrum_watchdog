@@ -162,15 +162,28 @@ export default function LandingPage({ onRoleSelect }: LandingPageProps) {
       </section>
       
       {/* How It Works Section */}
-
-      {/* How It Works Section */}
-      <section className="py-24 px-4 bg-gradient-to-b from-[#000203] to-[#011116]">
+      <section className="py-24 px-4 bg-[#000203]">
         <div className="w-[90%] mx-auto max-w-6xl">
-          <h2 className="text-4xl sm:text-5xl mb-16 text-[#FFFAE0] font-light font-primary">How It Works</h2>
-          <div className="grid md:grid-cols-3 gap-8 relative">
+          <h2 className="text-4xl sm:text-5xl mb-24 text-[#FFFAE0] font-light font-primary">How It Works</h2>
+          <div className="grid md:grid-cols-3 gap-16 relative">
+            {/* Connecting Lines */}
             <div className="hidden md:block absolute top-[22px] w-full">
-              <div className="absolute left-[calc(33%+60px)] right-[calc(50%+10px)] h-[2px] bg-gradient-to-r from-[#4ECDC4]/0 to-[#4ECDC4] shadow-[0_0_8px_rgba(78,205,196,0.6)]"></div>
-              <div className="absolute left-[calc(66%-60px)] right-[calc(33%-10px)] h-[2px] bg-gradient-to-l from-[#4ECDC4]/0 to-[#4ECDC4] shadow-[0_0_8px_rgba(78,205,196,0.6)]"></div>
+              {/* Line between Step 1 and 2 */}
+              <div
+                className="absolute left-[33%] right-[67%] h-[2px]"
+                style={{
+                  background: "linear-gradient(90deg, rgba(78, 205, 196, 0.2) 0%, #4ECDC4 100%)",
+                  boxShadow: "0 0 20px rgba(78, 205, 196, 0.4)",
+                }}
+              ></div>
+              {/* Line between Step 2 and 3 */}
+              <div
+                className="absolute left-[67%] right-[33%] h-[2px]"
+                style={{
+                  background: "linear-gradient(90deg, #4ECDC4 0%, rgba(78, 205, 196, 0.2) 100%)",
+                  boxShadow: "0 0 20px rgba(78, 205, 196, 0.4)",
+                }}
+              ></div>
             </div>
 
             {[
@@ -193,11 +206,9 @@ export default function LandingPage({ onRoleSelect }: LandingPageProps) {
               },
             ].map((item, index) => (
               <div key={index} className="text-left relative">
-                <div className="flex items-center gap-2 mb-4">
-                  <span className="text-[#4ECDC4] text-sm font-light">{item.step}</span>
-                </div>
-                <h4 className="text-xl mb-3 font-light">{item.title}</h4>
-                <p className="text-gray-400 text-sm leading-relaxed">{item.description}</p>
+                <span className="text-[#4ECDC4] text-sm font-light mb-6 block">{item.step}</span>
+                <h4 className="text-2xl mb-4 font-light text-white">{item.title}</h4>
+                <p className="text-gray-400 text-base leading-relaxed">{item.description}</p>
               </div>
             ))}
           </div>
