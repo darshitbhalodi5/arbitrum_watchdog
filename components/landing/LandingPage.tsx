@@ -6,13 +6,14 @@ import MissionGraphic from "@/public/assets/mission-section.png";
 import RecoverSection from "@/public/assets/recover.png";
 import EmpowerSection from "@/public/assets/empower.png";
 import PreventSection from "@/public/assets/prevent.png";
-import UpArrow from "@/public/assets/high.png";
-import EqualSign from "@/public/assets/medium.png";
-import DownArrow from "@/public/assets/low.png";
 import SpiralImage from "@/public/assets/spiral.png";
 import ActionSection from "@/public/assets/action.png";
 import HeroBg from "@/public/assets/background.png";
 import Arrow from "@/public/assets/arrow.png";
+import { CircleDot } from "lucide-react";
+import { ChevronDown } from "lucide-react";
+import { ChevronUp } from "lucide-react";
+import { Equal } from "lucide-react";
 
 interface LandingPageProps {
   onRoleSelect: (role: "reviewer" | "submitter") => void;
@@ -267,9 +268,12 @@ export default function LandingPage({ onRoleSelect }: LandingPageProps) {
               },
             ].map((item, index) => (
               <div key={index} className="text-left relative">
-                <span className="text-[#ffffff] text-sm font-light mb-6 block">
+                <div className="justify-center content-center">
+                <span className="text-[#ffffff] text-lg font-light mb-6 block">
+                < CircleDot className="inline-block mr-[1rem] text-[#FBFCA4]"/>
                   {item.step}
                 </span>
+                </div>
                 <h4
                   className="text-2xl mb-4 font-light bg-clip-text text-transparent"
                   style={{
@@ -386,21 +390,21 @@ export default function LandingPage({ onRoleSelect }: LandingPageProps) {
             {[
               {
                 position: "top-12 left-0",
-                icon: UpArrow,
+                icon: ChevronUp,
                 title: "High Severity",
                 reward: "30,000 ARB + 5%",
                 cap: "of recovered funds (capped at $100k)",
               },
               {
                 position: "right-0 top-1/2 -translate-y-1/2",
-                icon: EqualSign,
+                icon: Equal,
                 title: "Medium Severity",
                 reward: "10,000 ARB + 5%",
                 cap: "of recovered funds (capped at $50k)",
               },
               {
                 position: "bottom-12 left-0",
-                icon: DownArrow,
+                icon: ChevronDown,
                 title: "Low Severity",
                 reward: "1,000 ARB + 5%",
                 cap: "of recovered funds (capped at $10k)",
@@ -410,16 +414,8 @@ export default function LandingPage({ onRoleSelect }: LandingPageProps) {
                 key={index}
                 className={`absolute ${item.position} flex flex-col items-start justify-center gap-2`}
               >
-                <div
-                  className="w-8 h-8 flex items-center justify-center bg-[#00000052] border-0.5 border-solid border-[#FAFFC8A6] shadow-[0px_4px_29.8px_0px_#FFFFFF33_inset]"
-                >
-                  <Image
-                    src={item.icon || "/placeholder.svg"}
-                    alt="Severity Icon"
-                    width={20}
-                    height={20}
-                    className="mt-1"
-                  />
+                <div className="w-8 h-8 flex items-center justify-center bg-[#00000052] border-0.5 border-solid rounded-full border-[#FAFFC8A6] shadow-[0px_4px_29.8px_0px_#FFFFFF33_inset]">
+                  <item.icon className="text-[#4ECDC4]" width={20} height={20} />
                 </div>
                 <div className="text-left">
                   <h3
@@ -455,12 +451,20 @@ export default function LandingPage({ onRoleSelect }: LandingPageProps) {
             />
           </div>
 
-          <div className="rounded-2xl overflow-hidden relative bg-gradient-to-b from-[rgba(6,26,34,0.2)] to-[rgba(12,75,100,0.1)] backdrop-blur-xl border border-[#4ECDC4]/10">
+          <div
+            className="rounded-2xl overflow-hidden relative"
+            style={{
+              background:
+                "linear-gradient(270.15deg, rgba(6, 26, 34, 0.312) -1.49%, rgba(26, 104, 136, 0.28) 99.87%)",
+              border: "1px solid #82FFF466",
+              backdropFilter: "blur(1.5rem)",
+            }}
+          >
             <div className="px-8 py-12 text-center relative bg-gradient-to-b from-[rgba(6,26,34,0.05)] to-[rgba(12,75,100,0.025)]">
-              <h2 className="text-4xl sm:text-5xl mb-4 font-light text-white">
+              <h2 className="text-4xl sm:text-5xl mb-4 font-light text-[#B0E9FF]">
                 Ready to take action?
               </h2>
-              <p className="text-gray-400 text-lg max-w-2xl mx-auto">
+              <p className="text-[#ffffff] text-lg max-w-2xl mx-auto">
                 Submit a report, help us recover misused funds, and earn your
                 rewards! Together, we can ensure Arbitrum DAO funds are used for
                 the betterment of the ecosystem.
