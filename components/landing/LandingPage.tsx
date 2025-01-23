@@ -124,7 +124,7 @@ export default function LandingPage({ onRoleSelect }: LandingPageProps) {
       </div>
 
       {/* Mission Section */}
-      <section className="py-24 px-4 relative bg-gradient-to-b from-[#000203] to-[#011116]">
+      <section className="py-24 px-4 relative bg-[#000203]">
         <div className="w-[90%] mx-auto max-w-6xl">
           <div className="flex flex-col md:flex-row items-center justify-between gap-12">
             <div className="md:w-1/2">
@@ -318,7 +318,7 @@ export default function LandingPage({ onRoleSelect }: LandingPageProps) {
                   />
                 </div>
                 <div className="p-6">
-                  <h3 className="text-[#B0E9FF] text-xl font-light mb-3">
+                  <h3 className="text-[#B0E9FF] text-2xl font-light mb-3">
                     Recover Misused Funds
                   </h3>
                   <p className="text-[#ffffff] text-sm leading-relaxed">
@@ -340,7 +340,7 @@ export default function LandingPage({ onRoleSelect }: LandingPageProps) {
                   />
                 </div>
                 <div className="p-6">
-                  <h3 className="text-[#B0E9FF] text-xl font-light mb-3">
+                  <h3 className="text-[#B0E9FF] text-2xl font-light mb-3">
                     Prevent Misconduct
                   </h3>
                   <p className="text-[#ffffff] text-sm leading-relaxed">
@@ -362,7 +362,7 @@ export default function LandingPage({ onRoleSelect }: LandingPageProps) {
                   />
                 </div>
                 <div className="p-6">
-                  <h3 className="text-[#B0E9FF] text-xl font-light mb-3">
+                  <h3 className="text-[#B0E9FF] text-2xl font-light mb-3">
                     Empower the Community
                   </h3>
                   <p className="text-[#ffffff] text-sm leading-relaxed">
@@ -378,7 +378,7 @@ export default function LandingPage({ onRoleSelect }: LandingPageProps) {
 
       {/* Reward Structure Section */}
 
-      <section className="py-24 px-4 bg-gradient-to-b from-[#000203] to-[#011116]">
+      <section className="py-24 px-4 bg-[#000203]">
         <div className="w-[90%] mx-auto max-w-6xl">
           <h2
             className="text-4xl sm:text-5xl mb-4 text-[#FFFAE0] font-light font-primary text-center bg-clip-text text-transparent"
@@ -482,7 +482,7 @@ export default function LandingPage({ onRoleSelect }: LandingPageProps) {
       </section>
 
       {/* Call to Action Section */}
-      <section className="py-24 px-4">
+      <section className="py-24 px-4 bg-[#000203]">
         <div className="w-[90%] max-w-4xl mx-auto relative">
           <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[500px] opacity-80 pointer-events-none">
             <Image
@@ -518,7 +518,7 @@ export default function LandingPage({ onRoleSelect }: LandingPageProps) {
       </section>
 
       {/* Updated Footer */}
-      <footer className="py-8 px-4 text-center">
+      <footer className="py-8 px-4 text-center bg-[#000203]">
         <p className="text-[#ffffff] text-sm">
           Copyright © 2024 Truence. All rights reserved.
         </p>
