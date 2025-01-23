@@ -47,6 +47,8 @@ const ReviewerDashboard = () => {
     const [showSeverity, setShowSeverity] = useState(false);
     const [isVoting, setIsVoting] = useState(false);
     const [voteError, setVoteError] = useState<string | null>(null);
+    const [telegramError, setTelegramError] = useState<string | null>(null);
+    const [isDecrypting, setIsDecrypting] = useState(false);
 
     const calculateVoteCounts = (report: IReport): VoteCount => {
         return report.votes.reduce((acc, vote) => {
@@ -180,22 +182,40 @@ const ReviewerDashboard = () => {
     };
 
     const handleTelegramReveal = async (reportId: string, encryptedTelegram: string, actualTitle: string) => {
-        if (titleInput.trim() === actualTitle) {
-            try {
-                const decrypted = decrypt(encryptedTelegram, actualTitle);
-                setDecryptedHandles(prev => ({
-                    ...prev,
-                    [reportId]: decrypted
-                }));
-                setShowTelegramPrompt(false);
-                setTitleInput('');
-                toast.success('Telegram handle revealed');
-            } catch (error) {
-                console.error('Failed to decrypt telegram handle:', error);
-                toast.error('Failed to decrypt telegram handle');
+        // If the modal isn't shown yet, show it first and return
+        if (!showTelegramPrompt) {
+            setShowTelegramPrompt(true);
+            setTitleInput('');
+            setTelegramError(null);
+            return;
+        }
+
+        setIsDecrypting(true);
+        setTelegramError(null);
+
+        try {
+            if (titleInput.trim().toLowerCase() !== actualTitle.toLowerCase()) {
+                throw new Error('Incorrect report title. Please enter the exact title as shown in the report.');
             }
-        } else {
-            toast.error('Incorrect title');
+
+            const decrypted = decrypt(encryptedTelegram, actualTitle);
+            
+            if (!decrypted) {
+                throw new Error('Failed to decrypt telegram handle. Please try again.');
+            }
+
+            setDecryptedHandles(prev => ({
+                ...prev,
+                [reportId]: decrypted
+            }));
+            setShowTelegramPrompt(false);
+            setTitleInput('');
+            toast.success('Telegram handle revealed successfully');
+        } catch (error) {
+            console.error('Failed to decrypt telegram handle:', error);
+            setTelegramError(error instanceof Error ? error.message : 'Failed to decrypt telegram handle');
+        } finally {
+            setIsDecrypting(false);
         }
     };
 
@@ -205,6 +225,7 @@ const ReviewerDashboard = () => {
             delete newHandles[reportId];
             return newHandles;
         });
+        toast.success('Telegram handle hidden');
     };
 
     const handleBasePaymentConfirm = async () => {
@@ -335,29 +356,14 @@ const ReviewerDashboard = () => {
 
                 {/* Report Detail with Tabs */}
                 {selectedReport && (
-                    <div className="lg:w-2/3">
-                        <div className="rounded-lg p-6 relative overflow-hidden"
-                            style={{
-                                background: "#020C1099",
-                                border: "1px solid",
-                                backdropFilter: "blur(80px)",
-                                boxShadow: "0px 4px 50.5px 0px #96F1FF21 inset",
-                            }}
-                        >
-                            <div className="absolute inset-0 bg-gradient-to-b from-[#4ECDC4]/5 to-transparent opacity-30" />
-                            <div className="relative">
-                                <div className="flex justify-between items-start mb-6">
-                                    <h3 className="text-xl font-light text-[#B0E9FF]">{selectedReport.title}</h3>
-                                    <button
-                                        onClick={() => setSelectedReport(null)}
-                                        className="text-gray-400 hover:text-[#4ECDC4] transition-colors"
-                                    >
-                                        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                        </svg>
-                                    </button>
-                                </div>
+                    <div className="flex-1">
+                        <div className="bg-[#1A1B1E] rounded-lg p-6">
+                            <div className="mb-6">
+                                <h3 className="text-2xl font-light text-[#B0E9FF] mb-2">{selectedReport.title}</h3>
+                                {/* <p className="text-gray-400">{selectedReport.description}</p> */}
+                            </div>
 
+                            <div className="space-y-6">
                                 <TabView
                                     tabs={[
                                         {
@@ -518,7 +524,7 @@ const ReviewerDashboard = () => {
             </div>
 
             {/* Telegram Prompt Modal */}
-            {showTelegramPrompt && (
+            {showTelegramPrompt && selectedReport && (
                 <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50 backdrop-blur-sm">
                     <div className="rounded-lg p-6 max-w-md w-full relative overflow-hidden"
                         style={{
@@ -530,46 +536,96 @@ const ReviewerDashboard = () => {
                     >
                         <div className="absolute inset-0 bg-gradient-to-b from-[#4ECDC4]/5 to-transparent opacity-30" />
                         <div className="relative">
-                            <h3 className="text-[#B0E9FF] font-light text-xl mb-4">Enter Report Title to Connect</h3>
-                            <input
-                                type="text"
-                                value={titleInput}
-                                onChange={(e) => setTitleInput(e.target.value)}
-                                placeholder="Enter the report title"
-                                className="w-full bg-[#1A1B1E] text-white rounded-lg px-4 py-2 mb-4 border border-gray-800 focus:border-[#4ECDC4] focus:outline-none"
-                            />
-                            <div className="flex justify-end gap-3">
+                            <div className="flex justify-between items-start mb-6">
+                                <h3 className="text-[#B0E9FF] font-light text-xl">Verify Report Title</h3>
                                 <button
                                     onClick={() => {
                                         setShowTelegramPrompt(false);
                                         setTitleInput('');
+                                        setTelegramError(null);
                                     }}
-                                    className="px-4 py-2 text-gray-400 hover:text-[#4ECDC4] transition-colors"
+                                    className="text-gray-400 hover:text-[#4ECDC4] transition-colors"
                                 >
-                                    Cancel
+                                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
                                 </button>
-                                <button
-                                    onClick={() => handleTelegramReveal(
-                                        selectedReport?._id?.toString() || "",
-                                        selectedReport?.telegramHandle || "",
-                                        selectedReport?.title || ""
-                                    )}
-                                    className="px-4 py-2 rounded-lg relative overflow-hidden group"
-                                    style={{
-                                        background: "#020C1099",
-                                        border: "1px solid",
-                                        backdropFilter: "blur(80px)",
-                                        boxShadow: "0px 4px 50.5px 0px #96F1FF21 inset",
-                                    }}
-                                >
-                                    <div className="absolute inset-0 bg-gradient-to-b from-[#4ECDC4]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                                    <span className="relative text-[#B0E9FF]">Verify</span>
-                                </button>
+                            </div>
+
+                            <div className="mb-6">
+                                <p className="text-gray-400 text-sm mb-4">
+                                    To reveal the submitter&apos;s Telegram handle, please enter the exact report title for verification.
+                                </p>
+                                <div className="bg-[#1A1B1E] rounded-lg p-3 mb-4">
+                                    <p className="text-sm text-[#4ECDC4] mb-1">Current Report Title:</p>
+                                    <p className="text-white font-mono text-sm">{selectedReport.title}</p>
+                                </div>
+                                {telegramError && (
+                                    <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3 mb-4">
+                                        <p className="text-red-400 text-sm">{telegramError}</p>
+                                    </div>
+                                )}
+                            </div>
+
+                            <div className="space-y-4">
+                                <div>
+                                    <label className="block text-gray-300 mb-2 text-sm">
+                                        Enter Report Title
+                                    </label>
+                                    <input
+                                        type="text"
+                                        value={titleInput}
+                                        onChange={(e) => setTitleInput(e.target.value)}
+                                        placeholder="Enter the exact report title"
+                                        className="w-full bg-[#1A1B1E] text-white rounded-lg px-4 py-3 border border-gray-800 focus:border-[#4ECDC4] focus:outline-none text-sm"
+                                    />
+                                </div>
+
+                                <div className="flex justify-end gap-3 mt-6">
+                                    <button
+                                        onClick={() => {
+                                            setShowTelegramPrompt(false);
+                                            setTitleInput('');
+                                            setTelegramError(null);
+                                        }}
+                                        className="px-4 py-2 text-gray-400 hover:text-[#4ECDC4] transition-colors text-sm"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        onClick={() => handleTelegramReveal(
+                                            selectedReport._id?.toString() || "",
+                                            selectedReport.telegramHandle || "",
+                                            selectedReport.title || ""
+                                        )}
+                                        disabled={isDecrypting || !titleInput.trim()}
+                                        className="px-4 py-2 rounded-lg relative overflow-hidden group disabled:opacity-50"
+                                        style={{
+                                            background: "#020C1099",
+                                            border: "1px solid",
+                                            backdropFilter: "blur(80px)",
+                                            boxShadow: "0px 4px 50.5px 0px #96F1FF21 inset",
+                                        }}
+                                    >
+                                        <div className="absolute inset-0 bg-gradient-to-b from-[#4ECDC4]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                        <span className="relative text-[#B0E9FF] text-sm flex items-center gap-2">
+                                            {isDecrypting ? (
+                                                <>
+                                                    <div className="w-4 h-4 border-2 border-t-[#4ECDC4] border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin"></div>
+                                                    Verifying...
+                                                </>
+                                            ) : (
+                                                'Reveal Handle'
+                                            )}
+                                        </span>
+                                    </button>
+                                </div>
                             </div>
                         </div>
                     </div>
                 </div>
             )}
+
         </div>
     );
 };
