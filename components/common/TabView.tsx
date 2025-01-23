@@ -14,22 +14,22 @@ const TabView = ({ tabs }: TabViewProps) => {
     const [activeTab, setActiveTab] = useState(tabs[0].id);
 
     return (
-        <div className="w-full">
+        <div className="w-full font-secondary">
             {/* Tab Headers */}
-            <div className="flex border-b border-gray-800 mb-6">
+            <div className="flex border-b border-[#4ECDC4]/20 mb-6">
                 {tabs.map((tab) => (
                     <button
                         key={tab.id}
                         onClick={() => setActiveTab(tab.id)}
-                        className={`px-4 py-2 text-sm font-medium transition-colors relative ${
+                        className={`px-4 py-2 text-sm font-light transition-colors relative ${
                             activeTab === tab.id
-                                ? 'text-[#4ECDC4]'
-                                : 'text-gray-400 hover:text-gray-300'
+                                ? 'text-[#B0E9FF]'
+                                : 'text-gray-400 hover:text-[#B0E9FF]/70'
                         }`}
                     >
                         {tab.label}
                         {activeTab === tab.id && (
-                            <div className="absolute bottom-0 left-0 w-full h-0.5 bg-[#4ECDC4]"></div>
+                            <div className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-[#4ECDC4]/20 via-[#4ECDC4] to-[#4ECDC4]/20"></div>
                         )}
                     </button>
                 ))}

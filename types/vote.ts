@@ -1,6 +1,7 @@
 import { IReport } from "@/models/Report";
 
 export interface Vote {
+    timestamp: string | number | Date;
     reviewerAddress: string;
     vote: 'approved' | 'rejected';
     severity?: 'high' | 'medium' | 'low';

@@ -122,7 +122,6 @@ const ReviewerDashboard = () => {
         }
     };
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const hasVoted = (report: IReportWithQuestions | null) => {
         if (!report || !user?.wallet?.address) return false;
         return report.votes.some(vote => vote.reviewerAddress === user?.wallet?.address);
@@ -204,54 +203,69 @@ const ReviewerDashboard = () => {
     };
 
     return (
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-8">
-            <h2 className="text-2xl sm:text-3xl font-bold text-white mb-4 sm:mb-8">Reviewer Dashboard</h2>
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 font-secondary">
+            <h2 
+                className="text-3xl sm:text-4xl font-light font-primary mb-8 text-transparent bg-clip-text"
+                style={{
+                    backgroundImage:
+                        "linear-gradient(179.21deg, #FFFFFF 17.3%, #000000 168.94%)",
+                }}
+            >
+                Reviewer Dashboard
+            </h2>
 
-            <div className="flex flex-col lg:flex-row gap-4 sm:gap-8">
+            <div className="flex flex-col lg:flex-row gap-6">
                 {/* Reports List */}
                 <div className={`${selectedReport ? 'lg:w-1/3' : 'w-full'} ${selectedReport ? 'hidden lg:block' : 'block'}`}>
-                    <div className="space-y-3 sm:space-y-4">
+                    <div className="space-y-4">
                         {reports.map((report) => (
                             <button
                                 key={report._id?.toString()}
                                 onClick={() => setSelectedReport(report)}
-                                className={`w-full p-3 sm:p-4 rounded-lg text-left ${
+                                className={`w-full p-4 rounded-lg text-left relative overflow-hidden group transition-all duration-300 ${
                                     selectedReport?._id?.toString() === report._id?.toString()
                                     ? 'bg-[#4ECDC4]/10 border-[#4ECDC4] border'
-                                    : 'bg-[#2C2D31] border-gray-800 border hover:border-[#4ECDC4]'
+                                    : 'border border-gray-800 hover:border-[#4ECDC4]'
                                 }`}
+                                style={{
+                                    background: "#020C1099",
+                                    backdropFilter: "blur(80px)",
+                                }}
                             >
-                                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 mb-2">
-                                    <div className="flex items-start gap-2">
-                                        <h3 className="text-base sm:text-lg font-semibold text-white">{report.title}</h3>
-                                        <div className="flex gap-1">
-                                            {report.hasUnreadAnswers && (
-                                                <span className="animate-pulse w-2 h-2 bg-[#FF6B6B] rounded-full mt-2" title="New answers available"></span>
-                                            )}
-                                            {report.hasNewQuestions && (
-                                                <span className="animate-pulse w-2 h-2 bg-[#4ECDC4] rounded-full mt-2" title="New questions from submitter"></span>
-                                            )}
-                                            {report.hasKycUpdate && (
-                                                <span className="animate-pulse w-2 h-2 bg-yellow-500 rounded-full mt-2" title="KYC completed"></span>
-                                            )}
+                                <div className="absolute inset-0 bg-gradient-to-b from-[#4ECDC4]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                <div className="relative">
+                                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 mb-2">
+                                        <div className="flex items-start gap-2">
+                                            <h3 className="text-lg font-light text-[#B0E9FF]">{report.title}</h3>
+                                            <div className="flex gap-1">
+                                                {report.hasUnreadAnswers && (
+                                                    <span className="animate-pulse w-2 h-2 bg-[#FF6B6B] rounded-full mt-2" title="New answers available"></span>
+                                                )}
+                                                {report.hasNewQuestions && (
+                                                    <span className="animate-pulse w-2 h-2 bg-[#4ECDC4] rounded-full mt-2" title="New questions from submitter"></span>
+                                                )}
+                                                {report.hasKycUpdate && (
+                                                    <span className="animate-pulse w-2 h-2 bg-yellow-500 rounded-full mt-2" title="KYC completed"></span>
+                                                )}
+                                            </div>
+                                        </div>
+                                        <div className="flex items-center sm:flex-col sm:items-end gap-2">
+                                            <span className={`px-3 py-1 rounded-full text-xs ${
+                                                report.status === 'approved' ? 'bg-[#4ECDC4]/20 text-[#4ECDC4]' :
+                                                report.status === 'rejected' ? 'bg-[#FF6B6B]/20 text-[#FF6B6B]' :
+                                                'bg-yellow-500/20 text-yellow-400'
+                                            }`}>
+                                                {report.status.charAt(0).toUpperCase() + report.status.slice(1)}
+                                            </span>
+                                            <span className="text-xs text-[#FFFAD1]">
+                                                {report.votes?.length || 0}/3 votes
+                                            </span>
                                         </div>
                                     </div>
-                                    <div className="flex items-center sm:flex-col sm:items-end gap-2">
-                                        <span className={`px-2 py-1 rounded-full text-xs ${
-                                            report.status === 'approved' ? 'bg-green-500/20 text-green-400' :
-                                            report.status === 'rejected' ? 'bg-red-500/20 text-red-400' :
-                                            'bg-yellow-500/20 text-yellow-400'
-                                        }`}>
-                                            {report.status.charAt(0).toUpperCase() + report.status.slice(1)}
-                                        </span>
-                                        <span className="text-xs text-gray-400">
-                                            {report.votes?.length || 0}/3 votes
-                                        </span>
-                                    </div>
+                                    <p className="text-sm text-gray-400 font-mono">
+                                        {report.submitterAddress.slice(0, 6)}...{report.submitterAddress.slice(-4)}
+                                    </p>
                                 </div>
-                                <p className="text-xs sm:text-sm text-gray-400 font-mono">
-                                    {report.submitterAddress.slice(0, 6)}...{report.submitterAddress.slice(-4)}
-                                </p>
                             </button>
                         ))}
                     </div>
@@ -262,7 +276,7 @@ const ReviewerDashboard = () => {
                     <div className="lg:hidden mb-4">
                         <button
                             onClick={() => setSelectedReport(null)}
-                            className="text-gray-400 hover:text-white flex items-center gap-2"
+                            className="text-[#B0E9FF] hover:text-[#4ECDC4] flex items-center gap-2 transition-colors"
                         >
                             <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
@@ -275,149 +289,165 @@ const ReviewerDashboard = () => {
                 {/* Report Detail with Tabs */}
                 {selectedReport && (
                     <div className="lg:w-2/3">
-                        <div className="bg-[#2C2D31] rounded-lg p-4 sm:p-6 border border-gray-800">
-                            <div className="flex justify-between items-start mb-6">
-                                <h3 className="text-xl font-bold text-white">{selectedReport.title}</h3>
-                                <button
-                                    onClick={() => setSelectedReport(null)}
-                                    className="text-gray-400 hover:text-white"
-                                >
-                                    <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                                    </svg>
-                                </button>
-                            </div>
+                        <div className="rounded-lg p-6 relative overflow-hidden"
+                            style={{
+                                background: "#020C1099",
+                                border: "1px solid",
+                                backdropFilter: "blur(80px)",
+                                boxShadow: "0px 4px 50.5px 0px #96F1FF21 inset",
+                            }}
+                        >
+                            <div className="absolute inset-0 bg-gradient-to-b from-[#4ECDC4]/5 to-transparent opacity-30" />
+                            <div className="relative">
+                                <div className="flex justify-between items-start mb-6">
+                                    <h3 className="text-xl font-light text-[#B0E9FF]">{selectedReport.title}</h3>
+                                    <button
+                                        onClick={() => setSelectedReport(null)}
+                                        className="text-gray-400 hover:text-[#4ECDC4] transition-colors"
+                                    >
+                                        <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                                        </svg>
+                                    </button>
+                                </div>
 
-                            <TabView
-                                tabs={[
-                                    {
-                                        id: 'details',
-                                        label: 'Report Details',
-                                        content: (
-                                            <ReportDetail
-                                                report={selectedReport}
-                                                isReviewer={true}
-                                                onBasePaymentConfirm={handleBasePaymentConfirm}
-                                                onAdditionalPaymentConfirm={handleAdditionalPaymentConfirm}
-                                                onTelegramReveal={(title) => handleTelegramReveal(
-                                                    selectedReport._id as string,
-                                                    selectedReport.telegramHandle,
-                                                    title
-                                                )}
-                                                decryptedHandle={decryptedHandles[selectedReport._id as string]}
-                                                onTelegramHide={() => handleTelegramHide(selectedReport._id as string)}
-                                            />
-                                        )
-                                    },
-                                    {
-                                        id: 'qa',
-                                        label: 'Questions & Answers',
-                                        content: (
-                                            <QuestionAnswer
-                                                reportId={selectedReport._id?.toString() || ''}
-                                                isReviewer={true}
-                                            />
-                                        )
-                                    },
-                                    {
-                                        id: 'votes',
-                                        label: 'Vote Details',
-                                        content: (
-                                            <VoteDetailsTab
-                                                report={selectedReport}
-                                                isReviewer={true}
-                                                currentUserAddress={user?.wallet?.address}
-                                                showVoteActions={false}
-                                            />
-                                        )
-                                    },
-                                    {
-                                        id: 'cast-vote',
-                                        label: 'Cast Your Vote',
-                                        content: (
-                                            <div className="space-y-6">
-                                                {!hasVoted(selectedReport) ? (
-                                                    <>
-                                                        <div className="space-y-4">
-                                                            <h3 className="text-white font-semibold">Review Decision</h3>
-                                                            {!showSeverity ? (
-                                                                <div className="flex gap-4">
-                                                                    <button
-                                                                        onClick={() => setShowSeverity(true)}
-                                                                        className="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
-                                                                    >
-                                                                        Accept
-                                                                    </button>
-                                                                    <button
-                                                                        onClick={() => handleStatusUpdate('rejected')}
-                                                                        className="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
-                                                                    >
-                                                                        Deny
-                                                                    </button>
-                                                                </div>
-                                                            ) : (
-                                                                <div className="space-y-4">
-                                                                    <h4 className="text-white">Select Severity</h4>
-                                                                    <div className="flex flex-wrap gap-3">
+                                <TabView
+                                    tabs={[
+                                        {
+                                            id: 'details',
+                                            label: 'Report Details',
+                                            content: (
+                                                <ReportDetail
+                                                    report={selectedReport}
+                                                    isReviewer={true}
+                                                    onBasePaymentConfirm={handleBasePaymentConfirm}
+                                                    onAdditionalPaymentConfirm={handleAdditionalPaymentConfirm}
+                                                    onTelegramReveal={(title) => handleTelegramReveal(
+                                                        selectedReport._id as string,
+                                                        selectedReport.telegramHandle,
+                                                        title
+                                                    )}
+                                                    decryptedHandle={decryptedHandles[selectedReport._id as string]}
+                                                    onTelegramHide={() => handleTelegramHide(selectedReport._id as string)}
+                                                />
+                                            )
+                                        },
+                                        {
+                                            id: 'qa',
+                                            label: 'Questions & Answers',
+                                            content: (
+                                                <QuestionAnswer
+                                                    reportId={selectedReport._id?.toString() || ''}
+                                                    isReviewer={true}
+                                                />
+                                            )
+                                        },
+                                        {
+                                            id: 'votes',
+                                            label: 'Vote Details',
+                                            content: (
+                                                selectedReport.votes.length === 3 ? (
+                                                    <VoteDetailsTab
+                                                        report={selectedReport}
+                                                        isReviewer={true}
+                                                        currentUserAddress={user?.wallet?.address}
+                                                        showVoteActions={false}
+                                                    />
+                                                ) : (
+                                                    <div className="text-center py-8">
+                                                        <p className="text-gray-400 font-light">Vote details will be available once all reviewers have cast their votes.</p>
+                                                    </div>
+                                                )
+                                            )
+                                        },
+                                        {
+                                            id: 'cast-vote',
+                                            label: 'Cast Your Vote',
+                                            content: (
+                                                <div className="space-y-6">
+                                                    {!hasVoted(selectedReport) ? (
+                                                        <>
+                                                            <div className="space-y-4">
+                                                                <h3 className="text-white font-semibold">Review Decision</h3>
+                                                                {!showSeverity ? (
+                                                                    <div className="flex gap-4">
                                                                         <button
-                                                                            onClick={() => {
-                                                                                handleStatusUpdate('approved', 'high');
-                                                                                setShowSeverity(false);
-                                                                            }}
-                                                                            className="px-4 py-2 bg-red-500/20 text-red-400 rounded-lg hover:bg-red-500/30 transition-colors"
+                                                                            onClick={() => setShowSeverity(true)}
+                                                                            className="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
                                                                         >
-                                                                            High
+                                                                            Accept
                                                                         </button>
                                                                         <button
-                                                                            onClick={() => {
-                                                                                handleStatusUpdate('approved', 'medium');
-                                                                                setShowSeverity(false);
-                                                                            }}
-                                                                            className="px-4 py-2 bg-yellow-500/20 text-yellow-400 rounded-lg hover:bg-yellow-500/30 transition-colors"
+                                                                            onClick={() => handleStatusUpdate('rejected')}
+                                                                            className="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
                                                                         >
-                                                                            Medium
-                                                                        </button>
-                                                                        <button
-                                                                            onClick={() => {
-                                                                                handleStatusUpdate('approved', 'low');
-                                                                                setShowSeverity(false);
-                                                                            }}
-                                                                            className="px-4 py-2 bg-green-500/20 text-green-400 rounded-lg hover:bg-green-500/30 transition-colors"
-                                                                        >
-                                                                            Low
-                                                                        </button>
-                                                                        <button
-                                                                            onClick={() => setShowSeverity(false)}
-                                                                            className="px-4 py-2 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600 transition-colors"
-                                                                        >
-                                                                            Cancel
+                                                                            Deny
                                                                         </button>
                                                                     </div>
+                                                                ) : (
+                                                                    <div className="space-y-4">
+                                                                        <h4 className="text-white">Select Severity</h4>
+                                                                        <div className="flex flex-wrap gap-3">
+                                                                            <button
+                                                                                onClick={() => {
+                                                                                    handleStatusUpdate('approved', 'high');
+                                                                                    setShowSeverity(false);
+                                                                                }}
+                                                                                className="px-4 py-2 bg-red-500/20 text-red-400 rounded-lg hover:bg-red-500/30 transition-colors"
+                                                                            >
+                                                                                High
+                                                                            </button>
+                                                                            <button
+                                                                                onClick={() => {
+                                                                                    handleStatusUpdate('approved', 'medium');
+                                                                                    setShowSeverity(false);
+                                                                                }}
+                                                                                className="px-4 py-2 bg-yellow-500/20 text-yellow-400 rounded-lg hover:bg-yellow-500/30 transition-colors"
+                                                                            >
+                                                                                Medium
+                                                                            </button>
+                                                                            <button
+                                                                                onClick={() => {
+                                                                                    handleStatusUpdate('approved', 'low');
+                                                                                    setShowSeverity(false);
+                                                                                }}
+                                                                                className="px-4 py-2 bg-green-500/20 text-green-400 rounded-lg hover:bg-green-500/30 transition-colors"
+                                                                            >
+                                                                                Low
+                                                                            </button>
+                                                                            <button
+                                                                                onClick={() => setShowSeverity(false)}
+                                                                                className="px-4 py-2 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600 transition-colors"
+                                                                            >
+                                                                                Cancel
+                                                                            </button>
+                                                                        </div>
+                                                                    </div>
+                                                                )}
+                                                                
+                                                                <div className="space-y-2">
+                                                                    <label className="block text-white">Review Comment</label>
+                                                                    <textarea
+                                                                        value={comment}
+                                                                        onChange={(e) => setComment(e.target.value)}
+                                                                        placeholder="Enter your review comment..."
+                                                                        className="w-full bg-[#1A1B1E] text-white rounded-lg px-4 py-2 border border-gray-800 focus:border-[#4ECDC4] focus:outline-none"
+                                                                        rows={4}
+                                                                    />
                                                                 </div>
-                                                            )}
-                                                            
-                                                            <div className="space-y-2">
-                                                                <label className="block text-white">Review Comment</label>
-                                                                <textarea
-                                                                    value={comment}
-                                                                    onChange={(e) => setComment(e.target.value)}
-                                                                    placeholder="Enter your review comment..."
-                                                                    className="w-full bg-[#1A1B1E] text-white rounded-lg px-4 py-2 border border-gray-800 focus:border-[#4ECDC4] focus:outline-none"
-                                                                    rows={4}
-                                                                />
                                                             </div>
+                                                        </>
+                                                    ) : (
+                                                        <div className="text-center text-gray-400">
+                                                            You have already cast your vote for this report.
                                                         </div>
-                                                    </>
-                                                ) : (
-                                                    <div className="text-center text-gray-400">
-                                                        You have already cast your vote for this report.
-                                                    </div>
-                                                )}
-                                            </div>
-                                        )
-                                    }
-                                ]}
-                            />
+                                                    )}
+                                                </div>
+                                            )
+                                        }
+                                    ]}
+                                />
+                            </div>
                         </div>
                     </div>
                 )}
@@ -425,36 +455,53 @@ const ReviewerDashboard = () => {
 
             {/* Telegram Prompt Modal */}
             {showTelegramPrompt && (
-                <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50">
-                    <div className="bg-[#2C2D31] rounded-lg p-6 max-w-md w-full">
-                        <h3 className="text-white font-semibold mb-4">Enter Report Title to Connect</h3>
-                        <input
-                            type="text"
-                            value={titleInput}
-                            onChange={(e) => setTitleInput(e.target.value)}
-                            placeholder="Enter the report title"
-                            className="w-full bg-[#1A1B1E] text-white rounded-lg px-4 py-2 mb-4"
-                        />
-                        <div className="flex justify-end gap-3">
-                            <button
-                                onClick={() => {
-                                    setShowTelegramPrompt(false);
-                                    setTitleInput('');
-                                }}
-                                className="px-4 py-2 text-gray-400 hover:text-white"
-                            >
-                                Cancel
-                            </button>
-                            <button
-                                onClick={() => handleTelegramReveal(
-                                    selectedReport?._id?.toString() || "",
-                                    selectedReport?.telegramHandle || "",
-                                    selectedReport?.title || ""
-                                )}
-                                className="px-4 py-2 bg-[#4ECDC4] text-white rounded-lg hover:opacity-90"
-                            >
-                                Verify
-                            </button>
+                <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50 backdrop-blur-sm">
+                    <div className="rounded-lg p-6 max-w-md w-full relative overflow-hidden"
+                        style={{
+                            background: "#020C1099",
+                            border: "1px solid",
+                            backdropFilter: "blur(80px)",
+                            boxShadow: "0px 4px 50.5px 0px #96F1FF21 inset",
+                        }}
+                    >
+                        <div className="absolute inset-0 bg-gradient-to-b from-[#4ECDC4]/5 to-transparent opacity-30" />
+                        <div className="relative">
+                            <h3 className="text-[#B0E9FF] font-light text-xl mb-4">Enter Report Title to Connect</h3>
+                            <input
+                                type="text"
+                                value={titleInput}
+                                onChange={(e) => setTitleInput(e.target.value)}
+                                placeholder="Enter the report title"
+                                className="w-full bg-[#1A1B1E] text-white rounded-lg px-4 py-2 mb-4 border border-gray-800 focus:border-[#4ECDC4] focus:outline-none"
+                            />
+                            <div className="flex justify-end gap-3">
+                                <button
+                                    onClick={() => {
+                                        setShowTelegramPrompt(false);
+                                        setTitleInput('');
+                                    }}
+                                    className="px-4 py-2 text-gray-400 hover:text-[#4ECDC4] transition-colors"
+                                >
+                                    Cancel
+                                </button>
+                                <button
+                                    onClick={() => handleTelegramReveal(
+                                        selectedReport?._id?.toString() || "",
+                                        selectedReport?.telegramHandle || "",
+                                        selectedReport?.title || ""
+                                    )}
+                                    className="px-4 py-2 rounded-lg relative overflow-hidden group"
+                                    style={{
+                                        background: "#020C1099",
+                                        border: "1px solid",
+                                        backdropFilter: "blur(80px)",
+                                        boxShadow: "0px 4px 50.5px 0px #96F1FF21 inset",
+                                    }}
+                                >
+                                    <div className="absolute inset-0 bg-gradient-to-b from-[#4ECDC4]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                                    <span className="relative text-[#B0E9FF]">Verify</span>
+                                </button>
+                            </div>
                         </div>
                     </div>
                 </div>

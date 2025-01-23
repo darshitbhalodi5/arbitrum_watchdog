@@ -18,7 +18,9 @@ const ReportDetail = ({
     report,
     isReviewer,
     onKycVerify,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     onBasePaymentConfirm,
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     onAdditionalPaymentConfirm,
     onTelegramReveal,
     decryptedHandle,
@@ -38,6 +40,52 @@ const ReportDetail = ({
         } catch (error) {
             console.error('Error viewing file:', error);
             toast.error('Failed to view file');
+        }
+    };
+
+    const handleBasePaymentConfirm = async () => {
+        try {
+            const response = await fetch(`/api/reports/${report._id}/payment/base`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    reviewerAddress: user?.wallet?.address
+                })
+            });
+            if (!response.ok) throw new Error('Failed to confirm payment');
+            
+            // Update the report status locally
+            if (report && typeof report === 'object') {
+                report.basePaymentConfirmations = (report.basePaymentConfirmations || 0) + 1;
+            }
+            
+            toast.success('Base payment confirmed');
+        } catch (error) {
+            console.error('Error confirming payment:', error);
+            toast.error('Failed to confirm payment');
+        }
+    };
+
+    const handleAdditionalPaymentConfirm = async () => {
+        try {
+            const response = await fetch(`/api/reports/${report._id}/payment/additional`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    reviewerAddress: user?.wallet?.address
+                })
+            });
+            if (!response.ok) throw new Error('Failed to confirm additional payment');
+            
+            // Update the report status locally
+            if (report && typeof report === 'object') {
+                report.additionalPaymentConfirmations = (report.additionalPaymentConfirmations || 0) + 1;
+            }
+            
+            toast.success('Additional payment confirmed');
+        } catch (error) {
+            console.error('Error confirming additional payment:', error);
+            toast.error('Failed to confirm additional payment');
         }
     };
 
@@ -111,7 +159,7 @@ const ReportDetail = ({
                             v.reviewerAddress === user?.wallet?.address && v.basePaymentSent
                         ) && (
                             <button
-                                onClick={onBasePaymentConfirm}
+                                onClick={handleBasePaymentConfirm}
                                 className="px-3 py-1 bg-[#4ECDC4] text-white rounded-lg hover:opacity-90"
                             >
                                 Confirm Base Payment
@@ -124,7 +172,7 @@ const ReportDetail = ({
                             v.reviewerAddress === user?.wallet?.address && v.additionalPaymentSent
                         ) && (
                             <button
-                                onClick={onAdditionalPaymentConfirm}
+                                onClick={handleAdditionalPaymentConfirm}
                                 className="px-3 py-1 bg-[#4ECDC4] text-white rounded-lg hover:opacity-90"
                             >
                                 Confirm Additional Payment

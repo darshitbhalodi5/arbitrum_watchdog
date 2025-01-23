@@ -2,6 +2,8 @@ import mongoose, { Document } from 'mongoose';
 import { Vote } from '@/types/vote';
 
 interface IReport extends Document {
+    additionalPaymentConfirmations: number;
+    basePaymentConfirmations: number;
     _id: string;
     title: string;
     telegramHandle: string;

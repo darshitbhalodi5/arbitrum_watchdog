@@ -24,6 +24,7 @@ export default function QuestionAnswer({ reportId, isReviewer }: Props) {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [newQuestion, setNewQuestion] = useState('');
   const [newAnswer, setNewAnswer] = useState('');
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [selectedQuestion, setSelectedQuestion] = useState<Question | null>(null);
   const { user } = usePrivy();
 
@@ -45,28 +46,31 @@ export default function QuestionAnswer({ reportId, isReviewer }: Props) {
   }, [fetchQuestions]);
 
   const handleAskQuestion = async () => {
-    if (!newQuestion.trim()) return;
+    if (!newQuestion.trim()) {
+        toast.error('Please enter your question');
+        return;
+    }
 
     try {
-      const response = await fetch('/api/questions', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          reportId,
-          question: newQuestion,
-          askedBy: user?.wallet?.address,
-          isSubmitterQuestion: !isReviewer
-        })
-      });
+        const response = await fetch('/api/questions', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                reportId,
+                question: newQuestion,
+                askedBy: user?.wallet?.address,
+                isSubmitterQuestion: !isReviewer
+            }),
+        });
 
-      if (!response.ok) throw new Error('Failed to create question');
+        if (!response.ok) throw new Error('Failed to submit question');
 
-      setNewQuestion('');
-      toast.success('Question submitted successfully');
-      fetchQuestions();
+        setNewQuestion('');
+        fetchQuestions();
+        toast.success('Question submitted successfully');
     } catch (error) {
-      console.error('Error asking question:', error);
-      toast.error('Failed to submit question');
+        console.error('Error submitting question:', error);
+        toast.error('Failed to submit question');
     }
   };
 
@@ -111,6 +115,7 @@ export default function QuestionAnswer({ reportId, isReviewer }: Props) {
     }
   };
 
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const handleQuestionSelect = (question: Question) => {
     // For reviewers, allow selecting submitter questions to answer
     // For submitters, only allow selecting unanswered reviewer questions
@@ -128,6 +133,7 @@ export default function QuestionAnswer({ reportId, isReviewer }: Props) {
   };
 
   // Filter questions based on user role
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const filteredQuestions = questions.filter(q => 
     isReviewer ? 
       // For reviewers: show questions they asked or submitter questions
@@ -137,116 +143,96 @@ export default function QuestionAnswer({ reportId, isReviewer }: Props) {
   );
 
   return (
-    <div className="mt-6 border-t border-gray-800 pt-6">
-      <div className="flex items-center justify-between mb-4">
-        <h4 className="text-white font-semibold text-sm sm:text-base">Questions & Answers</h4>
-        {!isReviewer && filteredQuestions.some(q => !q.answer && !q.isRead && !q.isSubmitterQuestion) && (
-          <div className="flex items-center">
-            <span className="animate-pulse w-2 h-2 bg-[#FF6B6B] rounded-full mr-2"></span>
-            <span className="text-[#FF6B6B] text-sm">New questions</span>
-          </div>
-        )}
-      </div>
-      
-      {/* Chat Messages */}
-      <div className="space-y-4 mb-4 max-h-[400px] overflow-y-auto">
-        {filteredQuestions.map((q) => (
-          <div 
-            key={q._id} 
-            className={`p-3 rounded-lg ${
-              (isReviewer ? q.isSubmitterQuestion : !q.isSubmitterQuestion) && !q.answer
-                ? 'cursor-pointer hover:bg-[#4ECDC4]/5 border border-[#4ECDC4]/20'
-                : 'hover:bg-[#2C2D31]'
-            }`}
-            onClick={() => handleQuestionSelect(q)}
+    <div className="space-y-6">
+      {/* Question Input */}
+      <div className="space-y-4">
+        <div className="flex items-center justify-between">
+          <h3 className="text-lg font-light text-[#B0E9FF]">Any Doubts?</h3>
+        </div>
+        <div className="flex gap-3">
+          <input
+            type="text"
+            value={newQuestion}
+            onChange={(e) => setNewQuestion(e.target.value)}
+            placeholder="Type your question here..."
+            className="flex-1 bg-[#1A1B1E] text-white rounded-lg px-4 py-2 border border-gray-800 focus:border-[#4ECDC4] focus:outline-none"
+          />
+          <button
+            onClick={handleAskQuestion}
+            className="px-4 py-2 rounded-lg relative overflow-hidden group"
+            style={{
+              background: "#020C1099",
+              border: "1px solid",
+              backdropFilter: "blur(80px)",
+              boxShadow: "0px 4px 50.5px 0px #96F1FF21 inset",
+            }}
           >
-            {/* Question */}
-            <div className="flex items-start gap-3 justify-end mb-3">
-              <div className="bg-[#4ECDC4]/10 rounded-lg p-3 w-full">
-                <div className="flex items-start justify-between gap-2">
-                  <div>
-                    <p className="text-xs text-gray-500 mb-1">
-                      {isReviewer ? 
-                        (q.isSubmitterQuestion ? "Question from Submitter:" : "Your Question:") :
-                        (q.isSubmitterQuestion ? "Your Question:" : "Question from Reviewer:")}
-                    </p>
-                    <p className="text-[#4ECDC4] text-sm">{q.question}</p>
-                  </div>
-                  {!isReviewer && !q.answer && !q.isRead && !q.isSubmitterQuestion && (
-                    <span className="w-2 h-2 bg-[#FF6B6B] rounded-full flex-shrink-0 mt-1"></span>
-                  )}
-                </div>
-              </div>
-            </div>
-
-            {/* Answer (if exists) */}
-            {q.answer ? (
-              <div className="flex items-start gap-3 ml-6">
-                <div className="bg-[#1A1B1E] rounded-lg p-3 w-full border border-gray-800">
-                  <p className="text-xs text-gray-500 mb-1">
-                    {isReviewer ? 
-                      (q.isSubmitterQuestion ? "Your Answer:" : "Submitter's Answer:") :
-                      (q.isSubmitterQuestion ? "Reviewer's Answer:" : "Your Answer:")}
-                  </p>
-                  <p className="text-gray-300 text-sm">{q.answer}</p>
-                </div>
-              </div>
-            ) : (
-              (isReviewer && q.isSubmitterQuestion && selectedQuestion?._id === q._id) || 
-              (!isReviewer && !q.isSubmitterQuestion && selectedQuestion?._id === q._id) ? (
-                <div className="flex items-start gap-3 ml-6">
-                  <div className="bg-[#1A1B1E] rounded-lg p-3 w-full border border-gray-800 border-dashed">
-                    <p className="text-xs text-gray-500">Type your answer below</p>
-                  </div>
-                </div>
-              ) : null
-            )}
-          </div>
-        ))}
+            <div className="absolute inset-0 bg-gradient-to-b from-[#4ECDC4]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+            <span className="relative text-[#B0E9FF]">Ask</span>
+          </button>
+        </div>
       </div>
 
-      {/* Input Area */}
-      <div className="mt-4">
-        {selectedQuestion ? (
-          <div className="flex flex-col gap-2">
-            <div className="bg-[#1A1B1E] p-3 rounded-lg border border-gray-800">
-              <p className="text-sm text-gray-400 mb-1">Replying to:</p>
-              <p className="text-sm text-[#4ECDC4]">{selectedQuestion.question}</p>
-            </div>
-            <div className="flex gap-2">
-              <input
-                type="text"
-                value={newAnswer}
-                onChange={(e) => setNewAnswer(e.target.value)}
-                placeholder="Type your answer..."
-                className="flex-1 bg-[#1A1B1E] text-white rounded-lg px-4 py-2 border border-gray-800 focus:ring-2 focus:ring-[#4ECDC4] outline-none text-sm"
-                onKeyPress={(e) => e.key === 'Enter' && handleAnswerQuestion(selectedQuestion._id)}
-              />
-              <button
-                onClick={() => handleAnswerQuestion(selectedQuestion._id)}
-                className="px-4 py-2 bg-[#4ECDC4] text-white rounded-lg hover:opacity-90 text-sm"
-              >
-                Send
-              </button>
-            </div>
+      {/* Questions List */}
+      <div className="space-y-6">
+        {questions.length === 0 ? (
+          <div className="text-center py-8">
+            <p className="text-gray-400 font-light">No conversations yet. Start by asking a question.</p>
           </div>
         ) : (
-          <div className="flex gap-2">
-            <input
-              type="text"
-              value={newQuestion}
-              onChange={(e) => setNewQuestion(e.target.value)}
-              placeholder="Ask a question..."
-              className="flex-1 bg-[#1A1B1E] text-white rounded-lg px-4 py-2 border border-gray-800 focus:ring-2 focus:ring-[#4ECDC4] outline-none text-sm"
-              onKeyPress={(e) => e.key === 'Enter' && handleAskQuestion()}
-            />
-            <button
-              onClick={handleAskQuestion}
-              className="px-4 py-2 bg-[#4ECDC4] text-white rounded-lg hover:opacity-90 text-sm"
+          questions.map((question) => (
+            <div
+              key={question._id}
+              className="p-4 rounded-lg relative overflow-hidden"
+              style={{
+                background: "#020C1099",
+                border: "1px solid",
+                backdropFilter: "blur(80px)",
+                boxShadow: "0px 4px 50.5px 0px #96F1FF21 inset",
+              }}
             >
-              Send
-            </button>
-          </div>
+              <div className="absolute inset-0 bg-gradient-to-b from-[#4ECDC4]/5 to-transparent opacity-30" />
+              <div className="relative space-y-3">
+                <div className="flex justify-between items-start gap-4">
+                  <p className="text-[#B0E9FF] font-light">{question.question}</p>
+                  <span className="text-xs text-gray-400">
+                    {new Date(question.createdAt).toLocaleDateString()}
+                  </span>
+                </div>
+                
+                {question.answer && (
+                  <div className="pl-4 border-l-2 border-[#4ECDC4]/30">
+                    <p className="text-white font-light">{question.answer}</p>
+                  </div>
+                )}
+
+                {isReviewer && !question.answer && (
+                  <div className="space-y-2">
+                    <textarea
+                      value={newAnswer}
+                      onChange={(e) => setNewAnswer(e.target.value)}
+                      placeholder="Type your answer..."
+                      className="w-full bg-[#1A1B1E] text-white rounded-lg px-4 py-2 border border-gray-800 focus:border-[#4ECDC4] focus:outline-none"
+                      rows={2}
+                    />
+                    <button
+                      onClick={() => handleAnswerQuestion(question._id)}
+                      className="px-4 py-2 rounded-lg relative overflow-hidden group"
+                      style={{
+                        background: "#020C1099",
+                        border: "1px solid",
+                        backdropFilter: "blur(80px)",
+                        boxShadow: "0px 4px 50.5px 0px #96F1FF21 inset",
+                      }}
+                    >
+                      <div className="absolute inset-0 bg-gradient-to-b from-[#4ECDC4]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                      <span className="relative text-[#B0E9FF]">Submit Answer</span>
+                    </button>
+                  </div>
+                )}
+              </div>
+            </div>
+          ))
         )}
       </div>
     </div>

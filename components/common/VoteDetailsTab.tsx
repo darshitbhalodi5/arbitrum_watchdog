@@ -1,5 +1,5 @@
 import { IReport } from "@/models/Report";
-import { Vote } from "@/types/vote";
+// import { Vote } from "@/types/vote";
 
 interface VoteDetailsTabProps {
     report: IReport;
@@ -17,50 +17,61 @@ const VoteDetailsTab = ({ report, isReviewer, currentUserAddress, onVoteSubmit, 
 
     return (
         <div className="space-y-6">
-            {/* Vote Summary */}
-            <div className="bg-[#1A1B1E] rounded-lg p-4">
-                <h3 className="text-white font-semibold mb-4">Vote Summary</h3>
+            {report.votes.length === 0 ? (
+                <div className="text-center py-8">
+                    <p className="text-gray-400 font-light">No votes have been cast yet.</p>
+                </div>
+            ) : (
                 <div className="space-y-4">
-                    {report.votes.map((vote: Vote, index: number) => (
+                    {report.votes.map((vote, index) => (
                         <div
-                            key={vote._id}
-                            className={`p-4 rounded-lg ${
-                                vote.reviewerAddress === currentUserAddress
-                                    ? 'bg-[#4ECDC4]/10 border border-[#4ECDC4]/20'
-                                    : 'bg-[#2C2D31]'
-                            }`}
+                            key={index}
+                            className="p-4 rounded-lg relative overflow-hidden"
+                            style={{
+                                background: "#020C1099",
+                                border: "1px solid",
+                                backdropFilter: "blur(80px)",
+                                boxShadow: "0px 4px 50.5px 0px #96F1FF21 inset",
+                            }}
                         >
-                            <div className="flex items-center justify-between mb-2">
-                                <div className="flex items-center gap-2">
-                                    <span className="text-gray-400">Reviewer {index + 1}:</span>
-                                    <span className="text-white font-mono text-sm">
-                                        {vote.reviewerAddress.slice(0, 6)}...{vote.reviewerAddress.slice(-4)}
+                            <div className="absolute inset-0 bg-gradient-to-b from-[#4ECDC4]/5 to-transparent opacity-30" />
+                            <div className="relative space-y-3">
+                                <div className="flex justify-between items-start">
+                                    <div>
+                                        <p className="text-sm text-gray-400 font-mono mb-1">
+                                            {vote.reviewerAddress.slice(0, 6)}...{vote.reviewerAddress.slice(-4)}
+                                            {currentUserAddress === vote.reviewerAddress && " (You)"}
+                                        </p>
+                                        <div className="flex items-center gap-2">
+                                            <span className={`px-3 py-1 rounded-full text-xs ${
+                                                vote.vote === 'approved' ? 'bg-[#4ECDC4]/20 text-[#4ECDC4]' :
+                                                'bg-[#FF6B6B]/20 text-[#FF6B6B]'
+                                            }`}>
+                                                {vote.vote.charAt(0).toUpperCase() + vote.vote.slice(1)}
+                                            </span>
+                                            {vote.severity && (
+                                                <span className={`px-3 py-1 rounded-full text-xs ${
+                                                    vote.severity === 'high' ? 'bg-[#FF6B6B]/20 text-[#FF6B6B]' :
+                                                    vote.severity === 'medium' ? 'bg-yellow-500/20 text-yellow-400' :
+                                                    'bg-[#4ECDC4]/20 text-[#4ECDC4]'
+                                                }`}>
+                                                    {vote.severity.charAt(0).toUpperCase() + vote.severity.slice(1)}
+                                                </span>
+                                            )}
+                                        </div>
+                                    </div>
+                                    <span className="text-xs text-gray-400">
+                                        {new Date(vote.timestamp).toLocaleDateString()}
                                     </span>
                                 </div>
-                                <span
-                                    className={`px-2 py-1 rounded-full text-xs ${
-                                        vote.vote === 'approved'
-                                            ? 'bg-green-500/20 text-green-400'
-                                            : 'bg-red-500/20 text-red-400'
-                                    }`}
-                                >
-                                    {vote.vote.charAt(0).toUpperCase() + vote.vote.slice(1)}
-                                </span>
+                                {vote.reviewerComment && (
+                                    <p className="text-[#B0E9FF] font-light text-sm">{vote.reviewerComment}</p>
+                                )}
                             </div>
-                            {vote.severity && (
-                                <div className="text-sm text-gray-400 mb-2">
-                                    Severity: {vote.severity.charAt(0).toUpperCase() + vote.severity.slice(1)}
-                                </div>
-                            )}
-                            {vote.reviewerComment && (
-                                <div className="text-sm text-gray-300">
-                                    Comment: {vote.reviewerComment}
-                                </div>
-                            )}
                         </div>
                     ))}
                 </div>
-            </div>
+            )}
 
             {/* Vote Actions - Only show for reviewers who haven't voted */}
             {showVoteActions && isReviewer && !hasVoted(report) && onVoteSubmit && (

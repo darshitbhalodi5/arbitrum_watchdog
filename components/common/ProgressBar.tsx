@@ -1,14 +1,39 @@
 import { Vote } from "@/types/vote";
 import { ProgressBarProps } from "@/types/progressbar"
+import { toast } from "react-hot-toast";
 
 const ProgressBar = ({ report, onKycVerify, isSubmitter }: ProgressBarProps) => {
+    const handleKycVerify = async () => {
+        try {
+            const response = await fetch(`/api/reports/${report._id}/kyc`, {
+                method: "POST"
+            });
+            if (!response.ok) throw new Error("Failed to verify KYC");
+            
+            // Update the report status locally
+            if (report && typeof report === 'object') {
+                report.kycStatus = 'completed';
+            }
+            
+            toast.success("KYC verification completed");
+            
+            // Call the onKycVerify callback if provided
+            if (onKycVerify) {
+                await onKycVerify();
+            }
+        } catch (error) {
+            console.error("Error verifying KYC:", error);
+            toast.error("Failed to verify KYC");
+        }
+    };
+
     const steps = [
         {
             title: 'KYC Verification',
             status: report.kycStatus,
             action: isSubmitter ? (
                 <button
-                    onClick={onKycVerify}
+                    onClick={handleKycVerify}
                     disabled={report.kycStatus === 'completed'}
                     className={`px-3 py-1 rounded-lg text-sm ${
                         report.kycStatus === 'completed'
