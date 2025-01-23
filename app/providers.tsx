@@ -42,7 +42,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
         appearance: {
           theme: "dark",
           accentColor: themeColors.primary as `#${string}`,
-          logo: "https://your-logo-url.com/logo.png",
+          logo: "./favicon.ico",
           walletList: [
             "metamask",
             "rainbow",

@@ -23,9 +23,7 @@ interface Props {
 export default function QuestionAnswer({ reportId, isReviewer }: Props) {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [newQuestion, setNewQuestion] = useState('');
-  const [newAnswer, setNewAnswer] = useState('');
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [selectedQuestion, setSelectedQuestion] = useState<Question | null>(null);
+  const [answerMap, setAnswerMap] = useState<{ [key: string]: string }>({});
   const { user } = usePrivy();
 
   const fetchQuestions = useCallback(async () => {
@@ -75,14 +73,18 @@ export default function QuestionAnswer({ reportId, isReviewer }: Props) {
   };
 
   const handleAnswerQuestion = async (questionId: string) => {
-    if (!newAnswer.trim()) return;
+    const answer = answerMap[questionId];
+    if (!answer?.trim()) {
+      toast.error('Please enter your answer');
+      return;
+    }
 
     try {
       const response = await fetch(`/api/questions/${questionId}`, {
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          answer: newAnswer,
+          answer,
           answeredBy: user?.wallet?.address,
           notifiedReviewers: []
         })
@@ -90,8 +92,11 @@ export default function QuestionAnswer({ reportId, isReviewer }: Props) {
 
       if (!response.ok) throw new Error('Failed to submit answer');
 
-      setNewAnswer('');
-      setSelectedQuestion(null);
+      setAnswerMap(prev => {
+        const newMap = { ...prev };
+        delete newMap[questionId];
+        return newMap;
+      });
       toast.success('Answer submitted successfully');
       fetchQuestions();
     } catch (error) {
@@ -100,47 +105,27 @@ export default function QuestionAnswer({ reportId, isReviewer }: Props) {
     }
   };
 
-  const markQuestionAsRead = async (questionId: string) => {
-    try {
-      await fetch(`/api/questions/${questionId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ 
-          markAsRead: true,
-          notifiedReviewers: user?.wallet?.address ? [user.wallet.address] : []
-        })
-      });
-    } catch (error) {
-      console.error('Error marking question as read:', error);
+  const canAnswerQuestion = (question: Question) => {
+    if (isReviewer) {
+      return question.isSubmitterQuestion && !question.answer;
+    } else {
+      return !question.isSubmitterQuestion && !question.answer;
     }
   };
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const handleQuestionSelect = (question: Question) => {
-    // For reviewers, allow selecting submitter questions to answer
-    // For submitters, only allow selecting unanswered reviewer questions
-    if ((isReviewer && question.isSubmitterQuestion && !question.answer) || (!isReviewer && !question.isSubmitterQuestion && !question.answer)) {
-      setSelectedQuestion(question);
-      if (!question.isRead) {
-        markQuestionAsRead(question._id);
-        setQuestions(prevQuestions => 
-          prevQuestions.map(q => 
-            q._id === question._id ? { ...q, isRead: true } : q
-          )
-        );
-      }
+  const getQuestionLabel = (question: Question) => {
+    if (question.askedBy === user?.wallet?.address) {
+      return 'Your Question';
     }
+    return question.isSubmitterQuestion ? 'Asked by Submitter' : 'Asked by Reviewer';
   };
 
-  // Filter questions based on user role
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const filteredQuestions = questions.filter(q => 
-    isReviewer ? 
-      // For reviewers: show questions they asked or submitter questions
-      q.askedBy === user?.wallet?.address || q.isSubmitterQuestion :
-      // For submitters: show questions from reviewers or their own questions
-      !q.isSubmitterQuestion || q.askedBy === user?.wallet?.address
-  );
+  const getAnswerLabel = (question: Question) => {
+    if (question.answeredBy === user?.wallet?.address) {
+      return 'Your Answer';
+    }
+    return question.isSubmitterQuestion ? 'Answered by Reviewer' : 'Answered by Submitter';
+  };
 
   return (
     <div className="space-y-6">
@@ -194,7 +179,10 @@ export default function QuestionAnswer({ reportId, isReviewer }: Props) {
               <div className="absolute inset-0 bg-gradient-to-b from-[#4ECDC4]/5 to-transparent opacity-30" />
               <div className="relative space-y-3">
                 <div className="flex justify-between items-start gap-4">
-                  <p className="text-[#B0E9FF] font-light">{question.question}</p>
+                  <div>
+                    <span className="text-xs text-[#4ECDC4] mb-1 block">{getQuestionLabel(question)}</span>
+                    <p className="text-[#B0E9FF] font-light">{question.question}</p>
+                  </div>
                   <span className="text-xs text-gray-400">
                     {new Date(question.createdAt).toLocaleDateString()}
                   </span>
@@ -202,15 +190,16 @@ export default function QuestionAnswer({ reportId, isReviewer }: Props) {
                 
                 {question.answer && (
                   <div className="pl-4 border-l-2 border-[#4ECDC4]/30">
+                    <span className="text-xs text-[#4ECDC4] mb-1 block">{getAnswerLabel(question)}</span>
                     <p className="text-white font-light">{question.answer}</p>
                   </div>
                 )}
 
-                {isReviewer && !question.answer && (
+                {canAnswerQuestion(question) && (
                   <div className="space-y-2">
                     <textarea
-                      value={newAnswer}
-                      onChange={(e) => setNewAnswer(e.target.value)}
+                      value={answerMap[question._id] || ''}
+                      onChange={(e) => setAnswerMap(prev => ({ ...prev, [question._id]: e.target.value }))}
                       placeholder="Type your answer..."
                       className="w-full bg-[#1A1B1E] text-white rounded-lg px-4 py-2 border border-gray-800 focus:border-[#4ECDC4] focus:outline-none"
                       rows={2}

@@ -3,16 +3,20 @@ import { VoteDetailsProps } from "@/types/vote"
 const VoteDetails = ({ votes, report, showAll, currentUserAddress }: VoteDetailsProps) => {
     const votesToDisplay = report?.votes || votes || [];
 
-    if (votesToDisplay.length === 0) {
-        return null;
-    }
-
     // Filter votes if not showing all and currentUserAddress is provided
     const filteredVotes = showAll 
         ? votesToDisplay 
         : currentUserAddress 
             ? votesToDisplay.filter(vote => vote.reviewerAddress === currentUserAddress)
             : votesToDisplay;
+
+    if (votesToDisplay.length === 0) {
+        return (
+            <div className="mt-4 p-4 rounded-lg bg-[#1A1B1E] border border-gray-800">
+                <p className="text-gray-400 text-center">No votes have been submitted yet.</p>
+            </div>
+        );
+    }
 
     if (filteredVotes.length === 0) return null;
 
