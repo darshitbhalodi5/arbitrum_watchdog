@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { usePrivy } from "@privy-io/react-auth";
 import ReviewerDashboard from "@/components/reviewer/ReviewerDashboard";
-import Navbar from "@/components/Navbar";
+import Navbar from "@/components/common/Navbar"
 import Loading from "@/components/Loader";
 
 export default function ReviewerPage() {

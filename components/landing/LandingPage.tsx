@@ -12,6 +12,7 @@ import DownArrow from "@/public/assets/low.png";
 import SpiralImage from "@/public/assets/spiral.png";
 import ActionSection from "@/public/assets/action.png";
 import HeroBg from "@/public/assets/background.png";
+import Arrow from "@/public/assets/arrow.png";
 
 interface LandingPageProps {
   onRoleSelect: (role: "reviewer" | "submitter") => void;
@@ -42,11 +43,27 @@ export default function LandingPage({ onRoleSelect }: LandingPageProps) {
         <div className="flex-1 flex items-center justify-center">
           <section className="w-full text-center relative z-10">
             <div className="w-[90%] mx-auto max-w-6xl">
-              <h1 className="text-6xl md:text-8xl font-light mb-4 font-primary tracking-wider text-transparent bg-clip-text bg-gradient-to-b from-white to-gray-400">
+              <h1
+                className="text-6xl md:text-8xl font-light mb-4 font-primary tracking-wider text-transparent bg-clip-text bg-gradient-to-b from-[#ffffff] to-[#000000]"
+                style={{
+                  backgroundImage:
+                    "linear-gradient(179.21deg, #FFFFFF 17.3%, #000000 168.94%)",
+                }}
+              >
                 Welcome to Truence
               </h1>
-              <div className="bg-[#1A1B1E]/30 backdrop-blur-xl rounded-full px-8 py-3 inline-block mb-16 border border-[#4ECDC4]/10">
-                <p className="text-gray-400 text-sm">Protecting the Integrity of DAO Funds</p>
+              <div
+                className="rounded-full px-8 py-3 inline-block mb-16"
+                style={{
+                  border: "0.5px solid #FAFFC8A6",
+                  background: "#00000052",
+                  boxShadow: "0px 4px 29.8px 0px #FFFFFF33 inset",
+                  backdropFilter: "blur(20px)", // Optional if needed
+                }}
+              >
+                <p className="text-[#FFFAD1] text-sm">
+                  Protecting the Integrity of DAO Funds
+                </p>
               </div>
 
               {/* Login Options */}
@@ -54,19 +71,28 @@ export default function LandingPage({ onRoleSelect }: LandingPageProps) {
                 {["reviewer", "submitter"].map((role) => (
                   <div
                     key={role}
-                    onClick={() => onRoleSelect(role as "reviewer" | "submitter")}
+                    onClick={() =>
+                      onRoleSelect(role as "reviewer" | "submitter")
+                    }
                     className="rounded-lg overflow-hidden relative cursor-pointer group"
                     style={{
-                      background: "linear-gradient(180deg, rgba(6, 26, 34, 0.4) 0%, rgba(12, 75, 100, 0.2) 100%)",
+                      background:
+                        "linear-gradient(180deg, rgba(6, 26, 34, 0.4) 0%, rgba(12, 75, 100, 0.2) 100%)",
                       backdropFilter: "blur(20px)",
                     }}
                   >
                     <div className="absolute inset-0 bg-gradient-to-b from-[#4ECDC4]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                     <div className="p-8 text-left relative">
-                      <h3 className="text-xl mb-3 font-light">
-                        Login as {role.charAt(0).toUpperCase() + role.slice(1)}
-                      </h3>
-                      <p className="text-gray-400 text-sm mb-6 leading-relaxed">
+                      <div className="flex items-center justify-between mb-3">
+                        <h3 className="text-xl text-[#B0E9FF] font-medium">
+                          Login as{" "}
+                          {role.charAt(0).toUpperCase() + role.slice(1)}
+                        </h3>
+                        <div className="text-gray-400 group-hover:translate-x-1 group-hover:translate-y-1 transition-transform duration-300">
+                          <Image src={Arrow} alt="Arrow Icon" />
+                        </div>
+                      </div>
+                      <p className="text-[#ffffff] text-sm mb-6 leading-relaxed">
                         {role === "reviewer"
                           ? "Review and validate submitted content. Only authorized reviewer wallets can access this role."
                           : "Submit content for review. Reviewer wallets cannot access this role."}
@@ -86,8 +112,9 @@ export default function LandingPage({ onRoleSelect }: LandingPageProps) {
               </div>
 
               {/* Note text */}
-              <p className="text-gray-500 text-sm mt-6">
-                Note: Each wallet can only be used for one role. Reviewer wallets cannot submit reports.
+              <p className="text-[#CDFFFA] text-sm mt-6">
+                Note: Each wallet can only be used for one role. Reviewer
+                wallets cannot submit reports.
               </p>
             </div>
           </section>
@@ -99,13 +126,21 @@ export default function LandingPage({ onRoleSelect }: LandingPageProps) {
         <div className="w-[90%] mx-auto max-w-6xl">
           <div className="flex flex-col md:flex-row items-center justify-between gap-12">
             <div className="md:w-1/2">
-              <h2 className="text-4xl sm:text-5xl mb-6 font-primary font-light text-transparent bg-clip-text bg-gradient-to-r from-[#4ECDC4] to-[#FFFAE0]">
+              <h2
+                className="text-4xl sm:text-5xl mb-6 font-primary font-light text-transparent bg-clip-text"
+                style={{
+                  backgroundImage:
+                    "linear-gradient(179.48deg, #FBFCA4 17.14%, #FFFFFF 135.08%)",
+                }}
+              >
                 The Mission
               </h2>
-              <p className="text-gray-400 text-lg leading-relaxed">
-                The Arbitrum DAO has distributed over $50 million ARB tokens to fund ecosystem initiatives. However,
-                there have been instances of misused tokens and we need accountability to ensure the long-term success
-                of the DAO. The Truence Program incentivizes the community to protect DAO funds and to identify grant
+              <p className="text-[#ffffff] text-lg leading-relaxed">
+                The Arbitrum DAO has distributed over $50 million ARB tokens to
+                fund ecosystem initiatives. However, there have been instances
+                of misused tokens and we need accountability to ensure the
+                long-term success of the DAO. The Truence Program incentivizes
+                the community to protect DAO funds and to identify grant
                 spending misuse or fraud.
               </p>
             </div>
@@ -125,12 +160,20 @@ export default function LandingPage({ onRoleSelect }: LandingPageProps) {
       </section>
 
       {/* What is Truence Section */}
-
-      {/* What is Truence Section */}
       <section className="py-24 px-4 bg-[#000203]">
         <div className="w-[90%] mx-auto max-w-6xl">
-          <h2 className="text-4xl sm:text-5xl mb-6 font-primary font-light text-[#4ECDC4]">What is Truence ?</h2>
-          <p className="text-gray-400 mb-16 text-lg">Truence is a grant misuse bounty program designed to:</p>
+          <h2
+            className="text-4xl sm:text-5xl mb-6 font-primary font-light text-transparent bg-clip-text"
+            style={{
+              backgroundImage:
+                "linear-gradient(179.48deg, #C3FEF8 17.14%, #D8D8D8 117.32%)",
+            }}
+          >
+            What is Truence ?
+          </h2>
+          <p className="text-[#ffffff] mb-16 text-lg">
+            Truence is a grant misuse bounty program designed to:
+          </p>
           <div className="grid md:grid-cols-2 gap-16">
             {[
               {
@@ -143,7 +186,14 @@ export default function LandingPage({ onRoleSelect }: LandingPageProps) {
               },
             ].map((item, index) => (
               <div key={index} className="flex flex-col items-start">
-                <div className="w-24 h-24 rounded-full relative flex items-center justify-center mb-8 group bg-gradient-to-b from-[rgba(6,26,34,0.08)] to-[rgba(12,75,100,0.2)] backdrop-blur-xl border border-[#4ECDC4]/20">
+                <div
+                  className="w-24 h-24 rounded-full relative flex items-center justify-center mb-8 group bg-gradient-to-b from-[rgba(6,26,34,0.08)] to-[rgba(12,75,100,0.2)] backdrop-blur-xl"
+                  style={{
+                    border: "0.5px solid #CCFFFD",
+                    background: "#09181B",
+                    boxShadow: "0px 4px 12px 0px #FFFFFF33 inset",
+                  }}
+                >
                   <div className="w-8 h-8 opacity-90">
                     <Image
                       src={item.icon || "/placeholder.svg"}
@@ -154,33 +204,43 @@ export default function LandingPage({ onRoleSelect }: LandingPageProps) {
                     />
                   </div>
                 </div>
-                <p className="text-gray-400 text-lg leading-relaxed">{item.text}</p>
+                <p className="text-[#ffffff] text-lg leading-relaxed">
+                  {item.text}
+                </p>
               </div>
             ))}
           </div>
         </div>
       </section>
-      
+
       {/* How It Works Section */}
       <section className="py-24 px-4 bg-[#000203]">
         <div className="w-[90%] mx-auto max-w-6xl">
-          <h2 className="text-4xl sm:text-5xl mb-24 text-[#FFFAE0] font-light font-primary">How It Works</h2>
+          <h2
+            className="text-4xl sm:text-5xl mb-24 font-light font-primary bg-clip-text text-transparent"
+            style={{
+              backgroundImage:
+                "linear-gradient(179.48deg, #FBFCA4 17.14%, #FFFFFF 135.08%)",
+            }}
+          >
+            How It Works
+          </h2>
           <div className="grid md:grid-cols-3 gap-16 relative">
             {/* Connecting Lines */}
             <div className="hidden md:block absolute top-[22px] w-full">
-              {/* Line between Step 1 and 2 */}
               <div
                 className="absolute left-[33%] right-[67%] h-[2px]"
                 style={{
-                  background: "linear-gradient(90deg, rgba(78, 205, 196, 0.2) 0%, #4ECDC4 100%)",
+                  background:
+                    "linear-gradient(90deg, rgba(78, 205, 196, 0.2) 0%, #4ECDC4 100%)",
                   boxShadow: "0 0 20px rgba(78, 205, 196, 0.4)",
                 }}
               ></div>
-              {/* Line between Step 2 and 3 */}
               <div
                 className="absolute left-[67%] right-[33%] h-[2px]"
                 style={{
-                  background: "linear-gradient(90deg, #4ECDC4 0%, rgba(78, 205, 196, 0.2) 100%)",
+                  background:
+                    "linear-gradient(90deg, #4ECDC4 0%, rgba(78, 205, 196, 0.2) 100%)",
                   boxShadow: "0 0 20px rgba(78, 205, 196, 0.4)",
                 }}
               ></div>
@@ -190,7 +250,8 @@ export default function LandingPage({ onRoleSelect }: LandingPageProps) {
               {
                 step: "Step 1",
                 title: "Submit a Report",
-                description: "Confidentially report evidence-based misuse of DAO funds.",
+                description:
+                  "Confidentially report evidence-based misuse of DAO funds.",
               },
               {
                 step: "Step 2",
@@ -206,9 +267,21 @@ export default function LandingPage({ onRoleSelect }: LandingPageProps) {
               },
             ].map((item, index) => (
               <div key={index} className="text-left relative">
-                <span className="text-[#4ECDC4] text-sm font-light mb-6 block">{item.step}</span>
-                <h4 className="text-2xl mb-4 font-light text-white">{item.title}</h4>
-                <p className="text-gray-400 text-base leading-relaxed">{item.description}</p>
+                <span className="text-[#ffffff] text-sm font-light mb-6 block">
+                  {item.step}
+                </span>
+                <h4
+                  className="text-2xl mb-4 font-light bg-clip-text text-transparent"
+                  style={{
+                    backgroundImage:
+                      "linear-gradient(179.48deg, #FBFCA4 17.14%, #FFFFFF 135.08%)",
+                  }}
+                >
+                  {item.title}
+                </h4>
+                <p className="text-[#ffffff] text-base leading-relaxed">
+                  {item.description}
+                </p>
               </div>
             ))}
           </div>
@@ -218,18 +291,28 @@ export default function LandingPage({ onRoleSelect }: LandingPageProps) {
       {/* Why Truence Matters Section */}
       <section className="py-24 px-4 bg-[#000203]">
         <div className="w-[90%] mx-auto max-w-6xl">
-          <h2 className="text-4xl sm:text-5xl mb-12 text-[#FFFAE0] font-light font-primary">Why Truence Matters</h2>
+          <h2
+            className="text-4xl sm:text-5xl mb-12 font-light font-primary text-transparent bg-clip-text"
+            style={{
+              backgroundImage:
+                "linear-gradient(179.48deg, #C3FEF8 17.14%, #D8D8D8 117.32%)",
+            }}
+          >
+            Why Truence Matters
+          </h2>
           <div className="grid md:grid-cols-3 gap-8">
             {[
               {
                 image: RecoverSection,
                 title: "Recover Misused Funds",
-                description: "Strengthen DAO finances by identifying and recovering misallocated resources.",
+                description:
+                  "Strengthen DAO finances by identifying and recovering misallocated resources.",
               },
               {
                 image: PreventSection,
                 title: "Prevent Misconduct",
-                description: "Transparent reporting and public accountability deter bad actors.",
+                description:
+                  "Transparent reporting and public accountability deter bad actors.",
               },
               {
                 image: EmpowerSection,
@@ -249,25 +332,46 @@ export default function LandingPage({ onRoleSelect }: LandingPageProps) {
                       className="object-contain"
                     />
                   </div>
-                  <h3 className="text-[#4ECDC4] text-xl font-light mb-3">{card.title}</h3>
-                  <p className="text-gray-400 text-sm leading-relaxed">{card.description}</p>
+                  <h3 className="text-[#B0E9FF] text-xl font-light mb-3">
+                    {card.title}
+                  </h3>
+                  <p className="text-[#ffffff] text-sm leading-relaxed">
+                    {card.description}
+                  </p>
                 </div>
               </div>
             ))}
           </div>
         </div>
       </section>
-      
-      {/* Reward Structure Section */}
 
       {/* Reward Structure Section */}
       <section className="py-24 px-4 bg-gradient-to-b from-[#000203] to-[#011116]">
         <div className="w-[90%] mx-auto max-w-6xl">
-          <h2 className="text-4xl sm:text-5xl mb-4 text-[#FFFAE0] font-light font-primary">Reward Structure</h2>
-          <div className="bg-[#1A1B1E]/30 rounded-full px-8 py-3 inline-block mb-16 border border-[#4ECDC4]/10">
-            <p className="text-gray-400 text-sm">Community members are rewarded based on the severity of the misuse</p>
+          <h2
+            className="text-4xl sm:text-5xl mb-4 text-[#FFFAE0] font-light font-primary text-center bg-clip-text text-transparent"
+            style={{
+              backgroundImage:
+                "linear-gradient(179.48deg, #FBFCA4 17.14%, #FFFFFF 135.08%)",
+            }}
+          >
+            Reward Structure
+          </h2>
+          <div className="flex justify-center items-center">
+            <div
+              className="bg-[#1A1B1E]/30 rounded-full px-8 py-3 inline-block mb-16 border border-[#4ECDC4]/10"
+              style={{
+                background: "#00000052",
+                border: "0.5px solid #FAFFC8A6",
+                boxShadow: "0px 4px 29.8px 0px #FFFFFF33 inset",
+              }}
+            >
+              <p className="text-[#FFFAD1] text-sm">
+                Community members are rewarded based on the severity of the
+                misuse
+              </p>
+            </div>
           </div>
-
           <div className="relative flex justify-center items-center min-h-[600px]">
             <div className="absolute inset-0 flex items-center justify-center">
               <Image
@@ -302,29 +406,44 @@ export default function LandingPage({ onRoleSelect }: LandingPageProps) {
                 cap: "of recovered funds (capped at $10k)",
               },
             ].map((item, index) => (
-              <div key={index} className={`absolute ${item.position} flex items-start gap-2`}>
-                <Image
-                  src={item.icon || "/placeholder.svg"}
-                  alt="Severity Icon"
-                  width={20}
-                  height={20}
-                  className="mt-1"
-                />
+              <div
+                key={index}
+                className={`absolute ${item.position} flex flex-col items-start justify-center gap-2`}
+              >
+                <div
+                  className="w-8 h-8 flex items-center justify-center bg-[#00000052] border-0.5 border-solid border-[#FAFFC8A6] shadow-[0px_4px_29.8px_0px_#FFFFFF33_inset]"
+                >
+                  <Image
+                    src={item.icon || "/placeholder.svg"}
+                    alt="Severity Icon"
+                    width={20}
+                    height={20}
+                    className="mt-1"
+                  />
+                </div>
                 <div className="text-left">
-                  <h3 className="text-lg font-light mb-1">{item.title}</h3>
-                  <p className="text-[#4ECDC4] text-xl font-light mb-1">{item.reward}</p>
-                  <p className="text-xs text-gray-400">{item.cap}</p>
+                  <h3
+                    className="text-lg font-light mb-1 text-transparent bg-clip-text"
+                    style={{
+                      backgroundImage:
+                        "linear-gradient(179.48deg, #FBFCA4 17.14%, #FFFFFF 135.08%)",
+                    }}
+                  >
+                    {item.title}
+                  </h3>
+                  <p className="text-[#ffffff] text-xl font-light mb-1">
+                    {item.reward}
+                  </p>
+                  <p className="text-xs text-[#ffffff]">{item.cap}</p>
                 </div>
               </div>
             ))}
           </div>
         </div>
       </section>
-      
-      {/* Call to Action Section */}
 
-            {/* Call to Action Section */}
-            <section className="py-24 px-4">
+      {/* Call to Action Section */}
+      <section className="py-24 px-4">
         <div className="w-[90%] max-w-4xl mx-auto relative">
           <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[500px] opacity-80 pointer-events-none">
             <Image
@@ -338,10 +457,13 @@ export default function LandingPage({ onRoleSelect }: LandingPageProps) {
 
           <div className="rounded-2xl overflow-hidden relative bg-gradient-to-b from-[rgba(6,26,34,0.2)] to-[rgba(12,75,100,0.1)] backdrop-blur-xl border border-[#4ECDC4]/10">
             <div className="px-8 py-12 text-center relative bg-gradient-to-b from-[rgba(6,26,34,0.05)] to-[rgba(12,75,100,0.025)]">
-              <h2 className="text-4xl sm:text-5xl mb-4 font-light text-white">Ready to take action?</h2>
+              <h2 className="text-4xl sm:text-5xl mb-4 font-light text-white">
+                Ready to take action?
+              </h2>
               <p className="text-gray-400 text-lg max-w-2xl mx-auto">
-                Submit a report, help us recover misused funds, and earn your rewards! Together, we can ensure Arbitrum
-                DAO funds are used for the betterment of the ecosystem.
+                Submit a report, help us recover misused funds, and earn your
+                rewards! Together, we can ensure Arbitrum DAO funds are used for
+                the betterment of the ecosystem.
               </p>
             </div>
           </div>
