@@ -1,7 +1,34 @@
 import { VoteDetailsProps } from "@/types/vote"
+import { useEffect, useState } from "react";
+
+interface VoteCount {
+    approved: number;
+    rejected: number;
+    total: number;
+}
 
 const VoteDetails = ({ votes, report, showAll, currentUserAddress }: VoteDetailsProps) => {
     const votesToDisplay = report?.votes || votes || [];
+    const [voteCount, setVoteCount] = useState<VoteCount>({
+        approved: 0,
+        rejected: 0,
+        total: 0
+    });
+
+    useEffect(() => {
+        // Calculate vote counts
+        const counts = votesToDisplay.reduce((acc, vote) => {
+            if (vote.vote === 'approved') {
+                acc.approved += 1;
+            } else if (vote.vote === 'rejected') {
+                acc.rejected += 1;
+            }
+            acc.total += 1;
+            return acc;
+        }, { approved: 0, rejected: 0, total: 0 });
+
+        setVoteCount(counts);
+    }, [votesToDisplay]);
 
     // Filter votes if not showing all and currentUserAddress is provided
     const filteredVotes = showAll 
@@ -22,6 +49,26 @@ const VoteDetails = ({ votes, report, showAll, currentUserAddress }: VoteDetails
 
     return (
         <div className="mt-4 space-y-3">
+            {/* Vote Summary */}
+            <div className="bg-[#1A1B1E] rounded-lg p-4 border border-gray-800">
+                <h4 className="text-white font-semibold text-sm sm:text-base mb-3">Vote Summary</h4>
+                <div className="grid grid-cols-3 gap-4">
+                    <div className="text-center">
+                        <p className="text-sm text-gray-400">Total Votes</p>
+                        <p className="text-xl font-semibold text-white">{voteCount.total}</p>
+                    </div>
+                    <div className="text-center">
+                        <p className="text-sm text-gray-400">Approved</p>
+                        <p className="text-xl font-semibold text-green-400">{voteCount.approved}</p>
+                    </div>
+                    <div className="text-center">
+                        <p className="text-sm text-gray-400">Rejected</p>
+                        <p className="text-xl font-semibold text-red-400">{voteCount.rejected}</p>
+                    </div>
+                </div>
+            </div>
+
+            {/* Vote List */}
             <h4 className="text-white font-semibold text-sm sm:text-base">
                 {showAll ? 'All Votes' : 'Your Vote'}
             </h4>

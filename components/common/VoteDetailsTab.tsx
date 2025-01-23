@@ -40,7 +40,7 @@ const VoteDetailsTab = ({ report, isReviewer, currentUserAddress, onVoteSubmit, 
                                     <div>
                                         <p className="text-sm text-gray-400 font-mono mb-1">
                                             {vote.reviewerAddress.slice(0, 6)}...{vote.reviewerAddress.slice(-4)}
-                                            {currentUserAddress === vote.reviewerAddress && " (You)"}
+                                            {currentUserAddress === vote.reviewerAddress && " (Your Vote)"}
                                         </p>
                                         <div className="flex items-center gap-2">
                                             <span className={`px-3 py-1 rounded-full text-xs ${
@@ -60,9 +60,6 @@ const VoteDetailsTab = ({ report, isReviewer, currentUserAddress, onVoteSubmit, 
                                             )}
                                         </div>
                                     </div>
-                                    <span className="text-xs text-gray-400">
-                                        {new Date(vote.timestamp).toLocaleDateString()}
-                                    </span>
                                 </div>
                                 {vote.reviewerComment && (
                                     <p className="text-[#B0E9FF] font-light text-sm">{vote.reviewerComment}</p>

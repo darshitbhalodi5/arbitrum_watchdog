@@ -23,10 +23,17 @@ interface Question {
     notifiedReviewers?: string[];
 }
 
+interface VoteCount {
+    approved: number;
+    rejected: number;
+    total: number;
+}
+
 interface IReportWithQuestions extends IReport {
     hasUnreadAnswers?: boolean;
     hasNewQuestions?: boolean;
     hasKycUpdate?: boolean;
+    voteCount?: VoteCount;
 }
 
 const ReviewerDashboard = () => {
@@ -38,6 +45,20 @@ const ReviewerDashboard = () => {
     const [showTelegramPrompt, setShowTelegramPrompt] = useState(false);
     const [decryptedHandles, setDecryptedHandles] = useState<{ [key: string]: string }>({});
     const [showSeverity, setShowSeverity] = useState(false);
+    const [isVoting, setIsVoting] = useState(false);
+    const [voteError, setVoteError] = useState<string | null>(null);
+
+    const calculateVoteCounts = (report: IReport): VoteCount => {
+        return report.votes.reduce((acc, vote) => {
+            if (vote.vote === 'approved') {
+                acc.approved += 1;
+            } else if (vote.vote === 'rejected') {
+                acc.rejected += 1;
+            }
+            acc.total += 1;
+            return acc;
+        }, { approved: 0, rejected: 0, total: 0 });
+    };
 
     const fetchReports = useCallback(async () => {
         try {
@@ -60,19 +81,33 @@ const ReviewerDashboard = () => {
                         !q.answer && 
                         !(q.notifiedReviewers || []).includes(user?.wallet?.address || '')
                     ),
-                    hasKycUpdate: report.kycStatus === 'completed' && report.status === 'pending'
+                    hasKycUpdate: report.kycStatus === 'completed' && report.status === 'pending',
+                    voteCount: calculateVoteCounts(report)
                 };
             }));
             
             setReports(reportsWithNotifications);
+
+            // Update selected report if it exists
+            if (selectedReport) {
+                const updatedSelectedReport = reportsWithNotifications.find(
+                    r => r._id === selectedReport._id
+                );
+                if (updatedSelectedReport) {
+                    setSelectedReport(updatedSelectedReport);
+                }
+            }
         } catch (error) {
             console.error('Error fetching reports:', error);
             toast.error('Failed to fetch reports');
         }
-    },[user?.wallet?.address]);
+    }, [user?.wallet?.address, selectedReport]);
 
     useEffect(() => {
         fetchReports();
+        // Set up polling for vote updates
+        const interval = setInterval(fetchReports, 10000); // Poll every 10 seconds
+        return () => clearInterval(interval);
     }, [fetchReports]);
 
     const handleStatusUpdate = async (vote: 'approved' | 'rejected', severity?: 'high' | 'medium' | 'low') => {
@@ -82,6 +117,9 @@ const ReviewerDashboard = () => {
             toast.error('Please provide a comment for rejection');
             return;
         }
+
+        setIsVoting(true);
+        setVoteError(null);
 
         try {
             const response = await fetch(`/api/reports/${selectedReport._id}/status`, {
@@ -97,12 +135,19 @@ const ReviewerDashboard = () => {
 
             if (!response.ok) throw new Error('Failed to update status');
 
-            toast.success('Vote submitted successfully');
+            // toast.success('Vote submitted successfully');
             setComment('');
-            fetchReports();
+            setShowSeverity(false);
+            
+            // Immediately fetch updated reports to reflect new vote
+            await fetchReports();
         } catch (error) {
             console.error('Error updating status:', error);
             toast.error('Failed to submit vote');
+            setVoteError('Failed to submit vote. Please try again.');
+            setShowSeverity(false);
+        } finally {
+            setIsVoting(false);
         }
     };
 
@@ -257,9 +302,11 @@ const ReviewerDashboard = () => {
                                             }`}>
                                                 {report.status.charAt(0).toUpperCase() + report.status.slice(1)}
                                             </span>
-                                            <span className="text-xs text-[#FFFAD1]">
-                                                {report.votes?.length || 0}/3 votes
-                                            </span>
+                                            <div className="flex flex-col items-end">
+                                                <span className="text-xs text-[#FFFAD1]">
+                                                    {report.voteCount?.total || 0}/3 votes
+                                                </span>
+                                            </div>
                                         </div>
                                     </div>
                                     <p className="text-sm text-gray-400 font-mono">
@@ -365,20 +412,36 @@ const ReviewerDashboard = () => {
                                             label: 'Cast Your Vote',
                                             content: (
                                                 <div className="space-y-6">
-                                                    {!hasVoted(selectedReport) ? (
+                                                    {isVoting ? (
+                                                        <div className="flex flex-col items-center justify-center py-8">
+                                                            <div className="w-12 h-12 border-4 border-t-[#4ECDC4] border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin mb-4"></div>
+                                                            <p className="text-[#B0E9FF] text-lg">Submitting your vote...</p>
+                                                        </div>
+                                                    ) : !hasVoted(selectedReport) ? (
                                                         <>
                                                             <div className="space-y-4">
                                                                 <h3 className="text-white font-semibold">Review Decision</h3>
+                                                                {voteError && (
+                                                                    <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-4 mb-4">
+                                                                        <p className="text-red-400">{voteError}</p>
+                                                                    </div>
+                                                                )}
                                                                 {!showSeverity ? (
                                                                     <div className="flex gap-4">
                                                                         <button
-                                                                            onClick={() => setShowSeverity(true)}
+                                                                            onClick={() => {
+                                                                                setVoteError(null);
+                                                                                setShowSeverity(true);
+                                                                            }}
                                                                             className="px-6 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition-colors"
                                                                         >
                                                                             Accept
                                                                         </button>
                                                                         <button
-                                                                            onClick={() => handleStatusUpdate('rejected')}
+                                                                            onClick={() => {
+                                                                                setVoteError(null);
+                                                                                handleStatusUpdate('rejected');
+                                                                            }}
                                                                             className="px-6 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition-colors"
                                                                         >
                                                                             Deny
@@ -389,34 +452,28 @@ const ReviewerDashboard = () => {
                                                                         <h4 className="text-white">Select Severity</h4>
                                                                         <div className="flex flex-wrap gap-3">
                                                                             <button
-                                                                                onClick={() => {
-                                                                                    handleStatusUpdate('approved', 'high');
-                                                                                    setShowSeverity(false);
-                                                                                }}
+                                                                                onClick={() => handleStatusUpdate('approved', 'high')}
                                                                                 className="px-4 py-2 bg-red-500/20 text-red-400 rounded-lg hover:bg-red-500/30 transition-colors"
                                                                             >
                                                                                 High
                                                                             </button>
                                                                             <button
-                                                                                onClick={() => {
-                                                                                    handleStatusUpdate('approved', 'medium');
-                                                                                    setShowSeverity(false);
-                                                                                }}
+                                                                                onClick={() => handleStatusUpdate('approved', 'medium')}
                                                                                 className="px-4 py-2 bg-yellow-500/20 text-yellow-400 rounded-lg hover:bg-yellow-500/30 transition-colors"
                                                                             >
                                                                                 Medium
                                                                             </button>
                                                                             <button
-                                                                                onClick={() => {
-                                                                                    handleStatusUpdate('approved', 'low');
-                                                                                    setShowSeverity(false);
-                                                                                }}
+                                                                                onClick={() => handleStatusUpdate('approved', 'low')}
                                                                                 className="px-4 py-2 bg-green-500/20 text-green-400 rounded-lg hover:bg-green-500/30 transition-colors"
                                                                             >
                                                                                 Low
                                                                             </button>
                                                                             <button
-                                                                                onClick={() => setShowSeverity(false)}
+                                                                                onClick={() => {
+                                                                                    setShowSeverity(false);
+                                                                                    setVoteError(null);
+                                                                                }}
                                                                                 className="px-4 py-2 bg-gray-700 text-gray-300 rounded-lg hover:bg-gray-600 transition-colors"
                                                                             >
                                                                                 Cancel
@@ -438,8 +495,15 @@ const ReviewerDashboard = () => {
                                                             </div>
                                                         </>
                                                     ) : (
-                                                        <div className="text-center text-gray-400">
-                                                            You have already cast your vote for this report.
+                                                        <div className="text-center py-8">
+                                                            <div className="mb-4">
+                                                                <svg className="w-16 h-16 mx-auto text-[#4ECDC4]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                                </svg>
+                                                            </div>
+                                                            <p className="text-[#B0E9FF] text-lg font-light">
+                                                                Your vote has been successfully cast for this report.
+                                                            </p>
                                                         </div>
                                                     )}
                                                 </div>
