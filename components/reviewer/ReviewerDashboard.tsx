@@ -10,6 +10,7 @@ import ReportDetail from "@/components/reviewer/ReportDetail";
 import VoteDetailsTab from "@/components/reviewer/VoteDetailsTab";
 import QuestionAnswer from "@/components/common/QuestionAnswer";
 import SearchBar from "@/components/common/SearchBar";
+import StatusFilter from "@/components/common/StatusFilter";
 import {
     IReportWithQuestions,
     VoteCount,
@@ -33,6 +34,7 @@ const ReviewerDashboard = () => {
     const [telegramError, setTelegramError] = useState<string | null>(null);
     const [isDecrypting, setIsDecrypting] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
+    const [selectedStatus, setSelectedStatus] = useState<'all' | 'approved' | 'rejected' | 'pending'>('all');
 
     // Memoize expensive computations
     const reportsCache = useMemo(() => {
@@ -42,15 +44,25 @@ const ReviewerDashboard = () => {
         }, {} as Record<string, IReportWithQuestions>);
     }, [reports]);
 
-    // Filter reports based on search query
+    // Filter reports based on search query and status
     const filteredReports = useMemo(() => {
-        if (!searchQuery.trim()) return reports;
+        let filtered = reports;
         
-        const query = searchQuery.toLowerCase().trim();
-        return reports.filter(report => 
-            report.title.toLowerCase().includes(query)
-        );
-    }, [reports, searchQuery]);
+        // Filter by status
+        if (selectedStatus !== 'all') {
+            filtered = filtered.filter(report => report.status === selectedStatus);
+        }
+        
+        // Filter by search query
+        if (searchQuery.trim()) {
+            const query = searchQuery.toLowerCase().trim();
+            filtered = filtered.filter(report => 
+                report.title.toLowerCase().includes(query)
+            );
+        }
+        
+        return filtered;
+    }, [reports, searchQuery, selectedStatus]);
 
     // To calculate the vote count
     const calculateVoteCounts = (report: IReport): VoteCount => {
@@ -323,12 +335,16 @@ const ReviewerDashboard = () => {
                     className={`${selectedReport ? "lg:w-1/3" : "w-full"} ${selectedReport ? "hidden lg:block" : "block"
                         }`}
                 >
-                    {/* Add SearchBar component */}
-                    <div className="mb-4">
+                    {/* Search and Filter Section */}
+                    <div className="space-y-4 mb-4">
                         <SearchBar
                             searchQuery={searchQuery}
                             setSearchQuery={setSearchQuery}
                             placeholder="Search reports by title..."
+                        />
+                        <StatusFilter
+                            selectedStatus={selectedStatus}
+                            onStatusChange={setSelectedStatus}
                         />
                     </div>
 
