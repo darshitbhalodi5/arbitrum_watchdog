@@ -19,7 +19,7 @@ const VoteDetailsTab = ({ report, isReviewer, currentUserAddress, onVoteSubmit, 
         <div className="space-y-6">
             {report.votes.length === 0 ? (
                 <div className="text-center py-8">
-                    <p className="text-gray-400 font-light">No votes have been cast yet.</p>
+                    <p className="text-[#ffffff] font-light">No votes have been cast yet.</p>
                 </div>
             ) : (
                 <div className="space-y-4">
