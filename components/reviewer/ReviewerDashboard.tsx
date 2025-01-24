@@ -5,10 +5,10 @@ import { usePrivy } from '@privy-io/react-auth';
 import toast from 'react-hot-toast';
 import { decrypt } from '@/lib/encryption';
 import { IReport } from '@/models/Report';
-import TabView from '../common/TabView';
-import ReportDetail from '../common/ReportDetail';
-import VoteDetailsTab from '../common/VoteDetailsTab';
-import QuestionAnswer from '../common/QuestionAnswer';
+import TabView from '@/components/common/TabView';
+import ReportDetail from '@/components/reviewer/ReportDetail';
+import VoteDetailsTab from '@/components/reviewer/VoteDetailsTab';
+import QuestionAnswer from '@/components/common/QuestionAnswer';
 
 interface Question {
     _id: string;

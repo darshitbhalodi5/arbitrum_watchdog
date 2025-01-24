@@ -1,6 +1,6 @@
 import { usePrivy } from "@privy-io/react-auth";
 import toast from "react-hot-toast";
-import ProgressBar from "./ProgressBar";
+import ProgressBar from "@/components/common/ProgressBar";
 import { ReportDetailProps } from "@/types/report-details";
 
 const ReportDetail = ({

@@ -4,11 +4,11 @@ import { useCallback, useEffect, useState } from "react";
 import { decrypt } from "@/lib/encryption";
 import { EyeIcon, EyeSlashIcon } from "@heroicons/react/24/outline";
 import { toast } from "react-hot-toast";
-import VoteDetails from "@/components/common/VoteDetails";
+import VoteDetails from "@/components/submitter/VoteDetails";
 import ProgressBar from "@/components/common/ProgressBar";
 import QuestionAnswer from "@/components/common/QuestionAnswer";
-import NoReports from "../NoReport";
-import Loading from "../Loader";
+import NoReports from "@/components/NoReport";
+import Loading from "@/components/Loader";
 import TabView from "@/components/common/TabView";
 import { IReport } from "@/models/Report";
 

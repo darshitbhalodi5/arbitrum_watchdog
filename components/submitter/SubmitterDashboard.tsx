@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import SubmitReportModal from "./SubmitReportModal";
-import ReportHistory from "./ReportHistory";
+import SubmitReportModal from "@/components/submitter/SubmitReportModal";
+import ReportHistory from "@/components/submitter//ReportHistory";
 import { usePrivy } from "@privy-io/react-auth";
 
 const SubmitterDashboard = () => {
