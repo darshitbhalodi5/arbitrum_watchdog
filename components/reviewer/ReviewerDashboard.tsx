@@ -9,6 +9,7 @@ import TabView from "@/components/common/TabView";
 import ReportDetail from "@/components/reviewer/ReportDetail";
 import VoteDetailsTab from "@/components/reviewer/VoteDetailsTab";
 import QuestionAnswer from "@/components/common/QuestionAnswer";
+import SearchBar from "@/components/common/SearchBar";
 import {
     IReportWithQuestions,
     VoteCount,
@@ -31,6 +32,7 @@ const ReviewerDashboard = () => {
     const [voteError, setVoteError] = useState<string | null>(null);
     const [telegramError, setTelegramError] = useState<string | null>(null);
     const [isDecrypting, setIsDecrypting] = useState(false);
+    const [searchQuery, setSearchQuery] = useState("");
 
     // Memoize expensive computations
     const reportsCache = useMemo(() => {
@@ -39,6 +41,16 @@ const ReviewerDashboard = () => {
             return acc;
         }, {} as Record<string, IReportWithQuestions>);
     }, [reports]);
+
+    // Filter reports based on search query
+    const filteredReports = useMemo(() => {
+        if (!searchQuery.trim()) return reports;
+        
+        const query = searchQuery.toLowerCase().trim();
+        return reports.filter(report => 
+            report.title.toLowerCase().includes(query)
+        );
+    }, [reports, searchQuery]);
 
     // To calculate the vote count
     const calculateVoteCounts = (report: IReport): VoteCount => {
@@ -311,8 +323,17 @@ const ReviewerDashboard = () => {
                     className={`${selectedReport ? "lg:w-1/3" : "w-full"} ${selectedReport ? "hidden lg:block" : "block"
                         }`}
                 >
+                    {/* Add SearchBar component */}
+                    <div className="mb-4">
+                        <SearchBar
+                            searchQuery={searchQuery}
+                            setSearchQuery={setSearchQuery}
+                            placeholder="Search reports by title..."
+                        />
+                    </div>
+
                     <div className="space-y-4">
-                        {reports.map((report) => (
+                        {filteredReports.map((report) => (
                             <button
                                 key={report._id?.toString()}
                                 onClick={() => handleReportSelection(report._id as string)}
@@ -379,6 +400,13 @@ const ReviewerDashboard = () => {
                                 </div>
                             </button>
                         ))}
+                        {filteredReports.length === 0 && searchQuery && (
+                            <div className="text-center py-8">
+                                <p className="text-gray-400">
+                                    No reports found matching &quot;{searchQuery}&quot;
+                                </p>
+                            </div>
+                        )}
                     </div>
                 </div>
 
