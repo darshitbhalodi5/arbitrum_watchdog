@@ -153,32 +153,9 @@ const ReviewerDashboard = () => {
         }
     };
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const handleFileView = async (fileId: string) => {
-        try {
-            const response = await fetch(`/api/reports/${selectedReport?._id}/file`);
-            if (!response.ok) throw new Error('Failed to fetch file');
-
-            const blob = await response.blob();
-            const url = window.URL.createObjectURL(blob);
-            window.open(url, '_blank');
-            window.URL.revokeObjectURL(url);
-        } catch (error) {
-            console.error('Error viewing file:', error);
-            toast.error('Failed to view file');
-        }
-    };
-
     const hasVoted = (report: IReportWithQuestions | null) => {
         if (!report || !user?.wallet?.address) return false;
         return report.votes.some(vote => vote.reviewerAddress === user?.wallet?.address);
-    };
-
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    const getUserVote = (report: IReportWithQuestions) => {
-        return report.votes?.find(vote =>
-            vote.reviewerAddress === user?.wallet?.address
-        );
     };
 
     const handleTelegramReveal = async (reportId: string, encryptedTelegram: string, actualTitle: string) => {

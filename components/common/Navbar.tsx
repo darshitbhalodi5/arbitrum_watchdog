@@ -55,17 +55,13 @@ export default function Navbar() {
             <Image
               src={TruenceSymbol}
               alt="Truence Symbol"
-              width={28}
-              height={28}
-              className="object-contain"
+              className="object-contain w-[2rem] h-[2-rem]"
               priority
             />
             <Image
               src={TruenceLogo}
               alt="Truence Logo"
-              width={120}
-              height={32}
-              className="object-contain"
+              className="object-contain w-[8rem] h-[2rem]"
               priority
             />
           </Link>
