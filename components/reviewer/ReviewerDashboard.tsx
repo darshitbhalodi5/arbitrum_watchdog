@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useMemo } from "react";
 import { usePrivy } from "@privy-io/react-auth";
 import toast from "react-hot-toast";
 import { decrypt } from "@/lib/encryption";
@@ -32,6 +32,14 @@ const ReviewerDashboard = () => {
   const [telegramError, setTelegramError] = useState<string | null>(null);
   const [isDecrypting, setIsDecrypting] = useState(false);
 
+  // Memoize expensive computations
+  const reportsCache = useMemo(() => {
+    return reports.reduce((acc, report) => {
+      acc[report._id as string] = report;
+      return acc;
+    }, {} as Record<string, IReportWithQuestions>);
+  }, [reports]);
+
   // To calculate the vote count
   const calculateVoteCounts = (report: IReport): VoteCount => {
     return report.votes.reduce(
@@ -50,13 +58,15 @@ const ReviewerDashboard = () => {
 
   // Function for fetch all reports
   const fetchReports = useCallback(async () => {
+    if (reports.length > 0) return; // Prevent repeated fetching
+
     try {
       const response = await fetch("/api/reports/all");
       if (!response.ok) throw new Error("Failed to fetch reports");
       const data = await response.json();
 
       // Check for unread answers and new questions for each report
-      const reportsWithNotifications = await Promise.all(
+      const reportsWithDetails = await Promise.all(
         data.map(async (report: IReport) => {
           const questionsResponse = await fetch(
             `/api/questions?reportId=${report._id}&userAddress=${user?.wallet?.address}&isReviewer=true`
@@ -83,29 +93,42 @@ const ReviewerDashboard = () => {
         })
       );
 
-      setReports(reportsWithNotifications);
+      setReports(reportsWithDetails);
 
       // Update selected report if it exists
-      if (selectedReport) {
-        const updatedSelectedReport = reportsWithNotifications.find(
-          (r) => r._id === selectedReport._id
-        );
-        if (updatedSelectedReport) {
-          setSelectedReport(updatedSelectedReport);
-        }
-      }
+      // if (selectedReport) {
+      //   const updatedSelectedReport = reportsWithNotifications.find(
+      //     (r) => r._id === selectedReport._id
+      //   );
+      //   if (updatedSelectedReport) {
+      //     setSelectedReport(updatedSelectedReport);
+      //   }
+      // }
     } catch (error) {
       console.error("Error fetching reports:", error);
       toast.error("Failed to fetch reports");
     }
-  }, [user?.wallet?.address, selectedReport]);
+  }, [user?.wallet?.address, reports.length]);
 
+  // Use effect to fetch reports only once
   useEffect(() => {
     fetchReports();
-    // Set up polling for vote updates
-    const interval = setInterval(fetchReports, 60000); // Poll every 1 minute
-    return () => clearInterval(interval);
   }, [fetchReports]);
+
+  // Optimize report selection
+  const handleReportSelection = (reportId: string) => {
+    const cachedReport = reportsCache[reportId];
+    if (cachedReport) {
+      setSelectedReport(cachedReport);
+    }
+  };
+  
+  // useEffect(() => {
+  //   fetchReports();
+  //   // Set up polling for vote updates
+  //   const interval = setInterval(fetchReports, 60000); // Poll every 1 minute
+  //   return () => clearInterval(interval);
+  // }, [fetchReports]);
 
   // Handle vote status
   const handleStatusUpdate = async (
@@ -293,7 +316,7 @@ const ReviewerDashboard = () => {
             {reports.map((report) => (
               <button
                 key={report._id?.toString()}
-                onClick={() => setSelectedReport(report)}
+                onClick={() => handleReportSelection(report._id as string)}
                 className={`w-full p-4 rounded-lg text-left relative overflow-hidden group transition-all duration-300 ${
                   selectedReport?._id?.toString() === report._id?.toString()
                     ? "bg-[#4ECDC4]/10 border-[#4ECDC4] border"
