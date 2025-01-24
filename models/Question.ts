@@ -1,59 +1,60 @@
-import mongoose from 'mongoose';
+import mongoose from "mongoose";
 
 const questionSchema = new mongoose.Schema({
   reportId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Report',
-    required: true
+    ref: "Report",
+    required: true,
   },
   question: {
     type: String,
-    required: true
+    required: true,
   },
   answer: {
     type: String,
-    default: null
+    default: null,
   },
   askedBy: {
     type: String,
-    required: true // reviewer's or submitter's wallet address
+    required: true, // reviewer's or submitter's wallet address
   },
   answeredBy: {
     type: String,
-    default: null // reviewer's or submitter's wallet address
+    default: null, // reviewer's or submitter's wallet address
   },
   status: {
     type: String,
-    enum: ['pending', 'answered'],
-    default: 'pending'
+    enum: ["pending", "answered"],
+    default: "pending",
   },
   isRead: {
     type: Boolean,
-    default: false
+    default: false,
   },
   isSubmitterQuestion: {
     type: Boolean,
-    default: false
+    default: false,
   },
   notifiedReviewers: {
     type: [String],
-    default: []
+    default: [],
   },
   createdAt: {
     type: Date,
-    default: Date.now
+    default: Date.now,
   },
   updatedAt: {
     type: Date,
-    default: Date.now
-  }
+    default: Date.now,
+  },
 });
 
-questionSchema.pre('save', function(next) {
+questionSchema.pre("save", function (next) {
   this.updatedAt = new Date();
   next();
 });
 
-const Question = mongoose.models.Question || mongoose.model('Question', questionSchema);
+const Question =
+  mongoose.models.Question || mongoose.model("Question", questionSchema);
 
-export default Question; 
+export default Question;

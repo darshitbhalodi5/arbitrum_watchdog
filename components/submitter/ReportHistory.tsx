@@ -10,26 +10,7 @@ import QuestionAnswer from "@/components/common/QuestionAnswer";
 import NoReports from "@/components/NoReport";
 import Loading from "@/components/Loader";
 import TabView from "@/components/common/TabView";
-import { IReport } from "@/models/Report";
-
-interface Question {
-  _id: string;
-  question: string;
-  answer: string | null;
-  askedBy: string;
-  answeredBy: string | null;
-  status: "pending" | "answered";
-  createdAt: string;
-  isRead?: boolean;
-}
-
-interface Report extends IReport {
-  hasUnreadQuestions?: boolean;
-}
-
-interface ReportHistoryProps {
-  walletAddress: string;
-}
+import { ReportHistoryProps, Report, Question } from "@/types/report-history";
 
 const ReportHistory = ({ walletAddress }: ReportHistoryProps) => {
   const [reports, setReports] = useState<Report[]>([]);
@@ -39,6 +20,7 @@ const ReportHistory = ({ walletAddress }: ReportHistoryProps) => {
     [key: string]: string;
   }>({});
 
+  // Fetch reports
   const fetchReports = useCallback(async () => {
     try {
       const response = await fetch(`/api/reports?address=${walletAddress}`);
@@ -71,6 +53,7 @@ const ReportHistory = ({ walletAddress }: ReportHistoryProps) => {
     fetchReports();
   }, [fetchReports]);
 
+  // To download files
   const handleFileView = async (reportId: string, e: React.MouseEvent) => {
     e.stopPropagation(); // Prevent report card click
     try {
@@ -101,13 +84,14 @@ const ReportHistory = ({ walletAddress }: ReportHistoryProps) => {
         window.URL.revokeObjectURL(url);
       }, 100);
 
-      toast.success("File download started");
+      toast.success("File downloaded successfully");
     } catch (error) {
       console.error("Error downloading file:", error);
       toast.error("Failed to download file");
     }
   };
 
+  // Telegram toggle to show and hide telegram handle
   const handleTelegramToggle = (
     reportId: string,
     encryptedTelegram: string,

@@ -69,7 +69,7 @@ export default function NoReports() {
         </div>
 
         {/* Text content */}
-        <h3 
+        <h3
           className="text-2xl sm:text-3xl font-light font-primary mb-4 text-transparent bg-clip-text"
           style={{
             backgroundImage:
@@ -79,7 +79,8 @@ export default function NoReports() {
           No Reports Found
         </h3>
         <p className="text-[#B0E9FF] text-sm sm:text-base font-light max-w-md mx-auto">
-          You haven&apos;t submitted any reports yet. Start by clicking the &quot;Submit New Report&quot; button above.
+          You haven&apos;t submitted any reports yet. Start by clicking the
+          &quot;Submit New Report&quot; button above.
         </p>
       </motion.div>
     </div>

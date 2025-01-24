@@ -14,10 +14,7 @@ import { CircleDot } from "lucide-react";
 import { ChevronDown } from "lucide-react";
 import { ChevronUp } from "lucide-react";
 import { Equal } from "lucide-react";
-
-interface LandingPageProps {
-  onRoleSelect: (role: "reviewer" | "submitter") => void;
-}
+import { LandingPageProps } from "@/types/landingpage";
 
 export default function LandingPage({ onRoleSelect }: LandingPageProps) {
   return (

@@ -10,6 +10,7 @@ const SubmitterDashboard = () => {
   const { user } = usePrivy();
   const [refreshTrigger, setRefreshTrigger] = useState(0);
 
+  // To handle the post report submission
   const handleReportSubmitted = () => {
     setRefreshTrigger((prev) => prev + 1);
     setIsModalOpen(false);
@@ -19,7 +20,7 @@ const SubmitterDashboard = () => {
     <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 font-secondary">
       <div className="mb-8">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-          <h2 
+          <h2
             className="text-3xl sm:text-4xl font-light font-primary text-transparent bg-clip-text"
             style={{
               backgroundImage:
@@ -39,7 +40,9 @@ const SubmitterDashboard = () => {
             }}
           >
             <div className="absolute inset-0 bg-gradient-to-b from-[#4ECDC4]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-            <span className="relative text-[#B0E9FF] font-medium">Submit New Report</span>
+            <span className="relative text-[#B0E9FF] font-medium">
+              Submit New Report
+            </span>
           </button>
         </div>
       </div>
@@ -52,7 +55,7 @@ const SubmitterDashboard = () => {
       />
 
       <div className="mt-8">
-        <h3 
+        <h3
           className="text-2xl sm:text-3xl font-light font-primary mb-6 text-transparent bg-clip-text"
           style={{
             backgroundImage:

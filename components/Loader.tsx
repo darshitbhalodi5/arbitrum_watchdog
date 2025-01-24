@@ -1,6 +1,4 @@
-interface LoadingProps {
-  message?: string;
-}
+import { LoadingProps } from "@/types/loader";
 
 export default function Loading({
   message = "Your report is on its way, hold tight!",
