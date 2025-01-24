@@ -1,13 +1,5 @@
 import { IReport } from "@/models/Report";
-// import { Vote } from "@/types/vote";
-
-interface VoteDetailsTabProps {
-    report: IReport;
-    isReviewer: boolean;
-    currentUserAddress?: string;
-    onVoteSubmit?: (vote: 'approved' | 'rejected', severity?: 'high' | 'medium' | 'low') => Promise<void>;
-    showVoteActions?: boolean;
-}
+import { VoteDetailsTabProps } from "@/types/vote-details";
 
 const VoteDetailsTab = ({ report, isReviewer, currentUserAddress, onVoteSubmit, showVoteActions = true }: VoteDetailsTabProps) => {
     const hasVoted = (report: IReport) => {

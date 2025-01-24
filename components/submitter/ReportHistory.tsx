@@ -35,7 +35,9 @@ const ReportHistory = ({ walletAddress }: ReportHistoryProps) => {
   const [reports, setReports] = useState<Report[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedReport, setSelectedReport] = useState<Report | null>(null);
-  const [decryptedHandles, setDecryptedHandles] = useState<{ [key: string]: string }>({});
+  const [decryptedHandles, setDecryptedHandles] = useState<{
+    [key: string]: string;
+  }>({});
 
   const fetchReports = useCallback(async () => {
     try {
@@ -144,7 +146,11 @@ const ReportHistory = ({ walletAddress }: ReportHistoryProps) => {
   return (
     <div className="flex flex-col lg:flex-row gap-4 sm:gap-8">
       {/* Reports List */}
-      <div className={`${selectedReport ? 'lg:w-1/3' : 'w-full'} ${selectedReport ? 'hidden lg:block' : 'block'}`}>
+      <div
+        className={`${selectedReport ? "lg:w-1/3" : "w-full"} ${
+          selectedReport ? "hidden lg:block" : "block"
+        }`}
+      >
         <div className="space-y-3 sm:space-y-4">
           {reports.map((report) => (
             <button
@@ -152,29 +158,38 @@ const ReportHistory = ({ walletAddress }: ReportHistoryProps) => {
               onClick={() => setSelectedReport(report)}
               className={`w-full p-3 sm:p-4 rounded-lg text-left ${
                 selectedReport?._id === report._id
-                ? 'bg-[#4ECDC4]/10 border-[#4ECDC4] border'
-                : 'bg-[#2C2D31] border-gray-800 border hover:border-[#4ECDC4]'
+                  ? "bg-[#4ECDC4]/10 border-[#4ECDC4] border"
+                  : "bg-[#2C2D31] border-gray-800 border hover:border-[#4ECDC4]"
               }`}
             >
               <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 mb-2">
                 <div className="flex items-start gap-2">
-                  <h3 className="text-base sm:text-lg font-semibold text-white">{report.title}</h3>
+                  <h3 className="text-base sm:text-lg font-semibold text-white">
+                    {report.title}
+                  </h3>
                   {report.hasUnreadQuestions && (
                     <span className="animate-pulse w-2 h-2 bg-[#FF6B6B] rounded-full mt-2"></span>
                   )}
                 </div>
                 <div className="flex items-center gap-2">
-                  <span className={`px-2 py-1 rounded-full text-xs ${
-                    report.status === 'approved' ? 'bg-green-500/20 text-green-400' :
-                    report.status === 'rejected' ? 'bg-red-500/20 text-red-400' :
-                    'bg-yellow-500/20 text-yellow-400'
-                  }`}>
-                    {report.status.charAt(0).toUpperCase() + report.status.slice(1)}
+                  <span
+                    className={`px-2 py-1 rounded-full text-xs ${
+                      report.status === "approved"
+                        ? "bg-green-500/20 text-green-400"
+                        : report.status === "rejected"
+                        ? "bg-red-500/20 text-red-400"
+                        : "bg-yellow-500/20 text-yellow-400"
+                    }`}
+                  >
+                    {report.status.charAt(0).toUpperCase() +
+                      report.status.slice(1)}
                   </span>
                 </div>
               </div>
               <div className="text-xs sm:text-sm text-gray-400">
-                <p>Submitted: {new Date(report.createdAt).toLocaleDateString()}</p>
+                <p>
+                  Submitted: {new Date(report.createdAt).toLocaleDateString()}
+                </p>
               </div>
             </button>
           ))}
@@ -188,8 +203,18 @@ const ReportHistory = ({ walletAddress }: ReportHistoryProps) => {
             onClick={() => setSelectedReport(null)}
             className="text-gray-400 hover:text-white flex items-center gap-2"
           >
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+            <svg
+              className="w-5 h-5"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 19l-7-7 7-7"
+              />
             </svg>
             Back to Reports
           </button>
@@ -201,13 +226,25 @@ const ReportHistory = ({ walletAddress }: ReportHistoryProps) => {
         <div className="lg:w-2/3">
           <div className="bg-[#2C2D31] rounded-lg p-4 sm:p-6 border border-gray-800">
             <div className="flex justify-between items-start mb-6">
-              <h3 className="text-xl font-bold text-white">{selectedReport.title}</h3>
+              <h3 className="text-xl font-bold text-white">
+                {selectedReport.title}
+              </h3>
               <button
                 onClick={() => setSelectedReport(null)}
                 className="text-gray-400 hover:text-white"
               >
-                <svg className="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                <svg
+                  className="w-6 h-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
                 </svg>
               </button>
             </div>
@@ -215,15 +252,19 @@ const ReportHistory = ({ walletAddress }: ReportHistoryProps) => {
             <TabView
               tabs={[
                 {
-                  id: 'details',
-                  label: 'Report Details',
+                  id: "details",
+                  label: "Report Details",
                   content: (
                     <>
                       <div className="space-y-4">
                         <div className="space-y-2">
                           <div className="flex items-center justify-between">
-                            <span className="text-gray-400">Wallet Address:</span>
-                            <span className="text-white">{selectedReport.submitterAddress}</span>
+                            <span className="text-gray-400">
+                              Wallet Address:
+                            </span>
+                            <span className="text-white">
+                              {selectedReport.submitterAddress}
+                            </span>
                           </div>
                           <div className="flex items-center justify-between">
                             <span className="text-gray-400">Telegram:</span>
@@ -268,19 +309,35 @@ const ReportHistory = ({ walletAddress }: ReportHistoryProps) => {
                             </div>
                           </div>
                           <div className="flex items-center justify-between">
-                            <span className="text-gray-400">Submitted Date:</span>
+                            <span className="text-gray-400">
+                              Submitted Date:
+                            </span>
                             <span className="text-white">
-                              {new Date(selectedReport.createdAt).toLocaleDateString()}
+                              {new Date(
+                                selectedReport.createdAt
+                              ).toLocaleDateString()}
                             </span>
                           </div>
                           <div className="flex items-center justify-between">
                             <span className="text-gray-400">Report File:</span>
                             <button
-                              onClick={(e) => handleFileView(selectedReport._id, e)}
+                              onClick={(e) =>
+                                handleFileView(selectedReport._id, e)
+                              }
                               className="text-[#4ECDC4] hover:underline focus:outline-none inline-flex items-center gap-2"
                             >
-                              <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                              <svg
+                                className="w-4 h-4"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                                stroke="currentColor"
+                              >
+                                <path
+                                  strokeLinecap="round"
+                                  strokeLinejoin="round"
+                                  strokeWidth={2}
+                                  d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
+                                />
                               </svg>
                               Download File
                             </button>
@@ -292,16 +349,12 @@ const ReportHistory = ({ walletAddress }: ReportHistoryProps) => {
                               report={selectedReport}
                               onKycVerify={async () => {
                                 try {
-                                  const response = await fetch(
-                                    `/api/reports/${selectedReport._id}/kyc`,
-                                    { method: "POST" }
-                                  );
-                                  if (!response.ok) throw new Error("Failed to verify KYC");
                                   fetchReports();
-                                  toast.success("KYC verification completed");
                                 } catch (error) {
-                                  console.error("Error verifying KYC:", error);
-                                  toast.error("Failed to verify KYC");
+                                  console.error(
+                                    "Error fetching reports after KYC:",
+                                    error
+                                  );
                                 }
                               }}
                               isSubmitter={true}
@@ -310,28 +363,25 @@ const ReportHistory = ({ walletAddress }: ReportHistoryProps) => {
                         )}
                       </div>
                     </>
-                  )
+                  ),
                 },
                 {
-                  id: 'qa',
-                  label: 'Questions & Answers',
+                  id: "qa",
+                  label: "Questions & Answers",
                   content: (
                     <QuestionAnswer
                       reportId={selectedReport._id}
                       isReviewer={false}
                     />
-                  )
+                  ),
                 },
                 {
-                  id: 'votes',
-                  label: 'Vote Details',
+                  id: "votes",
+                  label: "Vote Details",
                   content: (
-                    <VoteDetails
-                      votes={selectedReport.votes}
-                      showAll={true}
-                    />
-                  )
-                }
+                    <VoteDetails votes={selectedReport.votes} showAll={true} />
+                  ),
+                },
               ]}
             />
           </div>
