@@ -16,6 +16,7 @@ import {
     VoteCount,
     Question,
 } from "@/types/reviewer-dashboard";
+import BookmarkButton from "@/components/common/BookmarkButton";
 
 const ReviewerDashboard = () => {
     const { user } = usePrivy();
@@ -35,6 +36,7 @@ const ReviewerDashboard = () => {
     const [isDecrypting, setIsDecrypting] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedStatus, setSelectedStatus] = useState<'all' | 'approved' | 'rejected' | 'pending'>('all');
+    const [bookmarkedReports, setBookmarkedReports] = useState<Set<string>>(new Set());
 
     // Memoize expensive computations
     const reportsCache = useMemo(() => {
@@ -63,6 +65,28 @@ const ReviewerDashboard = () => {
         
         return filtered;
     }, [reports, searchQuery, selectedStatus]);
+
+    // Load bookmarks from localStorage on mount
+    useEffect(() => {
+        const savedBookmarks = localStorage.getItem('reviewerBookmarks');
+        if (savedBookmarks) {
+            setBookmarkedReports(new Set(JSON.parse(savedBookmarks)));
+        }
+    }, []);
+
+    // Save bookmarks to localStorage whenever they change
+    useEffect(() => {
+        localStorage.setItem('reviewerBookmarks', JSON.stringify(Array.from(bookmarkedReports)));
+    }, [bookmarkedReports]);
+
+    // Sort reports with bookmarked ones first
+    const sortedReports = useMemo(() => {
+        return [...filteredReports].sort((a, b) => {
+            const aBookmarked = bookmarkedReports.has(a._id as string) ? 1 : 0;
+            const bBookmarked = bookmarkedReports.has(b._id as string) ? 1 : 0;
+            return bBookmarked - aBookmarked;
+        });
+    }, [filteredReports, bookmarkedReports]);
 
     // To calculate the vote count
     const calculateVoteCounts = (report: IReport): VoteCount => {
@@ -317,6 +341,20 @@ const ReviewerDashboard = () => {
         }
     };
 
+    const handleToggleBookmark = (reportId: string) => {
+        if (bookmarkedReports.has(reportId)) {
+            setBookmarkedReports(prev => {
+                const newSet = new Set(prev);
+                newSet.delete(reportId);
+                return newSet;
+            });
+            toast.success("Report removed from bookmarks");
+        } else {
+            setBookmarkedReports(prev => new Set(prev).add(reportId));
+            toast.success("Report added to bookmarks");
+        }
+    };
+
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 font-secondary">
             <h2
@@ -349,7 +387,7 @@ const ReviewerDashboard = () => {
                     </div>
 
                     <div className="space-y-4">
-                        {filteredReports.map((report) => (
+                        {sortedReports.map((report) => (
                             <button
                                 key={report._id?.toString()}
                                 onClick={() => handleReportSelection(report._id as string)}
@@ -391,17 +429,25 @@ const ReviewerDashboard = () => {
                                             </div>
                                         </div>
                                         <div className="flex items-center sm:flex-col sm:items-end gap-2">
-                                            <span
-                                                className={`px-3 py-1 rounded-full text-xs ${report.status === "approved"
-                                                    ? "bg-[#4ECDC4]/20 text-[#4ECDC4]"
-                                                    : report.status === "rejected"
-                                                        ? "bg-[#FF6B6B]/20 text-[#FF6B6B]"
-                                                        : "bg-yellow-500/20 text-yellow-400"
+                                            <div className="flex items-center gap-2">
+                                                <span
+                                                    className={`px-3 py-1 rounded-full text-xs ${
+                                                        report.status === "approved"
+                                                            ? "bg-[#4ECDC4]/20 text-[#4ECDC4]"
+                                                            : report.status === "rejected"
+                                                                ? "bg-[#FF6B6B]/20 text-[#FF6B6B]"
+                                                                : "bg-yellow-500/20 text-yellow-400"
                                                     }`}
-                                            >
-                                                {report.status.charAt(0).toUpperCase() +
-                                                    report.status.slice(1)}
-                                            </span>
+                                                >
+                                                    {report.status.charAt(0).toUpperCase() +
+                                                        report.status.slice(1)}
+                                                </span>
+                                                <BookmarkButton
+                                                    isBookmarked={bookmarkedReports.has(report._id as string)}
+                                                    onToggle={() => handleToggleBookmark(report._id as string)}
+                                                    size="sm"
+                                                />
+                                            </div>
                                             <div className="flex flex-col items-end">
                                                 <span className="text-xs text-[#FFFAD1]">
                                                     {report.voteCount?.total || 0}/3 votes
@@ -416,7 +462,7 @@ const ReviewerDashboard = () => {
                                 </div>
                             </button>
                         ))}
-                        {filteredReports.length === 0 && searchQuery && (
+                        {sortedReports.length === 0 && searchQuery && (
                             <div className="text-center py-8">
                                 <p className="text-gray-400">
                                     No reports found matching &quot;{searchQuery}&quot;
