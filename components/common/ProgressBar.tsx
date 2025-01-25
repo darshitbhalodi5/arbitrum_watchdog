@@ -5,6 +5,8 @@ import { toast } from "react-hot-toast";
 const ProgressBar = ({
   report,
   onKycVerify,
+  onBasePaymentVerify,
+  onAdditionalPaymentVerify,
   isSubmitter,
 }: ProgressBarProps) => {
   // To handle KYC verification
@@ -54,10 +56,25 @@ const ProgressBar = ({
     {
       title: "Base Payment",
       status: report.basePaymentStatus,
-      statusText: getBasePaymentStatusText(
-        report.basePaymentStatus,
-        report.votes
-      ),
+      statusText: getBasePaymentStatusText(report.basePaymentStatus, report.votes),
+      action: !isSubmitter && report.kycStatus === "completed" && report.votes.length === 3 ? (
+        <button
+          onClick={onBasePaymentVerify}
+          disabled={
+            report.basePaymentStatus === "completed" || 
+            !!report.votes.find(
+              (v) => v.reviewerAddress === window.ethereum?.selectedAddress && v.basePaymentSent
+            )
+          }
+          className={`px-3 py-1 rounded-lg text-sm ${
+            report.basePaymentStatus === "completed"
+              ? "bg-green-500/20 text-green-400"
+              : "bg-[#4ECDC4] text-white hover:opacity-90"
+          }`}
+        >
+          {report.basePaymentStatus === "completed" ? "Payment Completed" : "Verify Payment"}
+        </button>
+      ) : null,
     },
     {
       title: "Additional Payment",
@@ -66,6 +83,24 @@ const ProgressBar = ({
         report.additionalPaymentStatus,
         report.votes
       ),
+      action: !isSubmitter && report.basePaymentStatus === "completed" && report.votes.length === 3 ? (
+        <button
+          onClick={onAdditionalPaymentVerify}
+          disabled={
+            report.additionalPaymentStatus === "completed" || 
+            !!report.votes.find(
+              (v) => v.reviewerAddress === window.ethereum?.selectedAddress && v.additionalPaymentSent
+            )
+          }
+          className={`px-3 py-1 rounded-lg text-sm ${
+            report.additionalPaymentStatus === "completed"
+              ? "bg-green-500/20 text-green-400"
+              : "bg-[#4ECDC4] text-white hover:opacity-90"
+          }`}
+        >
+          {report.additionalPaymentStatus === "completed" ? "Verified" : "Verify Payment"}
+        </button>
+      ) : null,
     },
   ];
 

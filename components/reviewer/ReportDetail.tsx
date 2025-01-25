@@ -178,41 +178,10 @@ const ReportDetail = ({
         <ProgressBar
           report={report}
           onKycVerify={onKycVerify}
+          onBasePaymentVerify={handleBasePaymentConfirm}
+          onAdditionalPaymentVerify={handleAdditionalPaymentConfirm}
           isSubmitter={!isReviewer}
         />
-      )}
-
-      {/* Payment Confirmation Buttons */}
-      {isReviewer && report.votes.length === 3 && (
-        <div className="flex gap-2 mt-4">
-          {report.kycStatus === "completed" &&
-            !report.votes.find(
-              (v) =>
-                v.reviewerAddress === user?.wallet?.address && v.basePaymentSent
-            ) && (
-              <button
-                onClick={handleBasePaymentConfirm}
-                className="px-3 py-1 bg-[#4ECDC4] text-white rounded-lg hover:opacity-90"
-              >
-                Confirm Base Payment
-              </button>
-            )}
-
-          {report.basePaymentStatus === "completed" &&
-            report.status === "approved" &&
-            !report.votes.find(
-              (v) =>
-                v.reviewerAddress === user?.wallet?.address &&
-                v.additionalPaymentSent
-            ) && (
-              <button
-                onClick={handleAdditionalPaymentConfirm}
-                className="px-3 py-1 bg-[#4ECDC4] text-white rounded-lg hover:opacity-90"
-              >
-                Confirm Additional Payment
-              </button>
-            )}
-        </div>
       )}
     </div>
   );
