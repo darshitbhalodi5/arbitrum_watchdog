@@ -17,6 +17,7 @@ import {
     Question,
 } from "@/types/reviewer-dashboard";
 import BookmarkButton from "@/components/common/BookmarkButton";
+import { useBookmarks } from '@/hooks/useBookmarks'; // Adjust the import path as needed
 
 const ReviewerDashboard = () => {
     const { user } = usePrivy();
@@ -36,7 +37,12 @@ const ReviewerDashboard = () => {
     const [isDecrypting, setIsDecrypting] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedStatus, setSelectedStatus] = useState<'all' | 'approved' | 'rejected' | 'pending'>('all');
-    const [bookmarkedReports, setBookmarkedReports] = useState<Set<string>>(new Set());
+
+    const { 
+      bookmarks: bookmarkedReports, 
+      toggleBookmark: handleToggleBookmark, 
+      isBookmarked 
+  } = useBookmarks('reviewerReportBookmarks');
 
     // Memoize expensive computations
     const reportsCache = useMemo(() => {
@@ -66,27 +72,14 @@ const ReviewerDashboard = () => {
         return filtered;
     }, [reports, searchQuery, selectedStatus]);
 
-    // Load bookmarks from localStorage on mount
-    useEffect(() => {
-        const savedBookmarks = localStorage.getItem('reviewerBookmarks');
-        if (savedBookmarks) {
-            setBookmarkedReports(new Set(JSON.parse(savedBookmarks)));
-        }
-    }, []);
-
-    // Save bookmarks to localStorage whenever they change
-    useEffect(() => {
-        localStorage.setItem('reviewerBookmarks', JSON.stringify(Array.from(bookmarkedReports)));
-    }, [bookmarkedReports]);
-
     // Sort reports with bookmarked ones first
     const sortedReports = useMemo(() => {
         return [...filteredReports].sort((a, b) => {
-            const aBookmarked = bookmarkedReports.has(a._id as string) ? 1 : 0;
-            const bBookmarked = bookmarkedReports.has(b._id as string) ? 1 : 0;
+            const aBookmarked = isBookmarked(a._id as string) ? 1 : 0;
+            const bBookmarked = isBookmarked(b._id as string) ? 1 : 0;
             return bBookmarked - aBookmarked;
         });
-    }, [filteredReports, bookmarkedReports]);
+    }, [filteredReports, isBookmarked]);
 
     // To calculate the vote count
     const calculateVoteCounts = (report: IReport): VoteCount => {
@@ -338,20 +331,6 @@ const ReviewerDashboard = () => {
         } catch (error) {
             console.error("Error confirming additional payment:", error);
             toast.error("Failed to confirm additional payment");
-        }
-    };
-
-    const handleToggleBookmark = (reportId: string) => {
-        if (bookmarkedReports.has(reportId)) {
-            setBookmarkedReports(prev => {
-                const newSet = new Set(prev);
-                newSet.delete(reportId);
-                return newSet;
-            });
-            toast.success("Report removed from bookmarks");
-        } else {
-            setBookmarkedReports(prev => new Set(prev).add(reportId));
-            toast.success("Report added to bookmarks");
         }
     };
 
