@@ -1,6 +1,7 @@
 import { VoteDetailsProps } from "@/types/vote";
 import { useEffect, useMemo, useState } from "react";
 import { VoteCount } from "@/types/vote-details";
+import { generateUniqueAnonymousNames } from "@/utils/anonymousNames"; // Update the import path
 
 const VoteDetails = ({
   votes,
@@ -11,6 +12,12 @@ const VoteDetails = ({
   const votesToDisplay = useMemo(
     () => report?.votes || votes || [],
     [report, votes]
+  );
+
+   // Generate anonymous names for the votes
+   const anonymousNames = useMemo(() => 
+    generateUniqueAnonymousNames(votesToDisplay.map(vote => vote.reviewerAddress || '')),
+    [votesToDisplay]
   );
 
   const [voteCount, setVoteCount] = useState<VoteCount>({
@@ -106,8 +113,7 @@ const VoteDetails = ({
           >
             <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 sm:gap-0">
               <span className="text-gray-400 font-mono text-xs sm:text-sm">
-                {vote.reviewerAddress?.slice(0, 6)}...
-                {vote.reviewerAddress?.slice(-4)}
+                 By {anonymousNames[index]?.name || 'Anonymous'}
               </span>
               <div className="flex flex-wrap items-center gap-2">
                 <span
