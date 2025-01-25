@@ -37,6 +37,7 @@ const ReviewerDashboard = () => {
     const [isDecrypting, setIsDecrypting] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedStatus, setSelectedStatus] = useState<'all' | 'approved' | 'rejected' | 'pending'>('all');
+    const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc'); // Default to newest first
 
     const { 
       bookmarks: bookmarkedReports, 
@@ -72,14 +73,27 @@ const ReviewerDashboard = () => {
         return filtered;
     }, [reports, searchQuery, selectedStatus]);
 
-    // Sort reports with bookmarked ones first
+    // Sort reports with bookmarked ones first and then by date
     const sortedReports = useMemo(() => {
         return [...filteredReports].sort((a, b) => {
+            // First sort by bookmark status
             const aBookmarked = isBookmarked(a._id as string) ? 1 : 0;
             const bBookmarked = isBookmarked(b._id as string) ? 1 : 0;
-            return bBookmarked - aBookmarked;
+            if (aBookmarked !== bBookmarked) {
+                return bBookmarked - aBookmarked;
+            }
+            
+            // Then sort by date
+            const dateA = new Date(a.createdAt).getTime();
+            const dateB = new Date(b.createdAt).getTime();
+            return sortOrder === 'desc' ? dateB - dateA : dateA - dateB;
         });
-    }, [filteredReports, isBookmarked]);
+    }, [filteredReports, isBookmarked, sortOrder]);
+
+    // Toggle sort order
+    const toggleSortOrder = () => {
+        setSortOrder(prev => prev === 'desc' ? 'asc' : 'desc');
+    };
 
     // To calculate the vote count
     const calculateVoteCounts = (report: IReport): VoteCount => {
@@ -354,11 +368,31 @@ const ReviewerDashboard = () => {
                 >
                     {/* Search and Filter Section */}
                     <div className="space-y-4 mb-4">
+                        <div className="flex gap-4 items-center">
+                            <div className="flex-1">
                         <SearchBar
                             searchQuery={searchQuery}
                             setSearchQuery={setSearchQuery}
                             placeholder="Search reports by title..."
                         />
+                            </div>
+                            <button
+                                onClick={toggleSortOrder}
+                                className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-[#4ECDC4] hover:bg-[#4ECDC4]/10 transition-colors"
+                                title={sortOrder === 'desc' ? "Newest First" : "Oldest First"}
+                            >
+                                <span className="hidden sm:inline">Sort by Date</span>
+                                {sortOrder === 'desc' ? (
+                                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                                    </svg>
+                                ) : (
+                                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
+                                    </svg>
+                                )}
+                            </button>
+                        </div>
                         <StatusFilter
                             selectedStatus={selectedStatus}
                             onStatusChange={setSelectedStatus}
@@ -370,7 +404,8 @@ const ReviewerDashboard = () => {
                             <button
                                 key={report._id?.toString()}
                                 onClick={() => handleReportSelection(report._id as string)}
-                                className={`w-full p-4 rounded-lg text-left relative overflow-hidden group transition-all duration-300 ${selectedReport?._id?.toString() === report._id?.toString()
+                                className={`w-full p-4 rounded-lg text-left relative overflow-hidden group transition-all duration-300 ${
+                                    selectedReport?._id?.toString() === report._id?.toString()
                                     ? "bg-[#4ECDC4]/10 border-[#4ECDC4] border"
                                     : "border border-gray-800 hover:border-[#4ECDC4]"
                                     }`}
@@ -381,7 +416,7 @@ const ReviewerDashboard = () => {
                             >
                                 <div className="absolute inset-0 bg-gradient-to-b from-[#4ECDC4]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                                 <div className="relative">
-                                    <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 mb-2">
+                                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-2">
                                         <div className="flex items-start gap-2">
                                             <h3 className="text-lg font-light text-[#B0E9FF]">
                                                 {report.title}
@@ -430,6 +465,9 @@ const ReviewerDashboard = () => {
                                             <div className="flex flex-col items-end">
                                                 <span className="text-xs text-[#FFFAD1]">
                                                     {report.voteCount?.total || 0}/3 votes
+                                                </span>
+                                                <span className="text-xs text-gray-400">
+                                                    {new Date(report.createdAt).toLocaleDateString()} {new Date(report.createdAt).toLocaleTimeString()}
                                                 </span>
                                             </div>
                                         </div>
