@@ -351,7 +351,7 @@ const ReportHistory = ({ walletAddress }: ReportHistoryProps) => {
                 },
                 {
                   id: "qa",
-                  label: "Questions & Answers",
+                  label: "Chat",
                   content: (
                     <QuestionAnswer
                       reportId={selectedReport._id}

@@ -45,7 +45,6 @@ export function Providers({ children }: { children: React.ReactNode }) {
           logo: "./favicon.ico",
           walletList: [
             "metamask",
-            "rainbow",
             "phantom",
             "coinbase_wallet",
             "uniswap",
