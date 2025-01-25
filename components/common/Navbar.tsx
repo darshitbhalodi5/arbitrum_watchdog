@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Image from 'next/image';
 import Link from 'next/link';
+import { usePathname } from 'next/navigation';
 import { usePrivy } from "@privy-io/react-auth";
 import {
   ClipboardDocumentIcon,
@@ -16,6 +17,7 @@ export default function Navbar() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isCopied, setIsCopied] = useState(false);
   const { logout, authenticated, user } = usePrivy();
+  const pathname = usePathname();
 
   const reviewerAddresses = [
     process.env.NEXT_PUBLIC_REVIEWER_ADDRESS_1,
@@ -68,7 +70,7 @@ export default function Navbar() {
 
           {/* Desktop Menu */}
           <div className="hidden sm:flex sm:items-center sm:space-x-4">
-            {!authenticated ? null : (
+            {!authenticated || pathname === '/' ? null : (
               <div className="flex items-center space-x-4">
                 <div
                   className="px-4 py-2 rounded-md bg-[#1A1B1E] border border-[#4ECDC4]/20 
@@ -129,7 +131,7 @@ export default function Navbar() {
       {isMobileMenuOpen && (
         <div className="sm:hidden bg-[#1A1B1E] border-t border-[#4ECDC4]/20">
           <div className="pt-2 pb-3 space-y-1">
-            {!authenticated ? null : (
+            {!authenticated || pathname === '/' ? null : (
               <>
                 <div
                   className={`flex items-center justify-between px-4 py-2 text-base font-medium ${
