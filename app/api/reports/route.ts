@@ -11,6 +11,7 @@ export async function POST(req: Request) {
         const title = formData.get('title') as string;
         const telegramHandle = formData.get('telegramHandle') as string;
         const submitterAddress = formData.get('submitterAddress') as string;
+        const misuseRange = formData.get('misuseRange') as string;
         const file = formData.get('file') as File;
 
         // Upload file to S3
@@ -20,6 +21,7 @@ export async function POST(req: Request) {
             title,
             telegramHandle,
             submitterAddress,
+            misuseRange,
             fileUrl,
             status: 'pending',
         });

@@ -18,6 +18,7 @@ import {
 } from "@/types/reviewer-dashboard";
 import BookmarkButton from "@/components/common/BookmarkButton";
 import { useBookmarks } from '@/hooks/useBookmarks'; // Adjust the import path as needed
+import { MisuseRange } from "@/types/report";
 
 const ReviewerDashboard = () => {
     const { user } = usePrivy();
@@ -37,7 +38,8 @@ const ReviewerDashboard = () => {
     const [isDecrypting, setIsDecrypting] = useState(false);
     const [searchQuery, setSearchQuery] = useState("");
     const [selectedStatus, setSelectedStatus] = useState<'all' | 'approved' | 'rejected' | 'pending'>('all');
-    const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc'); // Default to newest first
+    const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
+    const [sortBy, setSortBy] = useState<'date' | 'misuseRange'>('date');
 
     const { 
       bookmarks: bookmarkedReports, 
@@ -52,6 +54,19 @@ const ReviewerDashboard = () => {
             return acc;
         }, {} as Record<string, IReportWithQuestions>);
     }, [reports]);
+
+    // Helper function to convert misuse range to numeric value for sorting
+    const getMisuseRangeValue = (range: MisuseRange): number => {
+        const values: { [key in MisuseRange]: number } = {
+            '<5k': 1,
+            '5-20k': 2,
+            '20-50k': 3,
+            '50-100k': 4,
+            '100-500k': 5,
+            '500k+': 6
+        };
+        return values[range];
+    };
 
     // Filter reports based on search query and status
     const filteredReports = useMemo(() => {
@@ -73,7 +88,7 @@ const ReviewerDashboard = () => {
         return filtered;
     }, [reports, searchQuery, selectedStatus]);
 
-    // Sort reports with bookmarked ones first and then by date
+    // Sort reports with bookmarked ones first and then by selected criteria
     const sortedReports = useMemo(() => {
         return [...filteredReports].sort((a, b) => {
             // First sort by bookmark status
@@ -83,17 +98,18 @@ const ReviewerDashboard = () => {
                 return bBookmarked - aBookmarked;
             }
             
-            // Then sort by date
-            const dateA = new Date(a.createdAt).getTime();
-            const dateB = new Date(b.createdAt).getTime();
-            return sortOrder === 'desc' ? dateB - dateA : dateA - dateB;
+            // Then sort by selected criteria
+            if (sortBy === 'date') {
+                const dateA = new Date(a.createdAt).getTime();
+                const dateB = new Date(b.createdAt).getTime();
+                return sortOrder === 'desc' ? dateB - dateA : dateA - dateB;
+            } else {
+                const aValue = getMisuseRangeValue(a.misuseRange);
+                const bValue = getMisuseRangeValue(b.misuseRange);
+                return sortOrder === 'desc' ? bValue - aValue : aValue - bValue;
+            }
         });
-    }, [filteredReports, isBookmarked, sortOrder]);
-
-    // Toggle sort order
-    const toggleSortOrder = () => {
-        setSortOrder(prev => prev === 'desc' ? 'asc' : 'desc');
-    };
+    }, [filteredReports, isBookmarked, sortOrder, sortBy]);
 
     // To calculate the vote count
     const calculateVoteCounts = (report: IReport): VoteCount => {
@@ -376,27 +392,30 @@ const ReviewerDashboard = () => {
                             placeholder="Search reports by title..."
                         />
                             </div>
-                            <button
-                                onClick={toggleSortOrder}
-                                className="flex items-center gap-2 px-3 py-2 rounded-lg text-sm text-[#4ECDC4] hover:bg-[#4ECDC4]/10 transition-colors"
-                                title={sortOrder === 'desc' ? "Newest First" : "Oldest First"}
-                            >
-                                <span className="hidden sm:inline">Sort by Date</span>
-                                {sortOrder === 'desc' ? (
-                                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
-                                    </svg>
-                                ) : (
-                                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 15l7-7 7 7" />
-                                    </svg>
-                                )}
-                            </button>
                         </div>
-                        <StatusFilter
-                            selectedStatus={selectedStatus}
-                            onStatusChange={setSelectedStatus}
-                        />
+                        <div className="flex gap-4 items-center justify-between">
+                            <StatusFilter
+                                selectedStatus={selectedStatus}
+                                onStatusChange={setSelectedStatus}
+                            />
+                            <div className="flex gap-2">
+                                <select
+                                    value={sortBy}
+                                    onChange={(e) => setSortBy(e.target.value as 'date' | 'misuseRange')}
+                                    className="bg-[#1A1B1E] text-white rounded-lg px-3 py-2 text-sm focus:ring-2 focus:ring-[#4ECDC4] outline-none"
+                                >
+                                    <option value="date">Sort by Date</option>
+                                    <option value="misuseRange">Sort by Misuse Amount</option>
+                                </select>
+                                <button
+                                    onClick={() => setSortOrder(prev => prev === 'desc' ? 'asc' : 'desc')}
+                                    className="bg-[#1A1B1E] text-white rounded-lg px-3 py-2 text-sm hover:bg-[#2C2D31]"
+                                    title={sortOrder === 'desc' ? "Highest/Newest First" : "Lowest/Oldest First"}
+                                >
+                                    {sortOrder === 'desc' ? '↓' : '↑'}
+                                </button>
+                            </div>
+                        </div>
                     </div>
 
                     <div className="space-y-4">
@@ -444,8 +463,11 @@ const ReviewerDashboard = () => {
                                         </div>
                                         <div className="flex items-center sm:flex-col sm:items-end gap-2">
                                             <div className="flex items-center gap-2">
+                                                <span className="px-2 py-1 rounded-full text-xs bg-purple-500/20 text-purple-400">
+                                                    {report.misuseRange} ARB
+                                                </span>
                                                 <span
-                                                    className={`px-3 py-1 rounded-full text-xs ${
+                                                    className={`px-2 py-1 rounded-full text-xs ${
                                                         report.status === "approved"
                                                             ? "bg-[#4ECDC4]/20 text-[#4ECDC4]"
                                                             : report.status === "rejected"
@@ -467,7 +489,7 @@ const ReviewerDashboard = () => {
                                                     {report.voteCount?.total || 0}/3 votes
                                                 </span>
                                                 <span className="text-xs text-gray-400">
-                                                    {new Date(report.createdAt).toLocaleDateString()} {new Date(report.createdAt).toLocaleTimeString()}
+                                                    {new Date(report.createdAt).toLocaleDateString()}
                                                 </span>
                                             </div>
                                         </div>

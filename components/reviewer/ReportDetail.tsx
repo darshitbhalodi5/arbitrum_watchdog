@@ -93,6 +93,13 @@ const ReportDetail = ({
           </span>
         </div>
 
+        <div>
+          <span className="text-gray-400">Misuse Amount:</span>
+          <span className="ml-2 text-[#4ECDC4] font-mono">
+            {report.misuseRange} ARB
+          </span>
+        </div>
+
         <button
           onClick={handleFileView}
           className="text-[#4ECDC4] hover:underline focus:outline-none inline-flex items-center gap-2"

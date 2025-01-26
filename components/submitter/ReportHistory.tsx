@@ -131,20 +131,18 @@ const ReportHistory = ({ walletAddress }: ReportHistoryProps) => {
     <div className="flex flex-col lg:flex-row gap-4 sm:gap-8">
       {/* Reports List */}
       <div
-        className={`${selectedReport ? "lg:w-1/3" : "w-full"} ${
-          selectedReport ? "hidden lg:block" : "block"
-        }`}
+        className={`${selectedReport ? "lg:w-1/3" : "w-full"} ${selectedReport ? "hidden lg:block" : "block"
+          }`}
       >
         <div className="space-y-3 sm:space-y-4">
           {reports.map((report) => (
             <button
               key={report._id}
               onClick={() => setSelectedReport(report)}
-              className={`w-full p-3 sm:p-4 rounded-lg text-left ${
-                selectedReport?._id === report._id
+              className={`w-full p-3 sm:p-4 rounded-lg text-left ${selectedReport?._id === report._id
                   ? "bg-[#4ECDC4]/10 border-[#4ECDC4] border"
                   : "bg-[#2C2D31] border-gray-800 border hover:border-[#4ECDC4]"
-              }`}
+                }`}
             >
               <div className="flex flex-col sm:flex-row sm:justify-between sm:items-start gap-2 mb-2">
                 <div className="flex items-start gap-2">
@@ -156,14 +154,16 @@ const ReportHistory = ({ walletAddress }: ReportHistoryProps) => {
                   )}
                 </div>
                 <div className="flex items-center gap-2">
+                  <span className="px-2 py-1 rounded-full text-xs bg-purple-500/20 text-purple-400">
+                    {report.misuseRange} ARB
+                  </span>
                   <span
-                    className={`px-2 py-1 rounded-full text-xs ${
-                      report.status === "approved"
+                    className={`px-2 py-1 rounded-full text-xs ${report.status === "approved"
                         ? "bg-green-500/20 text-green-400"
                         : report.status === "rejected"
-                        ? "bg-red-500/20 text-red-400"
-                        : "bg-yellow-500/20 text-yellow-400"
-                    }`}
+                          ? "bg-red-500/20 text-red-400"
+                          : "bg-yellow-500/20 text-yellow-400"
+                      }`}
                   >
                     {report.status.charAt(0).toUpperCase() +
                       report.status.slice(1)}

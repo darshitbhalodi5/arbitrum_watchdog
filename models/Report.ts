@@ -1,5 +1,6 @@
 import mongoose, { Document } from "mongoose";
 import { Vote } from "@/types/vote";
+import { MisuseRange } from "@/types/report";
 
 interface IReport extends Document {
   additionalPaymentConfirmations: number;
@@ -11,6 +12,7 @@ interface IReport extends Document {
   fileUrl: string;
   status: "pending" | "approved" | "rejected";
   severity?: "high" | "medium" | "low";
+  misuseRange: MisuseRange;
   votes: Vote[];
   kycStatus: "pending" | "completed";
   basePaymentStatus: "pending" | "completed" | "rejected";
@@ -69,6 +71,11 @@ const reportSchema = new mongoose.Schema(
     severity: {
       type: String,
       enum: ["high", "medium", "low"],
+    },
+    misuseRange: {
+      type: String,
+      enum: ["<5k", "5-20k", "20-50k", "50-100k", "100-500k", "500k+"],
+      required: true,
     },
     votes: {
       type: [voteSchema],

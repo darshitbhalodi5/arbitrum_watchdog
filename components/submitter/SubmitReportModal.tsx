@@ -4,6 +4,7 @@ import { useState } from "react";
 import { encrypt } from "@/lib/encryption";
 import toast from "react-hot-toast";
 import { SubmitReportModalProps } from "@/types/report-submission";
+import { MisuseRange } from "@/types/report";
 
 const SubmitReportModal = ({
   isOpen,
@@ -14,9 +15,12 @@ const SubmitReportModal = ({
   const [title, setTitle] = useState("");
   const [telegramHandle, setTelegramHandle] = useState("");
   const [file, setFile] = useState<File | null>(null);
+  const [misuseRange, setMisuseRange] = useState<MisuseRange>("<5k");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Handle report sub mission
+  const MISUSE_RANGES: MisuseRange[] = ["<5k", "5-20k", "20-50k", "50-100k", "100-500k", "500k+"];
+
+  // Handle report submission
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setIsSubmitting(true);
@@ -30,6 +34,7 @@ const SubmitReportModal = ({
       formData.append("title", title);
       formData.append("telegramHandle", encryptedTelegram);
       formData.append("submitterAddress", walletAddress);
+      formData.append("misuseRange", misuseRange);
       if (file) {
         formData.append("file", file);
       }
@@ -48,6 +53,7 @@ const SubmitReportModal = ({
       setTitle("");
       setTelegramHandle("");
       setFile(null);
+      setMisuseRange("<5k");
       onSubmit(); // Call onSubmit to trigger refresh
       onClose();
     } catch (error) {
@@ -100,6 +106,24 @@ const SubmitReportModal = ({
                 className="w-full bg-[#1A1B1E] text-white rounded-lg px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base focus:ring-2 focus:ring-[#4ECDC4] outline-none"
                 required
               />
+            </div>
+
+            <div>
+              <label className="block text-gray-300 mb-2 text-sm sm:text-base">
+                Misuse Range (ARB)
+              </label>
+              <select
+                value={misuseRange}
+                onChange={(e) => setMisuseRange(e.target.value as MisuseRange)}
+                className="w-full bg-[#1A1B1E] text-white rounded-lg px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base focus:ring-2 focus:ring-[#4ECDC4] outline-none"
+                required
+              >
+                {MISUSE_RANGES.map((range) => (
+                  <option key={range} value={range}>
+                    {range} ARB
+                  </option>
+                ))}
+              </select>
             </div>
 
             <div>
