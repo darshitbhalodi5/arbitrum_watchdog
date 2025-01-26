@@ -40,6 +40,8 @@ const ReviewerDashboard = () => {
     const [selectedStatus, setSelectedStatus] = useState<'all' | 'approved' | 'rejected' | 'pending'>('all');
     const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('desc');
     const [sortBy, setSortBy] = useState<'date' | 'misuseRange'>('date');
+    const [isRefreshing, setIsRefreshing] = useState(false);
+    const [lastRefreshed, setLastRefreshed] = useState<Date>(new Date());
 
     const { 
       bookmarks: bookmarkedReports, 
@@ -364,17 +366,86 @@ const ReviewerDashboard = () => {
         }
     };
 
+    // Function to handle manual refresh
+    const handleRefresh = async () => {
+        if (isRefreshing) return;
+        
+        setIsRefreshing(true);
+        try {
+            const reportsWithDetails = await fetchReportDetail();
+            setReports(reportsWithDetails);
+            setLastRefreshed(new Date());
+            // toast.success("Reports refreshed successfully");
+        } catch (error) {
+            console.error("Error refreshing reports:", error);
+            toast.error("Failed to refresh reports");
+        } finally {
+            setIsRefreshing(false);
+        }
+    };
+
     return (
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 font-secondary">
-            <h2
-                className="text-3xl sm:text-4xl font-light font-primary mb-8 text-transparent bg-clip-text"
-                style={{
-                    backgroundImage:
-                        "linear-gradient(179.21deg, #FFFFFF 17.3%, #000000 168.94%)",
-                }}
-            >
-                Reviewer Dashboard
-            </h2>
+            <div className="flex justify-between items-center mb-8">
+                <h2
+                    className="text-3xl sm:text-4xl font-light font-primary text-transparent bg-clip-text"
+                    style={{
+                        backgroundImage:
+                            "linear-gradient(179.21deg, #FFFFFF 17.3%, #000000 168.94%)",
+                    }}
+                >
+                    Reviewer Dashboard
+                </h2>
+                <div className="flex items-center gap-4">
+                    <span className="text-sm text-gray-400">
+                        Last refreshed: {lastRefreshed.toLocaleTimeString()}
+                    </span>
+                    <button
+                        onClick={handleRefresh}
+                        disabled={isRefreshing}
+                        className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#1A1B1E] text-[#4ECDC4] hover:bg-[#2C2D31] transition-colors disabled:opacity-50"
+                    >
+                        {isRefreshing ? (
+                            <>
+                                <svg className="animate-spin h-4 w-4" viewBox="0 0 24 24">
+                                    <circle
+                                        className="opacity-25"
+                                        cx="12"
+                                        cy="12"
+                                        r="10"
+                                        stroke="currentColor"
+                                        strokeWidth="4"
+                                        fill="none"
+                                    />
+                                    <path
+                                        className="opacity-75"
+                                        fill="currentColor"
+                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                    />
+                                </svg>
+                                <span>Refreshing...</span>
+                            </>
+                        ) : (
+                            <>
+                                <svg
+                                    className="w-4 h-4"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                                    />
+                                </svg>
+                                <span>Refresh</span>
+                            </>
+                        )}
+                    </button>
+                </div>
+            </div>
 
             <div className="flex flex-col lg:flex-row gap-6">
                 {/* Reports List */}
@@ -583,6 +654,7 @@ const ReviewerDashboard = () => {
                                                 <QuestionAnswer
                                                     reportId={selectedReport._id?.toString() || ""}
                                                     isReviewer={true}
+                                                    onRefresh={handleRefresh}
                                                 />
                                             ),
                                         },

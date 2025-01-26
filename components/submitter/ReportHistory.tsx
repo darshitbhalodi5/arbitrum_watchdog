@@ -10,9 +10,14 @@ import QuestionAnswer from "@/components/common/QuestionAnswer";
 import NoReports from "@/components/NoReport";
 import Loading from "@/components/Loader";
 import TabView from "@/components/common/TabView";
-import { ReportHistoryProps, Report, Question } from "@/types/report-history";
+import { Report, Question } from "@/types/report-history";
 
-const ReportHistory = ({ walletAddress }: ReportHistoryProps) => {
+interface ReportHistoryProps {
+  walletAddress: string;
+  onRefresh?: () => Promise<void>;
+}
+
+const ReportHistory = ({ walletAddress, onRefresh }: ReportHistoryProps) => {
   const [reports, setReports] = useState<Report[]>([]);
   const [loading, setLoading] = useState(true);
   const [selectedReport, setSelectedReport] = useState<Report | null>(null);
@@ -84,7 +89,7 @@ const ReportHistory = ({ walletAddress }: ReportHistoryProps) => {
         window.URL.revokeObjectURL(url);
       }, 100);
 
-      toast.success("File downloaded successfully");
+      toast.success("File download started");
     } catch (error) {
       console.error("Error downloading file:", error);
       toast.error("Failed to download file");
@@ -116,6 +121,12 @@ const ReportHistory = ({ walletAddress }: ReportHistoryProps) => {
         console.error("Failed to decrypt telegram handle:", error);
         toast.error("Failed to decrypt telegram handle");
       }
+    }
+  };
+
+  const handleRefresh = async () => {
+    if (onRefresh) {
+      await onRefresh();
     }
   };
 
@@ -356,6 +367,7 @@ const ReportHistory = ({ walletAddress }: ReportHistoryProps) => {
                     <QuestionAnswer
                       reportId={selectedReport._id}
                       isReviewer={false}
+                      onRefresh={handleRefresh}
                     />
                   ),
                 },
