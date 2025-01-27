@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { connect } from '@/lib/mongodb';
-import Question from '@/models/Question';
+import QuestionModel from '@/models/Question';
 
 // PATCH /api/questions/[id] - Answer a question or mark as read
 export async function PATCH(
@@ -12,7 +12,7 @@ export async function PATCH(
     const body = await req.json();
     const { answer, answeredBy, markAsRead } = body;
     const id = (await params).id;
-    const question = await Question.findById(id);
+    const question = await QuestionModel.findById(id);
     if (!question) {
       return NextResponse.json({ error: 'Question not found' }, { status: 404 });
     }

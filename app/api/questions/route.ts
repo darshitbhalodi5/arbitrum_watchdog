@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import {connect} from '@/lib/mongodb';
-import Question from '@/models/Question';
+import { QuestionModel } from '@/models/Question';
 import { ReportModel } from '@/models/Report';
 
 // POST /api/questions - Create a new question
@@ -17,7 +17,7 @@ export async function POST(req: Request) {
     }
 
     // Create the question
-    const newQuestion = await Question.create({
+    const newQuestion = await QuestionModel.create({
       reportId,
       question,
       askedBy,
@@ -60,7 +60,7 @@ export async function GET(req: Request) {
       query.reportId = reportId;
     }
 
-    const questions = await Question.find(query).sort({ createdAt: -1 });
+    const questions = await QuestionModel.find(query).sort({ createdAt: -1 });
     return NextResponse.json(questions);
   } catch (error) {
     console.error('Error fetching questions:', error);
