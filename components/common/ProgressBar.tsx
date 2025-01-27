@@ -163,10 +163,6 @@ const ProgressBar = ({
         >
           {getBasePaymentStatusForReviewer()}
         </button>
-      ) : hasVerifiedBasePayment ? (
-        <span className="px-3 py-1 text-sm bg-green-500/20 text-green-400 rounded-lg">
-          Payment Verified
-        </span>
       ) : null,
     },
     {
@@ -188,10 +184,6 @@ const ProgressBar = ({
         >
           {getAdditionalPaymentStatusForReviewer()}
         </button>
-      ) : hasVerifiedAdditionalPayment ? (
-        <span className="px-3 py-1 text-sm bg-green-500/20 text-green-400 rounded-lg">
-          Payment Verified
-        </span>
       ) : null,
     },
   ];

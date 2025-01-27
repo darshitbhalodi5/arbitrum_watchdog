@@ -85,7 +85,7 @@ export default function Home() {
     checkRoleAccess();
   }, [checkRoleAccess]);
 
-  if (!ready || isProcessing) {
+  if (isProcessing) {
     return (
       <div className="min-h-screen flex flex-col relative bg-[#020617]">
         <div className="flex items-center justify-center h-screen">

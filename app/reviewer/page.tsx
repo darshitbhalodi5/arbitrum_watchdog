@@ -19,12 +19,12 @@ export default function ReviewerPage() {
     }
   }, [ready, authenticated, router]);
 
-  if (!ready || redirecting) {
+  if (redirecting) {
       return <Loading message="Redirecting to homepage..." />;
   }
 
-  if (!ready || !authenticated || !user) {
-    return <Loading message="Accessing reviewer dashboard..." />;
+  if (!authenticated || !user) {
+    return <Loading message="Fetching latest data for you ..." />;
   }
 
   return (
