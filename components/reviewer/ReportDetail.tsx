@@ -47,7 +47,7 @@ const ReportDetail = ({
           (report.basePaymentConfirmations || 0) + 1;
       }
 
-      toast.success("Base payment confirmed");
+      // toast.success("Base payment confirmed");
     } catch (error) {
       console.error("Error confirming payment:", error);
       toast.error("Failed to confirm payment");
@@ -75,7 +75,7 @@ const ReportDetail = ({
           (report.additionalPaymentConfirmations || 0) + 1;
       }
 
-      toast.success("Additional payment confirmed");
+      // toast.success("Additional payment confirmed");
     } catch (error) {
       console.error("Error confirming additional payment:", error);
       toast.error("Failed to confirm additional payment");
