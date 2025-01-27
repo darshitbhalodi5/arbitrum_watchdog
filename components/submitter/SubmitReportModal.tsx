@@ -153,6 +153,9 @@ const SubmitReportModal = ({
               <p className="text-xs sm:text-sm text-gray-400 mt-1">
                 Supported formats: PDF, DOC, DOCX, TXT
               </p>
+              <p className="text-xs sm:text-sm text-gray-400 mt-1">
+                Max. Upload Size: 2 MB
+              </p>
             </div>
 
             <div className="flex flex-col sm:flex-row justify-end gap-3 sm:gap-4 mt-6">

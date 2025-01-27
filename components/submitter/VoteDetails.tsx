@@ -14,10 +14,14 @@ const VoteDetails = ({
     [report, votes]
   );
 
-   // Generate anonymous names for the votes
-   const anonymousNames = useMemo(() => 
-    generateUniqueAnonymousNames(votesToDisplay.map(vote => vote.reviewerAddress || '')),
-    [votesToDisplay]
+  // Generate anonymous names for the votes
+  const anonymousNames = useMemo(
+    () =>
+      generateUniqueAnonymousNames(
+        votesToDisplay.map((vote) => vote.reviewerAddress || ""),
+        report?.id || `report-${Date.now()}`
+      ),
+    [votesToDisplay, report?.id]
   );
 
   const [voteCount, setVoteCount] = useState<VoteCount>({
@@ -113,7 +117,7 @@ const VoteDetails = ({
           >
             <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-2 sm:gap-0">
               <span className="text-gray-400 font-mono text-xs sm:text-sm">
-                 By {anonymousNames[index]?.name || 'Anonymous'}
+                By {anonymousNames[index]?.name || "Anonymous"}
               </span>
               <div className="flex flex-wrap items-center gap-2">
                 <span
