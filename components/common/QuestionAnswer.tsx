@@ -169,9 +169,9 @@ const QuestionAnswer = ({ reportId, isReviewer, onRefresh }: QuestionAnswerProps
                 }`}
               >
                 <div className={`flex justify-between items-start gap-2 ${isCurrentUser ? 'flex-row-reverse' : 'flex-row'}`}>
-                  <span className="text-xs text-[#4ECDC4]">
+                  {/* <span className="text-xs text-[#4ECDC4]">
                     {isCurrentUser ? 'You' : (msg.sender === question.askedBy ? 'Submitter' : 'Reviewer')}
-                  </span>
+                  </span> */}
                   <span className="text-xs text-gray-400">
                     {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
                   </span>
@@ -199,21 +199,21 @@ const QuestionAnswer = ({ reportId, isReviewer, onRefresh }: QuestionAnswerProps
   // Question label for good experiance to both submitter and reviewer
   const getQuestionLabel = (question: Question) => {
     if (question.askedBy === user?.wallet?.address) {
-      return "Your Question";
+      return "You";
     }
     return question.isSubmitterQuestion
-      ? "Asked by Submitter"
-      : "Asked by Reviewer";
+      ? "Submitter"
+      : "Reviewer";
   };
 
   // Answer label for good experiance to both submitter and reviewer
   const getAnswerLabel = (question: Question) => {
     if (question.answeredBy === user?.wallet?.address) {
-      return "Your Answer";
+      return "You";
     }
     return question.isSubmitterQuestion
-      ? "Answered by Reviewer"
-      : "Answered by Submitter";
+      ? "Reviewer"
+      : "Submitter";
   };
 
   return (
