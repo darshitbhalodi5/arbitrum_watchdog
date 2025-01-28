@@ -3,14 +3,13 @@ import Navbar from "@/components/common/Navbar";
 import EyeIcon from "@/public/assets/solar-eye-broken.png";
 import CubeShape from "@/public/assets/heroicons-cube-transparent.png";
 import MissionGraphic from "@/public/assets/mission-section.png";
-import RecoverSection from "@/public/assets/recover.png";
-import EmpowerSection from "@/public/assets/empower.png";
-import PreventSection from "@/public/assets/prevent.png";
+import RecoverSection from "@/public/assets/recover.svg";
+import EmpowerSection from "@/public/assets/empower.svg";
+import PreventSection from "@/public/assets/prevent.svg";
 import SpiralImage from "@/public/assets/spiral.png";
 import ActionSection from "@/public/assets/action.png";
-import HeroBg from "@/public/assets/background.png";
+import HeroBg from "@/public/assets/background.svg";
 import Arrow from "@/public/assets/arrow.png";
-import { CircleDot } from "lucide-react";
 import { ChevronDown } from "lucide-react";
 import { ChevronUp } from "lucide-react";
 import { Equal } from "lucide-react";
@@ -18,16 +17,15 @@ import { LandingPageProps } from "@/types/landingpage";
 
 export default function LandingPage({ onRoleSelect }: LandingPageProps) {
   return (
-    <div className="min-h-screen bg-[#0A0B0C] text-white font-secondary">
+    <div className="min-h-screen bg-[#000000] text-white font-secondary">
       {/* Hero Section with Navbar - Full Height */}
       <div className="h-screen relative flex flex-col">
         {/* Background Image for Hero */}
-        <div className="absolute inset-0 z-0">
+        <div className="absolute top-[-150px] h-[900px] w-full">
           <Image
             src={HeroBg}
             alt="Hero Background"
-            fill
-            className="object-cover opacity-30"
+            className="object-contain opacity-50"
             priority
           />
         </div>
@@ -40,78 +38,55 @@ export default function LandingPage({ onRoleSelect }: LandingPageProps) {
         {/* Hero Content - Centered */}
         <div className="flex-1 flex items-center justify-center">
           <section className="w-full text-center relative z-10">
-            <div className="w-[90%] mx-auto max-w-6xl">
-              <h1
-                className="text-6xl md:text-8xl font-light mb-4 font-primary tracking-wider text-transparent bg-clip-text bg-gradient-to-b from-[#ffffff] to-[#000000]"
-                style={{
-                  backgroundImage:
-                    "linear-gradient(179.21deg, #FFFFFF 17.3%, #000000 168.94%)",
-                }}
-              >
+            <div className="w-[90%] mx-auto">
+              <h1 className="text-4xl sm:text-7xl lg:text-8xl xl:text-9xl mt-12 mb-4 font-primary font-medium tracking-wider text-transparent bg-clip-text bg-gradient-to-br from-[#ffffff] from-[17.3%] to-[168.94%] to-[#000000]">
                 Welcome to Truence
               </h1>
-              <div
-                className="rounded-full px-8 py-3 inline-block mb-16"
-                style={{
-                  border: "0.5px solid #FAFFC8A6",
-                  background: "#00000052",
-                  boxShadow: "0px 4px 29.8px 0px #FFFFFF33 inset",
-                  backdropFilter: "blur(20px)", // Optional if needed
-                }}
-              >
-                <p className="text-[#FFFAD1] text-sm">
-                  Protecting the Integrity of DAO Funds
-                </p>
+              <div className="rounded-full text-xs sm:text-base px-4 py-2 sm:px-12 sm:py-3 inline-block mb-16 text-[#FFFAD1] font-secondary tracking-wide border-[0.5px] border-[#FAFFC8A6] bg-[#00000052] shadow-[inset_0px_4px_29.8px_0px_#FFFFFF33] backdrop-blur-[20px]">
+                Protecting the Integrity of DAO Funds
               </div>
 
               {/* Login Options */}
-              <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+              <div className="grid md:grid-cols-2 gap-6 mx-auto">
                 {["reviewer", "submitter"].map((role) => (
                   <div
                     key={role}
                     onClick={() =>
                       onRoleSelect(role as "reviewer" | "submitter")
                     }
-                    className="rounded-lg overflow-hidden relative cursor-pointer group"
+                    className="rounded-lg overflow-hidden relative cursor-pointer group bg-[#020C1099] border border-[#82FFF466]"
                     style={{
-                      background: "#020C1099",
-                      border: "1px solid",
                       backdropFilter: "blur(80px)",
                       boxShadow: "0px 4px 50.5px 0px #96F1FF21 inset",
                     }}
                   >
                     <div className="absolute inset-0 bg-gradient-to-b from-[#4ECDC4]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                    <div className="p-8 text-left relative">
-                      <div className="flex items-center justify-between mb-3">
-                        <h3 className="text-xl text-[#B0E9FF] font-medium">
+                    <div className="py-5 px-8 sm:py-7 sm:px-14 lg:py-10 lg:px-20 text-left relative">
+                      <div className="flex items-center justify-start gap-4 mb-3">
+                        <h3 className="text-3xl text-[#B0E9FF] font-primary font-medium mb-3">
                           Login as{" "}
                           {role.charAt(0).toUpperCase() + role.slice(1)}
                         </h3>
-                        <div className="text-gray-400 group-hover:translate-x-1 group-hover:translate-y-1 transition-transform duration-300">
-                          <Image src={Arrow} alt="Arrow Icon" />
+                        <div className="text-gray-400 opacity-0 group-hover:opacity-100 group-hover:translate-x-6 transition-transform duration-300">
+                          <Image
+                            src={Arrow}
+                            alt="Arrow Icon"
+                            className="w-[25px] h-auto"
+                          />
                         </div>
                       </div>
-                      <p className="text-[#ffffff] text-sm mb-6 leading-relaxed">
+                      <p className="text-[#ffffff] text-base leading-relaxed font-secondary">
                         {role === "reviewer"
                           ? "Review and validate submitted content. Only authorized reviewer wallets can access this role."
                           : "Submit content for review. Reviewer wallets cannot access this role."}
                       </p>
-                      <div className="absolute bottom-0 right-0 w-24 h-24 opacity-10">
-                        <Image
-                          src={role === "reviewer" ? EyeIcon : CubeShape}
-                          alt={`${role} icon`}
-                          width={96}
-                          height={96}
-                          className="object-contain"
-                        />
-                      </div>
                     </div>
                   </div>
                 ))}
               </div>
 
               {/* Note text */}
-              <p className="text-[#CDFFFA] text-sm mt-6">
+              <p className="text-[#CDFFFA] text-sm mt-6 font-secondary">
                 Note: Each wallet can only be used for one role. Reviewer
                 wallets cannot submit reports.
               </p>
@@ -121,20 +96,14 @@ export default function LandingPage({ onRoleSelect }: LandingPageProps) {
       </div>
 
       {/* Mission Section */}
-      <section className="py-24 px-4 relative bg-[#000203]">
-        <div className="w-[90%] mx-auto max-w-6xl">
-          <div className="flex flex-col md:flex-row items-center justify-between gap-12">
-            <div className="md:w-1/2">
-              <h2
-                className="text-4xl sm:text-5xl mb-6 font-primary font-light text-transparent bg-clip-text"
-                style={{
-                  backgroundImage:
-                    "linear-gradient(179.48deg, #FBFCA4 17.14%, #FFFFFF 135.08%)",
-                }}
-              >
+      <section className="p-4 relative overflow-x-hidden mt-[200px] sm:mt-[200px] md:mt-0">
+        <div className="w-[90%] mx-auto">
+          <div className="flex flex-col md:flex-row items-center justify-between gap-4 lg:gap-12">
+            <div className="w-full md:w-[70%] lg:w-1/2">
+              <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl mb-6 font-primary font-medium text-transparent bg-clip-text bg-gradient-to-br from-[#FBFCA4] from-[17.14%] to-[#FFFFFF] to-[135.08%]">
                 The Mission
               </h2>
-              <p className="text-[#ffffff] text-lg leading-relaxed">
+              <p className="text-[#ffffff] text-sm md:text-base lg:text-lg leading-relaxed">
                 The Arbitrum DAO has distributed over $50 million ARB tokens to
                 fund ecosystem initiatives. However, there have been instances
                 of misused tokens and we need accountability to ensure the
@@ -143,34 +112,26 @@ export default function LandingPage({ onRoleSelect }: LandingPageProps) {
                 spending misuse or fraud.
               </p>
             </div>
-            <div className="md:w-1/2 flex justify-center">
-              <div className="relative w-[400px] aspect-square">
-                <Image
-                  src={MissionGraphic || "/placeholder.svg"}
-                  alt="Mission Section Graphic"
-                  fill
-                  className="object-contain transform hover:scale-105 transition-transform duration-500"
-                  priority
-                />
-              </div>
+            <div className="md:w-1/2 flex justify-center relative w-full h-[500px] md:h-[400px] lg:h-[500px] xl:h-[700px] md:mr-[-100px]">
+              <Image
+                src={MissionGraphic || "/placeholder.svg"}
+                alt="Mission Section Graphic"
+                fill
+                className="w-auto h-full"
+                priority
+              />
             </div>
           </div>
         </div>
       </section>
 
       {/* What is Truence Section */}
-      <section className="py-24 px-4 bg-[#000203]">
-        <div className="w-[90%] mx-auto max-w-6xl">
-          <h2
-            className="text-4xl sm:text-5xl mb-6 font-primary font-light text-transparent bg-clip-text"
-            style={{
-              backgroundImage:
-                "linear-gradient(179.48deg, #C3FEF8 17.14%, #D8D8D8 117.32%)",
-            }}
-          >
+      <section className="p-4">
+        <div className="w-[90%] mx-auto">
+          <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl mb-3 font-primary font-medium text-transparent bg-clip-text bg-gradient-to-br from-[#C3FEF8] from-[17.14%] to-[#D8D8D8] to-[135.08%]">
             What is Truence ?
           </h2>
-          <p className="text-[#ffffff] mb-16 text-lg">
+          <p className="text-[#ffffff] mb-16 text-sm sm:text-lg leading-relaxed">
             Truence is a grant misuse bounty program designed to:
           </p>
           <div className="grid md:grid-cols-2 gap-16">
@@ -184,7 +145,7 @@ export default function LandingPage({ onRoleSelect }: LandingPageProps) {
                 text: "Deter malicious actors by introducing transparent consequences for fund mismanagement.",
               },
             ].map((item, index) => (
-              <div key={index} className="flex flex-col items-start">
+              <div key={index} className="flex flex-col items-start w-full md:w-[340px] lg:w-[440px] xl:w-[500px]">
                 <div
                   className="w-16 h-16 rounded-full relative flex items-center justify-center mb-8 group bg-gradient-to-b from-[rgba(6,26,34,0.08)] to-[rgba(12,75,100,0.2)] backdrop-blur-xl"
                   style={{
@@ -193,17 +154,16 @@ export default function LandingPage({ onRoleSelect }: LandingPageProps) {
                     boxShadow: "0px 4px 12px 0px #FFFFFF33 inset",
                   }}
                 >
-                  <div className="w-8 h-8 opacity-90">
+                  <div className="w-8 h-8 opacity-90 flex items-center justify-center">
                     <Image
                       src={item.icon || "/placeholder.svg"}
                       alt="Icon"
                       width={32}
                       height={32}
-                      className="object-contain"
                     />
                   </div>
                 </div>
-                <p className="text-[#ffffff] text-lg leading-relaxed">
+                <p className="text-[#ffffff] text-xs sm:text-sm lg:text-base leading-relaxed text-wrap">
                   {item.text}
                 </p>
               </div>
@@ -213,156 +173,122 @@ export default function LandingPage({ onRoleSelect }: LandingPageProps) {
       </section>
 
       {/* How It Works Section */}
-      <section className="py-24 px-4 bg-[#000203]">
-        <div className="w-[90%] mx-auto max-w-6xl">
-          <h2
-            className="text-4xl sm:text-5xl mb-24 font-light font-primary bg-clip-text text-transparent"
-            style={{
-              backgroundImage:
-                "linear-gradient(179.48deg, #FBFCA4 17.14%, #FFFFFF 135.08%)",
-            }}
-          >
+      <section className="py-32 px-4">
+        <div className="w-[90%] h-full mx-auto">
+          <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl mt-6 mb-14 font-primary font-medium text-transparent bg-clip-text bg-gradient-to-br from-[#FBFCA4] from-[17.14%] to-[#FFFFFF] to-[135.08%]">
             How It Works
           </h2>
-          <div className="grid md:grid-cols-3 gap-16 relative">
-            {/* Connecting Lines */}
-            <div className="hidden md:block absolute top-[22px] w-full">
-              <div
-                className="absolute left-[33%] right-[67%] h-[2px]"
-                style={{
-                  background:
-                    "linear-gradient(90deg, rgba(78, 205, 196, 0.2) 0%, #4ECDC4 100%)",
-                  boxShadow: "0 0 20px rgba(78, 205, 196, 0.4)",
-                }}
-              ></div>
-              <div
-                className="absolute left-[67%] right-[33%] h-[2px]"
-                style={{
-                  background:
-                    "linear-gradient(90deg, #4ECDC4 0%, rgba(78, 205, 196, 0.2) 100%)",
-                  boxShadow: "0 0 20px rgba(78, 205, 196, 0.4)",
-                }}
-              ></div>
-            </div>
+          <div className="relative">
+            <div className="hidden md:flex w-[14%] lg:w-[17%] xl:w-[20%] h-[1px] bg-white absolute top-[12px] left-[20%] lg:left-[17%] xl:left-[14%] bg-gradient-to-r from-[#000000] via-[#FBFCAF] to-[#000000]"></div>
+            <div className="hidden md:flex w-[14%] lg:w-[17%] xl:w-[20%] h-[1px] bg-white absolute top-[12px] left-[56%] lg:left-[52%] xl:left-[49%] bg-gradient-to-r from-[#000000] via-[#FBFCAF] to-[#000000]"></div>
 
-            {[
-              {
-                step: "Step 1",
-                title: "Submit a Report",
-                description:
-                  "Confidentially report evidence-based misuse of DAO funds.",
-              },
-              {
-                step: "Step 2",
-                title: "Rewards",
-                description:
-                  "Earn ARB-based rewards for valid misuse reports, including a base payout and a share of recovered funds.",
-              },
-              {
-                step: "Step 3",
-                title: "Review Process",
-                description:
-                  "A trusted panel evaluates the report, determines severity (Low, Medium, High), and takes action.",
-              },
-            ].map((item, index) => (
-              <div key={index} className="text-left relative">
-                <div className="justify-center content-center">
-                  <span className="text-[#ffffff] text-lg font-light mb-6 block">
-                    <CircleDot className="inline-block mr-[1rem] text-[#FBFCA4]" />
-                    {item.step}
-                  </span>
+            <div className="grid md:grid-cols-3 gap-16 relative">
+              {[
+                {
+                  step: "Step 1",
+                  title: "Submit a Report",
+                  description:
+                    "Confidentially report evidence-based misuse of DAO funds.",
+                },
+                {
+                  step: "Step 2",
+                  title: "Rewards",
+                  description:
+                    "Earn ARB-based rewards for valid misuse reports, including a base payout and a share of recovered funds.",
+                },
+                {
+                  step: "Step 3",
+                  title: "Review Process",
+                  description:
+                    "A trusted panel evaluates the report, determines severity (Low, Medium, High), and takes action.",
+                },
+              ].map((item, index) => (
+                <div key={index} className="text-left px-4">
+                  <div className="flex items-center justify-start gap-4 mb-8">
+                    <div className="w-[25px] h-[25px] border-[0.5px] border-[#FAFCA3] rounded-full flex items-center justify-center">
+                      <div className="w-[13px] h-[13px] bg-[#FAFCA3] rounded-full"></div>
+                    </div>
+                    <span className="text-[#ffffff] text-lg">{item.step}</span>
+                  </div>
+
+                  <h4 className="text-xl sm:text-3xl mb-6 font-primary font-medium text-transparent bg-clip-text bg-gradient-to-br from-[#FBFCA4] from-[17.14%] to-[#FFFFFF] to-[135.08%]">
+                    {item.title}
+                  </h4>
+                  <p className="text-[#ffffff] text-xs sm:text-sm lg:text-base leading-relaxed">
+                    {item.description}
+                  </p>
                 </div>
-                <h4
-                  className="text-2xl mb-4 font-light bg-clip-text text-transparent"
-                  style={{
-                    backgroundImage:
-                      "linear-gradient(179.48deg, #FBFCA4 17.14%, #FFFFFF 135.08%)",
-                  }}
-                >
-                  {item.title}
-                </h4>
-                <p className="text-[#ffffff] text-base leading-relaxed">
-                  {item.description}
-                </p>
-              </div>
-            ))}
+              ))}
+            </div>
           </div>
         </div>
       </section>
 
       {/* Why Truence Matters Section */}
-      <section className="py-24 px-4 bg-[#000203]">
-        <div className="w-[90%] mx-auto max-w-6xl">
-          <h2
-            className="text-4xl sm:text-5xl mb-12 font-light font-primary text-transparent bg-clip-text"
-            style={{
-              backgroundImage:
-                "linear-gradient(179.48deg, #C3FEF8 17.14%, #D8D8D8 117.32%)",
-            }}
-          >
+      <section className="py-4 px-4">
+        <div className="w-[90%] mx-auto">
+          <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl my-10 font-primary font-medium text-transparent bg-clip-text bg-gradient-to-br from-[#C3FEF8] from-[17.14%] to-[#D8D8D8] to-[135.08%]">
             Why Truence Matters
           </h2>
-          <div className="grid grid-cols-3 gap-8">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8 h-max">
             <div className="relative">
-              <div className="rounded-lg bg-gradient-to-b from-[rgba(6,26,34,0.08)] to-[rgba(12,75,100,0.2)] backdrop-blur-xl border border-[#4ECDC4]/20">
-                <div className="h-48 flex items-start justify-start">
+              <div className="rounded-3xl bg-gradient-to-b from-[rgba(6,26,34,0.08)] to-[rgba(12,75,100,0.2)] backdrop-blur-xl border border-[#4ECDC4]/20 overflow-hidden h-full">
+                <div className="flex items-start justify-start ml-[-180px]">
                   <Image
                     src={RecoverSection}
                     alt="Recover Misused Funds"
-                    width={300}
-                    height={300}
-                    className="object-contain"
+                    className="h-[120px] md:h-[150px] lg:h-[170px] xl:h-[200px]"
                   />
                 </div>
-                <div className="p-6">
-                  <h3 className="text-[#B0E9FF] text-2xl font-light mb-3">
-                    Recover Misused Funds
+                <div className="p-6 lg:px-10 lg:py-8 xl:px-14 xl:py-10">
+                  <h3 className="text-[#B0E9FF] text-2xl md:text-3xl font-light mb-3">
+                    Recover
+                    <br /> Misused Funds
                   </h3>
-                  <p className="text-[#ffffff] text-sm leading-relaxed">
+                  <p className="text-[#ffffff] text-xs sm:text-sm leading-relaxed tracking-wide">
                     Strengthen DAO finances by identifying and recovering
                     misallocated resources.
                   </p>
                 </div>
               </div>
             </div>
+
             <div className="relative">
-              <div className="rounded-lg bg-gradient-to-b from-[rgba(6,26,34,0.08)] to-[rgba(12,75,100,0.2)] backdrop-blur-xl border border-[#4ECDC4]/20">
-                <div className="h-48 flex items-start justify-center">
+              <div className="rounded-3xl bg-gradient-to-b from-[rgba(6,26,34,0.08)] to-[rgba(12,75,100,0.2)] backdrop-blur-xl border border-[#4ECDC4]/20 overflow-hidden h-full">
+                <div className="flex items-start justify-start">
                   <Image
                     src={PreventSection}
                     alt="Prevent Misconduct"
-                    width={300}
-                    height={300}
-                    className="object-contain"
+                    className="h-[120px] md:h-[150px] lg:h-[170px] xl:h-[200px]"
                   />
                 </div>
-                <div className="p-6">
-                  <h3 className="text-[#B0E9FF] text-2xl font-light mb-3">
-                    Prevent Misconduct
+                <div className="p-6 lg:px-10 lg:py-8 xl:px-14 xl:py-10">
+                  <h3 className="text-[#B0E9FF] text-2xl md:text-3xl font-light mb-3">
+                    Prevent
+                    <br /> Misconduct
                   </h3>
-                  <p className="text-[#ffffff] text-sm leading-relaxed">
+                  <p className="text-[#ffffff] text-xs sm:text-sm leading-relaxed tracking-wide">
                     Transparent reporting and public accountability deter bad
                     actors.
                   </p>
                 </div>
               </div>
             </div>
+
             <div className="relative">
-              <div className="rounded-lg bg-gradient-to-b from-[rgba(6,26,34,0.08)] to-[rgba(12,75,100,0.2)] backdrop-blur-xl border border-[#4ECDC4]/20">
-                <div className="h-48 flex items-start justify-end">
+              <div className="rounded-3xl bg-gradient-to-b from-[rgba(6,26,34,0.08)] to-[rgba(12,75,100,0.2)] backdrop-blur-xl border border-[#4ECDC4]/20 overflow-hidden h-full">
+                <div className="flex items-start justify-start mr-[-95px]">
                   <Image
                     src={EmpowerSection}
                     alt="Empower the Community"
-                    width={300}
-                    height={300}
-                    className="object-contain"
+                    className="h-[120px] md:h-[150px] lg:h-[170px] xl:h-[200px]"
                   />
                 </div>
-                <div className="p-6">
-                  <h3 className="text-[#B0E9FF] text-2xl font-light mb-3">
-                    Empower the Community
+                <div className="p-6 lg:px-10 lg:py-8 xl:px-14 xl:py-10">
+                  <h3 className="text-[#B0E9FF] text-2xl md:text-3xl font-light mb-3">
+                    Empower the <br /> Community
                   </h3>
-                  <p className="text-[#ffffff] text-sm leading-relaxed">
+                  <p className="text-[#ffffff] text-xs sm:text-sm leading-relaxed tracking-wide">
                     Give contributors the tools and incentives to uphold the
                     integrity of the Arbitrum ecosystem.
                   </p>
@@ -374,114 +300,110 @@ export default function LandingPage({ onRoleSelect }: LandingPageProps) {
       </section>
 
       {/* Reward Structure Section */}
-
-      <section className="py-24 px-4 bg-[#000203]">
-        <div className="w-[90%] mx-auto max-w-6xl">
-          <h2
-            className="text-4xl sm:text-5xl mb-4 text-[#FFFAE0] font-light font-primary text-center bg-clip-text text-transparent"
-            style={{
-              backgroundImage:
-                "linear-gradient(179.48deg, #FBFCA4 17.14%, #FFFFFF 135.08%)",
-            }}
-          >
+      <section className="py-24 px-4">
+        <div className="w-[90%] mx-auto">
+          <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl mt-6 mb-5 font-primary font-medium text-transparent text-center bg-clip-text bg-gradient-to-br from-[#FBFCA4] from-[17.14%] to-[#FFFFFF] to-[135.08%]">
             Reward Structure
           </h2>
           <div className="flex justify-center items-center">
-            <div
-              className="bg-[#1A1B1E]/30 rounded-full px-8 py-3 inline-block mb-16 border border-[#4ECDC4]/10"
-              style={{
-                background: "#00000052",
-                border: "0.5px solid #FAFFC8A6",
-                boxShadow: "0px 4px 29.8px 0px #FFFFFF33 inset",
-              }}
-            >
-              <p className="text-[#FFFAD1] text-sm">
+            <div className="bg-[#00000052] rounded-full px-10 py-3 inline-block mb-16 border-[0.5px] border-[#FAFFC8A6] shadow-[inset_0px_4px_29.8px_0px_#FFFFFF33]">
+              <p className="text-[#FFFAD1] text-xs md:text-sm text-center tracking-wide">
                 Community members are rewarded based on the severity of the
                 misuse
               </p>
             </div>
           </div>
-          <div className="relative flex justify-center items-center min-h-[600px]">
+
+          <div className="relative h-[700px] w-[320px] md:w-[768px] xl:w-full max-w-[1400px] mx-auto overflow-hidden">
             {/* Spiral Image */}
-            <div className="absolute inset-0 flex items-center justify-center">
+            <div className="absolute left-[-50px] sm:left-[10%] xl:left-[30%] top-[15%] xl:top-[5%] w-[400px] sm:w-[450px] xl:w-[550px]">
               <Image
                 src={SpiralImage || "/placeholder.svg"}
                 alt="Reward Structure Spiral"
-                width={400}
-                height={600}
-                className="object-contain"
+                className="w-full h-auto"
               />
             </div>
 
-            {/* Labels with lines */}
-            {[
-              {
-                position: "top-12 left-0",
-                icon: ChevronUp,
-                title: "High Severity",
-                reward: "30,000 ARB + 5%",
-                cap: "of recovered funds (capped at $100k)",
-                linePosition:
-                  "absolute top-[4rem] left-[12rem] w-[16rem] h-[1px] bg-[#FAFFC8]",
-              },
-              {
-                position: "right-0 top-1/2 -translate-y-1/2",
-                icon: Equal,
-                title: "Medium Severity",
-                reward: "10,000 ARB + 5%",
-                cap: "of recovered funds (capped at $50k)",
-                linePosition:
-                  "absolute top-[4rem] right-[14rem] w-[14rem] h-[1px] bg-[#FAFFC8]",
-              },
-              {
-                position: "bottom-12 left-0",
-                icon: ChevronDown,
-                title: "Low Severity",
-                reward: "1,000 ARB + 5%",
-                cap: "of recovered funds (capped at $10k)",
-                linePosition:
-                  "absolute bottom-[4rem] left-[12rem] w-[16rem] h-[1px] bg-[#FAFFC8]",
-              },
-            ].map((item, index) => (
-              <div
-                key={index}
-                className={`absolute ${item.position} flex flex-col items-start justify-center gap-2`}
-              >
-                {/* Line connecting to spiral */}
-                <div className={item.linePosition}></div>
-                {/* Label */}
-                <div className="w-8 h-8 flex items-center justify-center bg-[#00000052] border-0.5 border-solid rounded-full border-[#FAFFC8A6] shadow-[0px_4px_29.8px_0px_#FFFFFF33_inset]">
-                  <item.icon
-                    className="text-[#FFFAD1]"
-                    width={20}
-                    height={20}
-                  />
-                </div>
-                <div className="text-left">
-                  <h3
-                    className="text-lg font-light mb-1 text-transparent bg-clip-text"
-                    style={{
-                      backgroundImage:
-                        "linear-gradient(179.48deg, #FBFCA4 17.14%, #FFFFFF 135.08%)",
-                    }}
-                  >
-                    {item.title}
-                  </h3>
-                  <p className="text-[#ffffff] text-xl font-light mb-1">
-                    {item.reward}
-                  </p>
-                  <p className="text-xs text-[#ffffff]">{item.cap}</p>
-                </div>
+            <div className="absolute top-[25%] left-[57%] xl:top-[20%] xl:left-[63%] w-[6px] h-[6px] bg-[#FFFAD1] rounded-full"></div>
+            <div className="absolute top-[calc(25%-60px)] left-[calc(57%+2.2px)] xl:top-[calc(20%-80px)] xl:left-[calc(63%+2.2px)] w-[1.5px] h-[60px] xl:h-[80px] bg-[#FFFAD1]"></div>
+            <div className="absolute top-[calc(25%-60px)] left-[47.2%] xl:top-[calc(20%-80px)] xl:left-[23.2%] h-[1.5px] w-[10%] xl:w-[40%] bg-gradient-to-r from-[#000000] from-[7.67%] to-[#FFFAD1]"></div>
+
+            <div className="absolute top-[39%] left-[85%] sm:top-[53%] sm:left-[52%] xl:top-[45%] xl:left-[63%] w-[6px] h-[6px] bg-[#FFFAD1] rounded-full"></div>
+            <div className="absolute top-[39%] left-[calc(85%+2.5px)] sm:top-[calc(53%+2.5px)] sm:left-[52%] xl:top-[calc(45%+2.5px)] xl:left-[63%] w-[1.5px] h-[110px] sm:h-[1.5px] sm:w-[7%] xl:w-[10%] bg-gradient-to-t sm:bg-gradient-to-l from-[#000000] from-[7.67%] to-[#FFFAD1]"></div>
+
+            <div className="absolute top-[60%] left-[5%] sm:top-[70%] sm:left-[35%] xl:top-[64%] xl:left-[36%] w-[6px] h-[6px] bg-[#FFFAD1] rounded-full"></div>
+            <div className="absolute top-[60%] left-[calc(5%+2.5px)] sm:top-[calc(70%+2.5px)] sm:left-[25%] xl:top-[calc(64%+2.5px)] xl:left-[26%] w-[1.5px] h-[150px] sm:h-[1.5px] sm:w-[10%] bg-gradient-to-t sm:bg-gradient-to-r from-[#000000] from-[7.67%] to-[#FFFAD1]"></div>
+
+            {/* High Severity Label */}
+            <div className="absolute top-0 left-0 sm:top-[-50px] xl:top-12 sm:left-[7%] flex flex-col items-start justify-center gap-4">
+              {/* Icon */}
+              <div className="w-5 h-5 sm:w-10 sm:h-10 flex items-center justify-center bg-[#00000052] border-[0.5px] rounded-full border-[#FAFFC8A6] shadow-[0px_4px_29.8px_0px_#FFFFFF33_inset]">
+                <ChevronUp className="text-[#FFFAD1]"  />
               </div>
-            ))}
+              {/* Label Content */}
+              <div className="text-left">
+                <h3 className="text-xl sm:text-3xl mb-2 sm:mb-4 text-transparent bg-clip-text bg-gradient-to-b from-[#FBFCA4] from-[17.14%] to-[#FFFFFF] to-[135.08%]">
+                  High Severity
+                </h3>
+                <p className="text-[#ffffff] text-lg sm:text-2xl font-bold mb-2 sm:mb-4">
+                  30,000 ARB + 5%
+                </p>
+                <p className="text-xs sm:text-sm text-[#ffffff] tracking-wider">
+                  of recovered funds (capped at $100k)
+                </p>
+              </div>
+            </div>
+
+            {/* Medium Severity Label */}
+            <div className="absolute top-[68%] right-[1%] sm:top-[64%] xl:right-[3%] xl:top-[56%] -translate-y-1/2 flex flex-col items-end sm:items-start justify-center gap-4">
+              {/* Icon */}
+              <div className="w-5 h-5 sm:w-10 sm:h-10 flex items-center justify-center bg-[#00000052] border-[0.5px] rounded-full border-[#FAFFC8A6] shadow-[0px_4px_29.8px_0px_#FFFFFF33_inset]">
+                <Equal className="text-[#FFFAD1]" />
+              </div>
+              {/* Label Content */}
+              <div className="text-right sm:text-left">
+                <h3 className="text-xl sm:text-3xl mb-2 sm:mb-4 text-transparent bg-clip-text bg-gradient-to-b from-[#FBFCA4] from-[17.14%] to-[#FFFFFF] to-[135.08%]">
+                  Medium Severity
+                </h3>
+                <p className="text-[#ffffff] text-lg sm:text-2xl font-bold mb-2 sm:mb-4">
+                  10,000 ARB + 5%
+                </p>
+                <p className="text-xs sm:text-sm text-[#ffffff] tracking-wider">
+                  of recovered funds (capped at $50k)
+                </p>
+              </div>
+            </div>
+
+            {/* Low Severity Label */}
+            <div className="absolute left-[1%] top-[82%] sm:top-[74%] sm:left-[10%] xl:top-[65%] xl:left-[7%] flex flex-col items-start justify-center gap-4">
+              {/* Icon */}
+              <div className="w-5 h-5 sm:w-10 sm:h-10 flex items-center justify-center bg-[#00000052] border-[0.5px] rounded-full border-[#FAFFC8A6] shadow-[0px_4px_29.8px_0px_#FFFFFF33_inset]">
+                <ChevronDown
+                  className="text-[#FFFAD1]"
+                  
+                />
+              </div>
+              {/* Label Content */}
+              <div className="text-left">
+                <h3 className="text-xl sm:text-3xl mb-2 sm:mb-4 text-transparent bg-clip-text bg-gradient-to-b from-[#FBFCA4] from-[17.14%] to-[#FFFFFF] to-[135.08%]">
+                  Low Severity
+                </h3>
+                <p className="text-[#ffffff] text-lg sm:text-2xl font-bold mb-2 sm:mb-4">
+                  1,000 ARB + 5%
+                </p>
+                <p className="text-xs sm:text-sm text-[#ffffff] tracking-wider">
+                  of recovered funds (capped at $10k)
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
       {/* Call to Action Section */}
-      <section className="py-24 px-4 bg-[#000203]">
-        <div className="w-[90%] max-w-4xl mx-auto relative">
-          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[700px] h-[500px] opacity-80 pointer-events-none">
+      <section className="py-24 px-4">
+        <div className="w-[90%] mx-auto relative">
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] md:w-[700px] md:h-[500px] opacity-80 pointer-events-none">
             <Image
               src={ActionSection || "/placeholder.svg"}
               alt="Action Section"
@@ -492,19 +414,19 @@ export default function LandingPage({ onRoleSelect }: LandingPageProps) {
           </div>
 
           <div
-            className="rounded-2xl overflow-hidden relative"
+            className="rounded-3xl overflow-hidden relative"
             style={{
               background:
                 "linear-gradient(270.15deg, rgba(6, 26, 34, 0.312) -1.49%, rgba(26, 104, 136, 0.28) 99.87%)",
               border: "1px solid #82FFF466",
-              backdropFilter: "blur(1.5rem)",
+              backdropFilter: "blur(1.3rem)",
             }}
           >
-            <div className="px-8 py-12 text-center relative bg-gradient-to-b from-[rgba(6,26,34,0.05)] to-[rgba(12,75,100,0.025)]">
-              <h2 className="text-4xl sm:text-5xl mb-4 font-light text-[#B0E9FF]">
+            <div className="p-4 sm:p-9 md:p-10 lg::p-16 text-center relative bg-gradient-to-b from-[rgba(6,26,34,0.05)] to-[rgba(12,75,100,0.025)]">
+              <h2 className="text-2xl sm:text-3xl lg:text-5xl mb-6 text-[#B0E9FF]">
                 Ready to take action?
               </h2>
-              <p className="text-[#ffffff] text-lg max-w-2xl mx-auto">
+              <p className="text-[#ffffff] text-xs sm:text-sm tracking-wide w-[70%] mx-auto">
                 Submit a report, help us recover misused funds, and earn your
                 rewards! Together, we can ensure Arbitrum DAO funds are used for
                 the betterment of the ecosystem.
@@ -515,7 +437,7 @@ export default function LandingPage({ onRoleSelect }: LandingPageProps) {
       </section>
 
       {/* Updated Footer */}
-      <footer className="py-8 px-4 text-center bg-[#000203]">
+      <footer className="py-8 md:pt-24 md:pb-10 px-4 text-center text-xs md:text-base">
         <p className="text-[#ffffff] text-sm">
           Copyright © 2024 Truence. All rights reserved.
         </p>

@@ -19,13 +19,13 @@
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  /* font-family: Arial, Helvetica, sans-serif; */
 }
 
-@font-face {
+/* @font-face {
   font-family: 'Arimo Hebrew Subset';
   src: url('/fonts/Arimo/Arimo-Regular.ttf') format('ttf'),
        url('/fonts/Arimo/Arimo-Medium.ttf') format('ttf');
   font-weight: 400;
   font-style: normal;
-}
+} */
