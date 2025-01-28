@@ -17,12 +17,43 @@ const SubmitReportModal = ({
   const [file, setFile] = useState<File | null>(null);
   const [misuseRange, setMisuseRange] = useState<MisuseRange>("<5k");
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isVerified, setIsVerified] = useState(false);
 
   const MISUSE_RANGES: MisuseRange[] = ["<5k", "5-20k", "20-50k", "50-100k", "100-500k", "500k+"];
 
-  // Handle report submission
+  const handleVerifyTelegram = () => {
+    if (!telegramHandle) {
+      toast.error('Please enter your Telegram handle');
+      return;
+    }
+
+    // Basic validation for Telegram handle format
+    const telegramRegex = /^@?[a-zA-Z0-9_]{5,32}$/;
+    const formattedHandle = telegramHandle.startsWith('@') ? telegramHandle : `@${telegramHandle}`;
+
+    if (!telegramRegex.test(formattedHandle)) {
+      toast.error('Invalid Telegram handle format. Handle should be 5-32 characters and can only contain letters, numbers, and underscores.');
+      return;
+    }
+
+    setTelegramHandle(formattedHandle);
+    setIsVerified(true);
+    toast.success('Telegram handle verified successfully!');
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (!title || !telegramHandle || !file || !misuseRange) {
+      toast.error('Please fill in all fields');
+      return;
+    }
+
+    if (!isVerified) {
+      toast.error('Please verify your Telegram handle first');
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -54,7 +85,8 @@ const SubmitReportModal = ({
       setTelegramHandle("");
       setFile(null);
       setMisuseRange("<5k");
-      onSubmit(); // Call onSubmit to trigger refresh
+      setIsVerified(false);
+      onSubmit();
       onClose();
     } catch (error) {
       console.error("Error submitting report:", error);
@@ -128,15 +160,54 @@ const SubmitReportModal = ({
 
             <div>
               <label className="block text-gray-300 mb-2 text-sm sm:text-base">
-                Telegram Handle
+                Telegram Account
               </label>
-              <input
-                type="text"
-                value={telegramHandle}
-                onChange={(e) => setTelegramHandle(e.target.value)}
-                className="w-full bg-[#1A1B1E] text-white rounded-lg px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base focus:ring-2 focus:ring-[#4ECDC4] outline-none"
-                required
-              />
+              <div className="space-y-3">
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={telegramHandle}
+                    onChange={(e) => {
+                      setTelegramHandle(e.target.value);
+                      setIsVerified(false);
+                    }}
+                    placeholder="@username"
+                    className="flex-1 bg-[#1A1B1E] text-white rounded-lg px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base focus:ring-2 focus:ring-[#4ECDC4] outline-none"
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={handleVerifyTelegram}
+                    className={`px-4 py-2 rounded-lg transition-colors text-sm sm:text-base ${
+                      isVerified
+                        ? 'bg-green-500/20 text-green-400'
+                        : 'bg-[#4ECDC4] text-black hover:bg-[#45b8b0]'
+                    }`}
+                  >
+                    {isVerified ? 'Verified ✓' : 'Verify'}
+                  </button>
+                </div>
+                  <p className="text-xs sm:text-sm text-gray-400 mt-1">
+                  It will be used for payments and communication.              </p>
+                {isVerified && (
+                  <div className="flex items-center gap-2 text-green-400 text-sm">
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5 13l4 4L19 7"
+                      />
+                    </svg>
+                    <span>Telegram handle verified</span>
+                  </div>
+                )}
+              </div>
             </div>
 
             <div>
@@ -168,7 +239,7 @@ const SubmitReportModal = ({
               </button>
               <button
                 type="submit"
-                disabled={isSubmitting}
+                disabled={isSubmitting || !isVerified}
                 className="bg-gradient-to-r from-[#C3FEF8] to-[#D8D8D8] text-black px-4 sm:px-6 py-2 sm:py-3 rounded-lg hover:opacity-90 transition-all duration-200 shadow-lg disabled:opacity-50 text-sm sm:text-base"
               >
                 {isSubmitting ? "Submitting..." : "Submit Report"}
