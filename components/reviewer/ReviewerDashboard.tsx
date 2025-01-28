@@ -19,6 +19,7 @@ import {
 import BookmarkButton from "@/components/common/BookmarkButton";
 import { useBookmarks } from '@/hooks/useBookmarks'; // Adjust the import path as needed
 import { MisuseRange } from "@/types/report";
+import Loading from "../Loader";
 
 const ReviewerDashboard = () => {
     const { user } = usePrivy();
@@ -42,6 +43,7 @@ const ReviewerDashboard = () => {
     const [sortBy, setSortBy] = useState<'date' | 'misuseRange'>('date');
     const [isRefreshing, setIsRefreshing] = useState(false);
     const [lastRefreshed, setLastRefreshed] = useState<Date>(new Date());
+    const [allReport, setAllReport] = useState(false);
 
     const { 
       bookmarks: bookmarkedReports, 
@@ -167,7 +169,7 @@ const ReviewerDashboard = () => {
     // Function for fetch all reports
     const fetchReports = useCallback(async () => {
         if (reports.length > 0) return; // Prevent repeated fetching
-
+        setAllReport(true);
         try {
             const reportsWithDetails = await fetchReportDetail();
 
@@ -176,6 +178,8 @@ const ReviewerDashboard = () => {
         } catch (error) {
             console.error("Error fetching reports:", error);
             toast.error("Failed to fetch reports");
+        } finally {
+            setAllReport(false);
         }
     }, [reports.length, fetchReportDetail]);
 
@@ -191,6 +195,10 @@ const ReviewerDashboard = () => {
             setSelectedReport(cachedReport);
         }
     };
+
+    if(allReport){
+        return <Loading message="Fetching all reports for review ..." />;
+    }
 
     // Handle vote status
     const handleStatusUpdate = async (

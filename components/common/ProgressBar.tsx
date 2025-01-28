@@ -1,6 +1,8 @@
 import { Vote } from "@/types/vote";
 import { ProgressBarProps } from "@/types/progressbar";
 import { toast } from "react-hot-toast";
+import { useState } from "react";
+import { usePrivy } from "@privy-io/react-auth";
 
 const ProgressBar = ({
   report,
@@ -9,6 +11,17 @@ const ProgressBar = ({
   onAdditionalPaymentVerify,
   isSubmitter,
 }: ProgressBarProps) => {
+  const [localReport, setLocalReport] = useState(report);
+  const { user } = usePrivy();
+
+  // Check if current reviewer has already verified payments
+  const currentReviewerVote = localReport.votes.find(
+    (v) => v.reviewerAddress === user?.wallet?.address
+  );
+
+  const hasVerifiedBasePayment = currentReviewerVote?.basePaymentSent || false;
+  const hasVerifiedAdditionalPayment = currentReviewerVote?.additionalPaymentSent || false;
+
   // To handle KYC verification
   const handleKycVerify = async () => {
     try {
@@ -18,9 +31,16 @@ const ProgressBar = ({
       if (!response.ok) throw new Error("Failed to verify KYC");
 
       // Update the report status locally
-      if (report && typeof report === "object") {
-        report.kycStatus = "completed";
-      }
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      setLocalReport((prev: any) => ({
+        ...prev,
+        kycStatus: "completed"
+      }));
+      
+      // Update the report status locally
+      // if (report && typeof report === "object") {
+      //   report.kycStatus = "completed";
+      // }
 
       // Call the onKycVerify callback if provided
       if (onKycVerify) {
@@ -34,71 +54,135 @@ const ProgressBar = ({
     }
   };
 
+   // Handle base payment verification
+   const handleBasePaymentVerify = async () => {
+    try {
+      await onBasePaymentVerify?.();
+
+      // Update local state to reflect the new payment confirmation
+      setLocalReport(prev => {
+        const updatedVotes = prev.votes.map(vote => {
+          if (vote.reviewerAddress === user?.wallet?.address) {
+            return { ...vote, basePaymentSent: true };
+          }
+          return vote;
+        });
+
+        const completedCount = updatedVotes.filter(v => v.basePaymentSent).length;
+        
+        return {
+          ...prev,
+          votes: updatedVotes,
+          basePaymentStatus: completedCount === 3 ? "completed" : prev.basePaymentStatus
+        };
+      });
+
+      toast.success("Base payment verified");
+    } catch (error) {
+      console.error("Error verifying base payment:", error);
+      toast.error("Failed to verify base payment");
+    }
+  };
+
+  // Handle additional payment verification
+  const handleAdditionalPaymentVerify = async () => {
+    try {
+      await onAdditionalPaymentVerify?.();
+
+      // Update local state to reflect the new payment confirmation
+      setLocalReport(prev => {
+        const updatedVotes = prev.votes.map(vote => {
+          if (vote.reviewerAddress === user?.wallet?.address) {
+            return { ...vote, additionalPaymentSent: true };
+          }
+          return vote;
+        });
+
+        const completedCount = updatedVotes.filter(v => v.additionalPaymentSent).length;
+        
+        return {
+          ...prev,
+          votes: updatedVotes,
+          additionalPaymentStatus: completedCount === 3 ? "completed" : prev.additionalPaymentStatus
+        };
+      });
+
+      toast.success("Additional payment verified");
+    } catch (error) {
+      console.error("Error verifying additional payment:", error);
+      toast.error("Failed to verify additional payment");
+    }
+  };
+
+   // Get status text for base payment
+   const getBasePaymentStatusForReviewer = () => {
+    if (localReport.basePaymentStatus === "completed") return "Payment Completed";
+    if (hasVerifiedBasePayment) return "Payment Verified";
+    return "Verify Payment";
+  };
+
+  // Get status text for additional payment
+  const getAdditionalPaymentStatusForReviewer = () => {
+    if (localReport.additionalPaymentStatus === "completed") return "Payment Completed";
+    if (hasVerifiedAdditionalPayment) return "Payment Verified";
+    return "Verify Payment";
+  };
+
   // Defined step for progress bar
   const steps = [
     {
       title: "KYC Verification",
-      status: report.kycStatus,
+      status: localReport.kycStatus,
       action: isSubmitter ? (
         <button
           onClick={handleKycVerify}
-          disabled={report.kycStatus === "completed"}
+          disabled={localReport.kycStatus === "completed"}
           className={`px-3 py-1 rounded-lg text-sm ${
-            report.kycStatus === "completed"
+            localReport.kycStatus === "completed"
               ? "bg-green-500/20 text-green-400"
               : "bg-[#4ECDC4] text-white hover:opacity-90"
           }`}
         >
-          {report.kycStatus === "completed" ? "Verified" : "Verify KYC"}
+          {localReport.kycStatus === "completed" ? "Verified" : "Verify KYC"}
         </button>
       ) : null,
     },
     {
       title: "Base Payment",
-      status: report.basePaymentStatus,
-      statusText: getBasePaymentStatusText(report.basePaymentStatus, report.votes),
-      action: !isSubmitter && report.kycStatus === "completed" && report.votes.length === 3 ? (
+      status: localReport.basePaymentStatus,
+      statusText: getBasePaymentStatusText(localReport.basePaymentStatus, localReport.votes),
+      action: !isSubmitter && localReport.kycStatus === "completed" && localReport.votes.length === 3 && !hasVerifiedBasePayment ? (
         <button
-          onClick={onBasePaymentVerify}
-          disabled={
-            report.basePaymentStatus === "completed" || 
-            !!report.votes.find(
-              (v) => v.reviewerAddress === window.ethereum?.selectedAddress && v.basePaymentSent
-            )
-          }
+          onClick={handleBasePaymentVerify}
+          disabled={localReport.basePaymentStatus === "completed"}
           className={`px-3 py-1 rounded-lg text-sm ${
-            report.basePaymentStatus === "completed"
+            localReport.basePaymentStatus === "completed" || hasVerifiedBasePayment
               ? "bg-green-500/20 text-green-400"
               : "bg-[#4ECDC4] text-white hover:opacity-90"
           }`}
         >
-          {report.basePaymentStatus === "completed" ? "Payment Completed" : "Verify Payment"}
+          {getBasePaymentStatusForReviewer()}
         </button>
       ) : null,
     },
     {
       title: "Additional Payment",
-      status: report.additionalPaymentStatus,
+      status: localReport.additionalPaymentStatus,
       statusText: getAdditionalPaymentStatusText(
-        report.additionalPaymentStatus,
-        report.votes
+        localReport.additionalPaymentStatus,
+        localReport.votes
       ),
-      action: !isSubmitter && report.basePaymentStatus === "completed" && report.votes.length === 3 ? (
+      action: !isSubmitter && localReport.basePaymentStatus === "completed" && localReport.votes.length === 3 && !hasVerifiedAdditionalPayment ? (
         <button
-          onClick={onAdditionalPaymentVerify}
-          disabled={
-            report.additionalPaymentStatus === "completed" || 
-            !!report.votes.find(
-              (v) => v.reviewerAddress === window.ethereum?.selectedAddress && v.additionalPaymentSent
-            )
-          }
+          onClick={handleAdditionalPaymentVerify}
+          disabled={localReport.additionalPaymentStatus === "completed"}
           className={`px-3 py-1 rounded-lg text-sm ${
-            report.additionalPaymentStatus === "completed"
+            localReport.additionalPaymentStatus === "completed" || hasVerifiedAdditionalPayment
               ? "bg-green-500/20 text-green-400"
               : "bg-[#4ECDC4] text-white hover:opacity-90"
           }`}
         >
-          {report.additionalPaymentStatus === "completed" ? "Verified" : "Verify Payment"}
+          {getAdditionalPaymentStatusForReviewer()}
         </button>
       ) : null,
     },
