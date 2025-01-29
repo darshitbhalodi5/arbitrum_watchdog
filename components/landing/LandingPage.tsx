@@ -19,9 +19,9 @@ export default function LandingPage({ onRoleSelect }: LandingPageProps) {
   return (
     <div className="min-h-screen bg-[#000000] text-white font-secondary">
       {/* Hero Section with Navbar - Full Height */}
-      <div className="h-screen relative flex flex-col">
+      <div className="relative flex flex-col">
         {/* Background Image for Hero */}
-        <div className="absolute top-[-150px] h-[900px] w-full">
+        <div className="absolute top-[-150px] h-auto sm:h-[900px] w-full">
           <Image
             src={HeroBg}
             alt="Hero Background"
@@ -96,7 +96,7 @@ export default function LandingPage({ onRoleSelect }: LandingPageProps) {
       </div>
 
       {/* Mission Section */}
-      <section className="p-4 relative overflow-x-hidden mt-[200px] sm:mt-[200px] md:mt-0">
+      <section className="p-4 relative overflow-x-hidden mt-[50px] md:mt-0">
         <div className="w-[90%] mx-auto">
           <div className="flex flex-col md:flex-row items-center justify-between gap-4 lg:gap-12">
             <div className="w-full md:w-[70%] lg:w-1/2">
@@ -316,7 +316,7 @@ export default function LandingPage({ onRoleSelect }: LandingPageProps) {
 
           <div className="relative h-[700px] w-[320px] md:w-[768px] xl:w-full max-w-[1400px] mx-auto overflow-hidden">
             {/* Spiral Image */}
-            <div className="absolute left-[-50px] sm:left-[10%] xl:left-[30%] top-[15%] xl:top-[5%] w-[400px] sm:w-[450px] xl:w-[550px]">
+            <div className="absolute left-[-50px] md:left-[10%] xl:left-[30%] top-[15%] xl:top-[5%] w-[400px] md:w-[450px] xl:w-[550px]">
               <Image
                 src={SpiralImage || "/placeholder.svg"}
                 alt="Reward Structure Spiral"
@@ -324,60 +324,60 @@ export default function LandingPage({ onRoleSelect }: LandingPageProps) {
               />
             </div>
 
-            <div className="absolute top-[25%] left-[57%] xl:top-[20%] xl:left-[63%] w-[6px] h-[6px] bg-[#FFFAD1] rounded-full"></div>
-            <div className="absolute top-[calc(25%-60px)] left-[calc(57%+2.2px)] xl:top-[calc(20%-80px)] xl:left-[calc(63%+2.2px)] w-[1.5px] h-[60px] xl:h-[80px] bg-[#FFFAD1]"></div>
-            <div className="absolute top-[calc(25%-60px)] left-[47.2%] xl:top-[calc(20%-80px)] xl:left-[23.2%] h-[1.5px] w-[10%] xl:w-[40%] bg-gradient-to-r from-[#000000] from-[7.67%] to-[#FFFAD1]"></div>
+            <div className="absolute top-[35%] left-[20%] md:top-[25%] md:left-[57%] xl:top-[20%] xl:left-[63%] w-[6px] h-[6px] bg-[#FFFAD1] rounded-full"></div>
+            <div className="absolute top-[calc(25%-60px)] left-[calc(57%+2.2px)] xl:top-[calc(20%-80px)] xl:left-[calc(63%+2.2px)] w-0 md:w-[1.5px] h-[60px] xl:h-[80px] bg-[#FFFAD1]"></div>
+            <div className="absolute top-[calc(35%-110px)] left-[calc(20%+2.2px)] md:top-[calc(25%-60px)] md:left-[47.2%] xl:top-[calc(20%-80px)] xl:left-[23.2%] h-[110px] w-[1.5px] md:h-[1.5px] md:w-[10%] xl:w-[40%] bg-gradient-to-b md:bg-gradient-to-r from-[#000000] from-[7.67%] to-[#FFFAD1]"></div>
 
-            <div className="absolute top-[39%] left-[85%] sm:top-[53%] sm:left-[52%] xl:top-[45%] xl:left-[63%] w-[6px] h-[6px] bg-[#FFFAD1] rounded-full"></div>
-            <div className="absolute top-[39%] left-[calc(85%+2.5px)] sm:top-[calc(53%+2.5px)] sm:left-[52%] xl:top-[calc(45%+2.5px)] xl:left-[63%] w-[1.5px] h-[110px] sm:h-[1.5px] sm:w-[7%] xl:w-[10%] bg-gradient-to-t sm:bg-gradient-to-l from-[#000000] from-[7.67%] to-[#FFFAD1]"></div>
+            <div className="absolute top-[39%] left-[85%] md:top-[53%] md:left-[52%] xl:top-[45%] xl:left-[63%] w-[6px] h-[6px] bg-[#FFFAD1] rounded-full"></div>
+            <div className="absolute top-[39%] left-[calc(85%+2.5px)] md:top-[calc(53%+2.5px)] md:left-[52%] xl:top-[calc(45%+2.5px)] xl:left-[63%] w-[1.5px] h-[110px] md:h-[1.5px] md:w-[7%] xl:w-[10%] bg-gradient-to-t md:bg-gradient-to-l from-[#000000] from-[7.67%] to-[#FFFAD1]"></div>
 
-            <div className="absolute top-[60%] left-[5%] sm:top-[70%] sm:left-[35%] xl:top-[64%] xl:left-[36%] w-[6px] h-[6px] bg-[#FFFAD1] rounded-full"></div>
-            <div className="absolute top-[60%] left-[calc(5%+2.5px)] sm:top-[calc(70%+2.5px)] sm:left-[25%] xl:top-[calc(64%+2.5px)] xl:left-[26%] w-[1.5px] h-[150px] sm:h-[1.5px] sm:w-[10%] bg-gradient-to-t sm:bg-gradient-to-r from-[#000000] from-[7.67%] to-[#FFFAD1]"></div>
+            <div className="absolute top-[60%] left-[5%] md:top-[70%] md:left-[35%] xl:top-[64%] xl:left-[36%] w-[6px] h-[6px] bg-[#FFFAD1] rounded-full"></div>
+            <div className="absolute top-[60%] left-[calc(5%+2.5px)] md:top-[calc(70%+2.5px)] md:left-[25%] xl:top-[calc(64%+2.5px)] xl:left-[26%] w-[1.5px] h-[150px] md:h-[1.5px] md:w-[10%] bg-gradient-to-t md:bg-gradient-to-r from-[#000000] from-[7.67%] to-[#FFFAD1]"></div>
 
             {/* High Severity Label */}
-            <div className="absolute top-0 left-0 sm:top-[-50px] xl:top-12 sm:left-[7%] flex flex-col items-start justify-center gap-4">
+            <div className="absolute top-0 left-0 md:top-[-50px] xl:top-12 md:left-[7%] flex flex-col items-start justify-center gap-4">
               {/* Icon */}
-              <div className="w-5 h-5 sm:w-10 sm:h-10 flex items-center justify-center bg-[#00000052] border-[0.5px] rounded-full border-[#FAFFC8A6] shadow-[0px_4px_29.8px_0px_#FFFFFF33_inset]">
+              <div className="w-5 h-5 md:w-10 md:h-10 flex items-center justify-center bg-[#00000052] border-[0.5px] rounded-full border-[#FAFFC8A6] shadow-[0px_4px_29.8px_0px_#FFFFFF33_inset]">
                 <ChevronUp className="text-[#FFFAD1]"  />
               </div>
               {/* Label Content */}
               <div className="text-left">
-                <h3 className="text-xl sm:text-3xl mb-2 sm:mb-4 text-transparent bg-clip-text bg-gradient-to-b from-[#FBFCA4] from-[17.14%] to-[#FFFFFF] to-[135.08%]">
+                <h3 className="text-xl md:text-3xl mb-2 md:mb-4 text-transparent bg-clip-text bg-gradient-to-b from-[#FBFCA4] from-[17.14%] to-[#FFFFFF] to-[135.08%]">
                   High Severity
                 </h3>
-                <p className="text-[#ffffff] text-lg sm:text-2xl font-bold mb-2 sm:mb-4">
+                <p className="text-[#ffffff] text-lg md:text-2xl font-bold mb-2 md:mb-4">
                   30,000 ARB + 5%
                 </p>
-                <p className="text-xs sm:text-sm text-[#ffffff] tracking-wider">
+                <p className="text-xs md:text-sm text-[#ffffff] tracking-wider">
                   of recovered funds (capped at $100k)
                 </p>
               </div>
             </div>
 
             {/* Medium Severity Label */}
-            <div className="absolute top-[68%] right-[1%] sm:top-[64%] xl:right-[3%] xl:top-[56%] -translate-y-1/2 flex flex-col items-end sm:items-start justify-center gap-4">
+            <div className="absolute top-[68%] right-[1%] md:top-[64%] xl:right-[3%] xl:top-[56%] -translate-y-1/2 flex flex-col items-end md:items-start justify-center gap-4">
               {/* Icon */}
-              <div className="w-5 h-5 sm:w-10 sm:h-10 flex items-center justify-center bg-[#00000052] border-[0.5px] rounded-full border-[#FAFFC8A6] shadow-[0px_4px_29.8px_0px_#FFFFFF33_inset]">
+              <div className="w-5 h-5 md:w-10 md:h-10 flex items-center justify-center bg-[#00000052] border-[0.5px] rounded-full border-[#FAFFC8A6] shadow-[0px_4px_29.8px_0px_#FFFFFF33_inset]">
                 <Equal className="text-[#FFFAD1]" />
               </div>
               {/* Label Content */}
-              <div className="text-right sm:text-left">
-                <h3 className="text-xl sm:text-3xl mb-2 sm:mb-4 text-transparent bg-clip-text bg-gradient-to-b from-[#FBFCA4] from-[17.14%] to-[#FFFFFF] to-[135.08%]">
+              <div className="text-right md:text-left">
+                <h3 className="text-xl md:text-3xl mb-2 md:mb-4 text-transparent bg-clip-text bg-gradient-to-b from-[#FBFCA4] from-[17.14%] to-[#FFFFFF] to-[135.08%]">
                   Medium Severity
                 </h3>
-                <p className="text-[#ffffff] text-lg sm:text-2xl font-bold mb-2 sm:mb-4">
+                <p className="text-[#ffffff] text-lg md:text-2xl font-bold mb-2 md:mb-4">
                   10,000 ARB + 5%
                 </p>
-                <p className="text-xs sm:text-sm text-[#ffffff] tracking-wider">
+                <p className="text-xs md:text-sm text-[#ffffff] tracking-wider">
                   of recovered funds (capped at $50k)
                 </p>
               </div>
             </div>
 
             {/* Low Severity Label */}
-            <div className="absolute left-[1%] top-[82%] sm:top-[74%] sm:left-[10%] xl:top-[65%] xl:left-[7%] flex flex-col items-start justify-center gap-4">
+            <div className="absolute left-[1%] top-[82%] md:top-[74%] md:left-[10%] xl:top-[65%] xl:left-[7%] flex flex-col items-start justify-center gap-4">
               {/* Icon */}
-              <div className="w-5 h-5 sm:w-10 sm:h-10 flex items-center justify-center bg-[#00000052] border-[0.5px] rounded-full border-[#FAFFC8A6] shadow-[0px_4px_29.8px_0px_#FFFFFF33_inset]">
+              <div className="w-5 h-5 md:w-10 md:h-10 flex items-center justify-center bg-[#00000052] border-[0.5px] rounded-full border-[#FAFFC8A6] shadow-[0px_4px_29.8px_0px_#FFFFFF33_inset]">
                 <ChevronDown
                   className="text-[#FFFAD1]"
                   
@@ -385,13 +385,13 @@ export default function LandingPage({ onRoleSelect }: LandingPageProps) {
               </div>
               {/* Label Content */}
               <div className="text-left">
-                <h3 className="text-xl sm:text-3xl mb-2 sm:mb-4 text-transparent bg-clip-text bg-gradient-to-b from-[#FBFCA4] from-[17.14%] to-[#FFFFFF] to-[135.08%]">
+                <h3 className="text-xl md:text-3xl mb-2 md:mb-4 text-transparent bg-clip-text bg-gradient-to-b from-[#FBFCA4] from-[17.14%] to-[#FFFFFF] to-[135.08%]">
                   Low Severity
                 </h3>
-                <p className="text-[#ffffff] text-lg sm:text-2xl font-bold mb-2 sm:mb-4">
+                <p className="text-[#ffffff] text-lg md:text-2xl font-bold mb-2 md:mb-4">
                   1,000 ARB + 5%
                 </p>
-                <p className="text-xs sm:text-sm text-[#ffffff] tracking-wider">
+                <p className="text-xs md:text-sm text-[#ffffff] tracking-wider">
                   of recovered funds (capped at $10k)
                 </p>
               </div>
