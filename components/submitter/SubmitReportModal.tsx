@@ -5,6 +5,7 @@ import { encrypt } from "@/lib/encryption";
 import toast from "react-hot-toast";
 import { SubmitReportModalProps } from "@/types/report-submission";
 import { MisuseRange } from "@/types/report";
+import TelegramVerification from "../common/TelegramVerification";
 
 const SubmitReportModal = ({
   isOpen,
@@ -18,6 +19,7 @@ const SubmitReportModal = ({
   const [misuseRange, setMisuseRange] = useState<MisuseRange>("<5k");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isVerified, setIsVerified] = useState(false);
+  const [showTelegramWidget, setShowTelegramWidget] = useState(false);
 
   const MISUSE_RANGES: MisuseRange[] = ["<5k", "5-20k", "20-50k", "50-100k", "100-500k", "500k+"];
 
@@ -37,12 +39,41 @@ const SubmitReportModal = ({
     }
 
     setTelegramHandle(formattedHandle);
-    setIsVerified(true);
-    toast.success('Telegram handle verified successfully!');
+    setShowTelegramWidget(true);
+    console.log('Showing Telegram widget for verification');
+  };
+
+  const handleVerificationComplete = (success: boolean, username?: string) => {
+    console.log('Verification complete:', { success, username });
+    
+    if (success && username) {
+      const formattedUsername = `@${username}`;
+      if (formattedUsername.toLowerCase() !== telegramHandle.toLowerCase()) {
+        console.error('Username mismatch:', { 
+          input: telegramHandle.toLowerCase(), 
+          telegram: formattedUsername.toLowerCase() 
+        });
+        toast.error('The provided handle does not match your Telegram account');
+        setIsVerified(false);
+        return;
+      }
+      
+      setIsVerified(true);
+      console.log('Telegram handle verified successfully');
+    } else {
+      setIsVerified(false);
+      console.log('Telegram verification failed');
+    }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    console.log('Submitting form with data:', {
+      title,
+      telegramHandle,
+      misuseRange,
+      isVerified
+    });
 
     if (!title || !telegramHandle || !file || !misuseRange) {
       toast.error('Please fill in all fields');
@@ -57,10 +88,9 @@ const SubmitReportModal = ({
     setIsSubmitting(true);
 
     try {
-      // Encrypt telegram handle using title as key
+      console.log('Encrypting telegram handle...');
       const encryptedTelegram = await encrypt(telegramHandle, title);
 
-      // Create form data for file upload
       const formData = new FormData();
       formData.append("title", title);
       formData.append("telegramHandle", encryptedTelegram);
@@ -70,7 +100,7 @@ const SubmitReportModal = ({
         formData.append("file", file);
       }
 
-      // Submit to API
+      console.log('Submitting to API...');
       const response = await fetch("/api/reports", {
         method: "POST",
         body: formData,
@@ -80,12 +110,14 @@ const SubmitReportModal = ({
         throw new Error("Failed to submit report");
       }
 
+      console.log('Report submitted successfully');
       toast.success("Report submitted successfully");
       setTitle("");
       setTelegramHandle("");
       setFile(null);
       setMisuseRange("<5k");
       setIsVerified(false);
+      setShowTelegramWidget(false);
       onSubmit();
       onClose();
     } catch (error) {
@@ -170,6 +202,7 @@ const SubmitReportModal = ({
                     onChange={(e) => {
                       setTelegramHandle(e.target.value);
                       setIsVerified(false);
+                      setShowTelegramWidget(false);
                     }}
                     placeholder="@username"
                     className="flex-1 bg-[#1A1B1E] text-white rounded-lg px-3 sm:px-4 py-2 sm:py-3 text-sm sm:text-base focus:ring-2 focus:ring-[#4ECDC4] outline-none"
@@ -187,8 +220,22 @@ const SubmitReportModal = ({
                     {isVerified ? 'Verified ✓' : 'Verify'}
                   </button>
                 </div>
-                  <p className="text-xs sm:text-sm text-gray-400 mt-1">
-                  It will be used for payments and communication.              </p>
+                <p className="text-xs sm:text-sm text-gray-400">
+                  It will be used for payments and communication.
+                </p>
+
+                {showTelegramWidget && !isVerified && (
+                  <div className="mt-2 p-3 bg-[#1A1B1E] rounded-lg">
+                    <p className="text-sm text-gray-300 mb-3">
+                      Please verify your Telegram account:
+                    </p>
+                    <TelegramVerification
+                      inputHandle={telegramHandle}
+                      onVerificationComplete={handleVerificationComplete}
+                    />
+                  </div>
+                )}
+
                 {isVerified && (
                   <div className="flex items-center gap-2 text-green-400 text-sm">
                     <svg
