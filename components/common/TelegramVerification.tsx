@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import Script from 'next/script';
 import toast from 'react-hot-toast';
 
@@ -17,6 +17,8 @@ interface TelegramVerificationProps {
 }
 
 const TelegramVerification = ({ inputHandle, onVerificationComplete }: TelegramVerificationProps) => {
+  const widgetRef = useRef<HTMLDivElement>(null);
+
   useEffect(() => {
     // Define the global callback function for Telegram widget
     window.onTelegramAuth = (user: TelegramUser) => {
@@ -48,18 +50,40 @@ const TelegramVerification = ({ inputHandle, onVerificationComplete }: TelegramV
         onVerificationComplete(false);
       }
     };
+
+    // Check if the widget container exists
+    if (widgetRef.current) {
+      console.log('Widget container found, attempting to render Telegram widget');
+    }
+
+    return () => {
+      // Cleanup
+      window.onTelegramAuth = () => {}; // Set to no-op function instead of deleting
+    };
   }, [inputHandle, onVerificationComplete]);
+
+  const handleScriptLoad = () => {
+    console.log('Telegram widget script loaded successfully');
+  };
+
+  const handleScriptError = () => {
+    console.error('Failed to load Telegram widget script');
+    toast.error('Failed to load Telegram verification widget');
+  };
 
   return (
     <div className="flex flex-col items-start gap-2">
       <Script
         src="https://telegram.org/js/telegram-widget.js?22"
-        strategy="lazyOnload"
+        strategy="afterInteractive"
+        onLoad={handleScriptLoad}
+        onError={handleScriptError}
       />
       
       <div 
+        ref={widgetRef}
         className="telegram-login"
-        data-telegram-login="Verify_Truence_bot" // Replace with your bot username
+        data-telegram-login={process.env.NEXT_PUBLIC_TELEGRAM_BOT_USERNAME}
         data-size="medium"
         data-radius="8"
         data-onauth="onTelegramAuth(user)"
