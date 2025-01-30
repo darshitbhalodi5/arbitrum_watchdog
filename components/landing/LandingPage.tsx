@@ -300,7 +300,7 @@ export default function LandingPage({ onRoleSelect }: LandingPageProps) {
       </section>
 
       {/* Reward Structure Section */}
-      <section className="py-24 px-4">
+      <section className="py-24 px-4 overflow-x-hidden">
         <div className="w-[90%] mx-auto">
           <h2 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl mt-6 mb-5 font-primary font-medium text-transparent text-center bg-clip-text bg-gradient-to-br from-[#FBFCA4] from-[17.14%] to-[#FFFFFF] to-[135.08%]">
             Reward Structure
@@ -355,7 +355,7 @@ export default function LandingPage({ onRoleSelect }: LandingPageProps) {
             </div>
 
             {/* Medium Severity Label */}
-            <div className="absolute top-[68%] right-[1%] md:top-[64%] xl:right-[3%] xl:top-[56%] -translate-y-1/2 flex flex-col items-end md:items-start justify-center gap-4">
+            <div className="absolute top-[68%] right-[2%] md:top-[64%] xl:right-[3%] xl:top-[56%] -translate-y-1/2 flex flex-col items-end md:items-start justify-center gap-4">
               {/* Icon */}
               <div className="w-5 h-5 md:w-10 md:h-10 flex items-center justify-center bg-[#00000052] border-[0.5px] rounded-full border-[#FAFFC8A6] shadow-[0px_4px_29.8px_0px_#FFFFFF33_inset]">
                 <Equal className="text-[#FFFAD1]" />
@@ -403,7 +403,7 @@ export default function LandingPage({ onRoleSelect }: LandingPageProps) {
       {/* Call to Action Section */}
       <section className="py-24 px-4">
         <div className="w-[90%] mx-auto relative">
-          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] md:w-[700px] md:h-[500px] opacity-80 pointer-events-none">
+          <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 w-[350px] h-[400px] md:w-[700px] md:h-[500px] opacity-80 pointer-events-none">
             <Image
               src={ActionSection || "/placeholder.svg"}
               alt="Action Section"
