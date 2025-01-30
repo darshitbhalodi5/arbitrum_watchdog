@@ -31,7 +31,7 @@ const TelegramVerification = ({ inputHandle, onVerificationComplete }: TelegramV
 
     // Define the global callback function for Telegram widget
     window.onTelegramAuth = (user: TelegramUser) => {
-      console.log('Telegram auth response:', user);
+      // console.log('Telegram auth response:', user);
 
       if (!user.username) {
         console.error('No username found in Telegram response');
@@ -44,13 +44,13 @@ const TelegramVerification = ({ inputHandle, onVerificationComplete }: TelegramV
       const formattedInputHandle = inputHandle.startsWith('@') ? inputHandle.slice(1) : inputHandle;
       const telegramUsername = user.username.toLowerCase();
       
-      console.log('Comparing handles:', {
-        input: formattedInputHandle.toLowerCase(),
-        telegram: telegramUsername
-      });
+      // console.log('Comparing handles:', {
+      //   input: formattedInputHandle.toLowerCase(),
+      //   telegram: telegramUsername
+      // });
 
       if (formattedInputHandle.toLowerCase() === telegramUsername) {
-        console.log('Telegram handle verified successfully');
+        // console.log('Telegram handle verified successfully');
         toast.success('Telegram handle verified successfully!');
         onVerificationComplete(true, user.username);
       } else {
@@ -63,7 +63,7 @@ const TelegramVerification = ({ inputHandle, onVerificationComplete }: TelegramV
     // Add script to widget container
     if (widgetRef.current) {
       widgetRef.current.appendChild(script);
-      console.log('Telegram widget script added to container');
+      // console.log('Telegram widget script added to container');
     }
 
     return () => {

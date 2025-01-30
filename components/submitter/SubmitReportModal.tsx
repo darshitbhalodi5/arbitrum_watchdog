@@ -40,11 +40,11 @@ const SubmitReportModal = ({
 
     setTelegramHandle(formattedHandle);
     setShowTelegramWidget(true);
-    console.log('Showing Telegram widget for verification');
+    // console.log('Showing Telegram widget for verification');
   };
 
   const handleVerificationComplete = (success: boolean, username?: string) => {
-    console.log('Verification complete:', { success, username });
+    // console.log('Verification complete:', { success, username });
     
     if (success && username) {
       const formattedUsername = `@${username}`;
@@ -59,21 +59,21 @@ const SubmitReportModal = ({
       }
       
       setIsVerified(true);
-      console.log('Telegram handle verified successfully');
+      // console.log('Telegram handle verified successfully');
     } else {
       setIsVerified(false);
-      console.log('Telegram verification failed');
+      // console.log('Telegram verification failed');
     }
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Submitting form with data:', {
-      title,
-      telegramHandle,
-      misuseRange,
-      isVerified
-    });
+    // console.log('Submitting form with data:', {
+    //   title,
+    //   telegramHandle,
+    //   misuseRange,
+    //   isVerified
+    // });
 
     if (!title || !telegramHandle || !file || !misuseRange) {
       toast.error('Please fill in all fields');
@@ -88,7 +88,7 @@ const SubmitReportModal = ({
     setIsSubmitting(true);
 
     try {
-      console.log('Encrypting telegram handle...');
+      // console.log('Encrypting telegram handle...');
       const encryptedTelegram = await encrypt(telegramHandle, title);
 
       const formData = new FormData();
@@ -100,7 +100,7 @@ const SubmitReportModal = ({
         formData.append("file", file);
       }
 
-      console.log('Submitting to API...');
+      // console.log('Submitting to API...');
       const response = await fetch("/api/reports", {
         method: "POST",
         body: formData,
@@ -110,7 +110,7 @@ const SubmitReportModal = ({
         throw new Error("Failed to submit report");
       }
 
-      console.log('Report submitted successfully');
+      // console.log('Report submitted successfully');
       toast.success("Report submitted successfully");
       setTitle("");
       setTelegramHandle("");
