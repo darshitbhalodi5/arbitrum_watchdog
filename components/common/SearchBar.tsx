@@ -13,7 +13,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
 }) => {
   return (
     <div className="relative w-full">
-      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
         <svg
           className="h-5 w-5 text-gray-400"
           fill="none"
@@ -32,7 +32,7 @@ const SearchBar: React.FC<SearchBarProps> = ({
         type="text"
         value={searchQuery}
         onChange={(e) => setSearchQuery(e.target.value)}
-        className="w-full pl-10 pr-4 py-2 rounded-lg text-white bg-[#1A1B1E] border border-gray-800 focus:border-[#4ECDC4] focus:outline-none transition-colors"
+        className="text-xs w-full pl-14 pr-4 py-3 rounded-lg text-white bg-[#1A1B1E] border border-gray-800 focus:border-[#4ECDC4] focus:outline-none transition-colors"
         placeholder={placeholder}
       />
       {searchQuery && (

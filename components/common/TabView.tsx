@@ -20,7 +20,7 @@ const TabView = ({ tabs }: TabViewProps) => {
           >
             {tab.label}
             {activeTab === tab.id && (
-              <div className="absolute bottom-0 left-0 w-full h-0.5 bg-gradient-to-r from-[#4ECDC4]/20 via-[#4ECDC4] to-[#4ECDC4]/20"></div>
+              <div className="absolute bottom-0 left-0 w-full h-[1px] bg-gradient-to-r from-[#1A1B1E] via-[#4ECDC4] to-[#1A1B1E]"></div>
             )}
           </button>
         ))}

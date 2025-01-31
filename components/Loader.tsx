@@ -4,7 +4,7 @@ export default function Loading({
   message = "Your report is on its way, hold tight!",
 }: LoadingProps) {
   return (
-    <div className="flex flex-col items-center justify-center min-h-[400px] p-8 relative">
+    <div className="flex flex-col items-center justify-center gap-4 h-[100vh] min-h-[400px] p-8 relative">
       {/* Loading spinner */}
       <div className="relative w-20 h-20 mb-6">
         {/* Outer rotating ring */}
@@ -18,7 +18,7 @@ export default function Loading({
       </div>
 
       {/* Loading text */}
-      <div className="backdrop-blur-xl bg-white/5 rounded-2xl p-6 border border-white/10">
+      <div className="backdrop-blur-xl bg-white/5 rounded-2xl px-6 py-4 border border-white/10">
         <p className="text-gray-400">{message}</p>
       </div>
     </div>
