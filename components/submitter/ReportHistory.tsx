@@ -253,17 +253,17 @@ const ReportHistory = ({ walletAddress, onRefresh }: ReportHistoryProps) => {
                     <>
                       <div className="space-y-4">
                         <div className="space-y-2">
-                          <div className="flex items-center justify-between">
-                            <span className="text-gray-400">
+                          <div className="flex items-center justify-between flex-wrap">
+                            <span className="text-gray-400 text-nowrap text-xs sm:text-base">
                               Wallet Address:
                             </span>
-                            <span className="text-white">
+                            <span className="text-white text-[2.6vw] sm:text-base">
                               {selectedReport.submitterAddress}
                             </span>
                           </div>
                           <div className="flex items-center justify-between">
-                            <span className="text-gray-400">Telegram:</span>
-                            <div className="flex items-center gap-2">
+                            <span className="text-gray-400 text-xs sm:text-base">Telegram:</span>
+                            <div className="flex items-center gap-2 text-xs sm:text-base">
                               {decryptedHandles[selectedReport._id] ? (
                                 <div className="flex items-center gap-2">
                                   <span className="text-[#4ECDC4]">
@@ -304,22 +304,22 @@ const ReportHistory = ({ walletAddress, onRefresh }: ReportHistoryProps) => {
                             </div>
                           </div>
                           <div className="flex items-center justify-between">
-                            <span className="text-gray-400">
+                            <span className="text-gray-400 text-xs sm:text-base">
                               Submitted Date:
                             </span>
-                            <span className="text-white">
+                            <span className="text-white text-xs sm:text-base">
                               {new Date(
                                 selectedReport.createdAt
                               ).toLocaleDateString()}
                             </span>
                           </div>
                           <div className="flex items-center justify-between">
-                            <span className="text-gray-400">Report File:</span>
+                            <span className="text-gray-400 text-xs sm:text-base">Report File:</span>
                             <button
                               onClick={(e) =>
                                 handleFileView(selectedReport._id, e)
                               }
-                              className="text-[#4ECDC4] hover:underline focus:outline-none inline-flex items-center gap-2"
+                              className="text-[#4ECDC4] text-xs sm:text-base hover:underline focus:outline-none inline-flex items-center gap-2"
                             >
                               <svg
                                 className="w-4 h-4"

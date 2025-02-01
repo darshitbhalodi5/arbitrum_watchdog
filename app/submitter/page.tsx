@@ -28,9 +28,9 @@ export default function SubmitterPage() {
   }
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#1A1B1E]">
+    <div className="min-h-screen flex flex-col">
       <Navbar />
-      <main className="flex-1 w-full max-w-[1920px] mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 lg:py-8">
+      <main className="flex-1 w-full mx-auto lg:pt-8">
         <SubmitterDashboard />
       </main>
     </div>

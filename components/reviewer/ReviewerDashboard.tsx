@@ -394,7 +394,7 @@ const ReviewerDashboard = () => {
   };
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 pb-0 font-secondary">
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 sm:pb-1 pb-0 font-secondary">
       <div className="flex justify-between items-center gap-4 mb-8">
         <h1 className="text-2xl sm:text-5xl font-primary font-medium tracking-wider text-transparent bg-clip-text bg-gradient-to-b from-[#ffffff] from-[17.3%] to-[168.94%] to-[#000000]">
           Reviewer Dashboard

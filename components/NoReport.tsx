@@ -5,7 +5,7 @@ import { FileX2, Search, AlertCircle } from "lucide-react";
 
 export default function NoReports() {
   return (
-    <div className="flex flex-col items-center justify-center p-8 text-center min-h-[500px] relative font-secondary">
+    <div className="flex flex-col items-center justify-center p-4 text-center min-h-[300px] relative font-secondary">
       {/* Background glow effect */}
       <div className="absolute inset-0 bg-gradient-to-b from-[#4ECDC4]/5 to-transparent" />
 
@@ -13,10 +13,10 @@ export default function NoReports() {
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="relative"
+        className="relative flex flex-col items-center justify-center"
       >
         {/* Animated circles */}
-        <div className="relative w-32 h-32 mb-8">
+        <div className="relative w-28 h-28 mb-8">
           <motion.div
             className="absolute inset-0 rounded-full border-2 border-[#4ECDC4]/20"
             animate={{ scale: [1, 1.1, 1], rotate: 360 }}
@@ -70,7 +70,7 @@ export default function NoReports() {
 
         {/* Text content */}
         <h3
-          className="text-2xl sm:text-3xl font-light font-primary mb-4 text-transparent bg-clip-text"
+          className="text-2xl font-light font-primary mb-4 text-transparent bg-clip-text"
           style={{
             backgroundImage:
               "linear-gradient(179.48deg, #FBFCA4 17.14%, #FFFFFF 135.08%)",
@@ -78,7 +78,7 @@ export default function NoReports() {
         >
           No Reports Found
         </h3>
-        <p className="text-[#B0E9FF] text-sm sm:text-base font-light max-w-md mx-auto">
+        <p className="text-[#B0E9FF] text-sm font-light max-w-md mx-auto">
           You haven&apos;t submitted any reports yet. Start by clicking the
           &quot;Submit New Report&quot; button above.
         </p>
