@@ -86,23 +86,23 @@ const ReportDetail = ({
     <div className="space-y-6">
       {/* Basic Info of report */}
       <div className="space-y-4">
-        <div>
-          <span className="text-gray-400">Submitter:</span>
-          <span className="ml-2 text-white font-mono">
+        <div className="flex flex-wrap items-center">
+          <span className="text-gray-400 text-xs sm:text-base">Submitter:</span>
+          <span className="ml-2 text-white font-mono text-wrap text-[3vw] sm:text-base">
             {report.submitterAddress}
           </span>
         </div>
 
         <div>
-          <span className="text-gray-400">Misuse Amount:</span>
-          <span className="ml-2 text-[#4ECDC4] font-mono">
+          <span className="text-gray-400 text-xs sm:text-base">Misuse Amount:</span>
+          <span className="ml-2 text-[#4ECDC4] font-mono text-xs sm:text-base">
             {report.misuseRange} ARB
           </span>
         </div>
 
         <button
           onClick={handleFileView}
-          className="text-[#4ECDC4] hover:underline focus:outline-none inline-flex items-center gap-2"
+          className="text-[#4ECDC4] text-xs sm:text-base hover:underline focus:outline-none inline-flex items-center gap-2"
         >
           <svg
             className="w-4 h-4"
@@ -129,7 +129,7 @@ const ReportDetail = ({
 
       {/* Telegram Handle Section */}
       {isReviewer && (
-        <div className="mt-4">
+        <div className="mt-4 text-xs sm:text-base">
           {decryptedHandle ? (
             <div className="bg-[#1A1B1E] p-4 rounded-lg">
               <div className="flex items-center justify-between mb-2">

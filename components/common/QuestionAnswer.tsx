@@ -9,11 +9,17 @@ interface QuestionAnswerProps {
   onRefresh?: () => Promise<void>;
 }
 
-const QuestionAnswer = ({ reportId, isReviewer, onRefresh }: QuestionAnswerProps) => {
+const QuestionAnswer = ({
+  reportId,
+  isReviewer,
+  onRefresh,
+}: QuestionAnswerProps) => {
   const [questions, setQuestions] = useState<Question[]>([]);
   const [newQuestion, setNewQuestion] = useState("");
   const [threadMessage, setThreadMessage] = useState("");
-  const [selectedQuestion, setSelectedQuestion] = useState<Question | null>(null);
+  const [selectedQuestion, setSelectedQuestion] = useState<Question | null>(
+    null
+  );
   const [answerMap, setAnswerMap] = useState<{ [key: string]: string }>({});
   const [isRefreshing, setIsRefreshing] = useState(false);
   const [lastRefreshed, setLastRefreshed] = useState<Date>(new Date());
@@ -39,7 +45,7 @@ const QuestionAnswer = ({ reportId, isReviewer, onRefresh }: QuestionAnswerProps
 
   const handleRefresh = async () => {
     if (isRefreshing) return;
-    
+
     setIsRefreshing(true);
     try {
       await fetchQuestions();
@@ -63,14 +69,17 @@ const QuestionAnswer = ({ reportId, isReviewer, onRefresh }: QuestionAnswerProps
     }
 
     try {
-      const response = await fetch(`/api/questions/${selectedQuestion._id}/thread`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          message: threadMessage,
-          sender: user?.wallet?.address,
-        }),
-      });
+      const response = await fetch(
+        `/api/questions/${selectedQuestion._id}/thread`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            message: threadMessage,
+            sender: user?.wallet?.address,
+          }),
+        }
+      );
 
       if (!response.ok) throw new Error("Failed to add thread message");
 
@@ -159,24 +168,37 @@ const QuestionAnswer = ({ reportId, isReviewer, onRefresh }: QuestionAnswerProps
           return (
             <div
               key={index}
-              className={`flex ${isCurrentUser ? 'justify-end' : 'justify-start'}`}
+              className={`flex ${
+                isCurrentUser ? "justify-end" : "justify-start"
+              }`}
             >
               <div
                 className={`max-w-[80%] p-3 rounded-lg ${
                   isCurrentUser
-                    ? 'bg-[#4ECDC4]/20 rounded-tr-none'
-                    : 'bg-[#1A1B1E]/80 rounded-tl-none'
+                    ? "bg-[#4ECDC4]/20 rounded-tr-none"
+                    : "bg-[#1A1B1E]/80 rounded-tl-none"
                 }`}
               >
-                <div className={`flex justify-between items-start gap-2 ${isCurrentUser ? 'flex-row-reverse' : 'flex-row'}`}>
+                <div
+                  className={`flex justify-between items-start gap-2 ${
+                    isCurrentUser ? "flex-row-reverse" : "flex-row"
+                  }`}
+                >
                   {/* <span className="text-xs text-[#4ECDC4]">
                     {isCurrentUser ? 'You' : (msg.sender === question.askedBy ? 'Submitter' : 'Reviewer')}
                   </span> */}
                   <span className="text-xs text-gray-400">
-                    {new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    {new Date(msg.timestamp).toLocaleTimeString([], {
+                      hour: "2-digit",
+                      minute: "2-digit",
+                    })}
                   </span>
                 </div>
-                <p className={`text-sm mt-1 ${isCurrentUser ? 'text-[#B0E9FF]' : 'text-white'}`}>
+                <p
+                  className={`text-sm mt-1 ${
+                    isCurrentUser ? "text-[#B0E9FF]" : "text-white"
+                  }`}
+                >
                   {msg.message}
                 </p>
               </div>
@@ -201,9 +223,7 @@ const QuestionAnswer = ({ reportId, isReviewer, onRefresh }: QuestionAnswerProps
     if (question.askedBy === user?.wallet?.address) {
       return "You";
     }
-    return question.isSubmitterQuestion
-      ? "Submitter"
-      : "Reviewer";
+    return question.isSubmitterQuestion ? "Submitter" : "Reviewer";
   };
 
   // Answer label for good experiance to both submitter and reviewer
@@ -211,23 +231,21 @@ const QuestionAnswer = ({ reportId, isReviewer, onRefresh }: QuestionAnswerProps
     if (question.answeredBy === user?.wallet?.address) {
       return "You";
     }
-    return question.isSubmitterQuestion
-      ? "Reviewer"
-      : "Submitter";
+    return question.isSubmitterQuestion ? "Reviewer" : "Submitter";
   };
 
   return (
     <div className="space-y-6">
-      <div className="flex justify-between items-center mb-2">
-        <h3 className="text-lg font-medium text-white">Questions & Answers</h3>
-        <div className="flex items-center gap-4">
-          <span className="text-sm text-gray-400">
+      <div className="flex flex-col sm:flex-row justify-between gap-3 items-center mb-2">
+        <h3 className="text-lg font-medium text-white text-nowrap">Questions & Answers</h3>
+        <div className="flex items-center justify-center sm:justify-end gap-2 flex-wrap-reverse">
+          <span className="text-xs sm:text-sm text-gray-400 text-nowrap">
             Last refreshed - {lastRefreshed.toLocaleTimeString()}
           </span>
           <button
             onClick={handleRefresh}
             disabled={isRefreshing}
-            className="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-[#2C2D31] text-[#4ECDC4] hover:bg-[#2c2d31b2] transition-colors disabled:opacity-50 text-sm"
+            className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-[#2C2D31] text-[#4ECDC4] hover:bg-[#2c2d31b2] transition-colors disabled:opacity-50 text-xs sm:text-sm"
           >
             {isRefreshing ? (
               <>
@@ -275,12 +293,16 @@ const QuestionAnswer = ({ reportId, isReviewer, onRefresh }: QuestionAnswerProps
             type="text"
             value={newQuestion}
             onChange={(e) => setNewQuestion(e.target.value)}
-            placeholder={selectedQuestion ? "Add follow-up question..." : "Type your question here..."}
-            className="text-xs flex-1 bg-[#1A1B1E] text-white rounded-lg px-4 py-2 border border-gray-800 focus:border-[#4ECDC4] focus:outline-none"
+            placeholder={
+              selectedQuestion
+                ? "Add follow-up question..."
+                : "Type your question here..."
+            }
+            className="text-[10px] sm:text-xs flex-1 bg-[#1A1B1E] text-white rounded-lg px-4 py-2 border border-gray-800 focus:border-[#4ECDC4] focus:outline-none"
           />
           <button
             onClick={handleAskQuestion}
-            className="text-xs px-4 py-2 rounded-lg relative overflow-hidden group"
+            className="text-[10px] sm:text-xs px-4 py-2 rounded-lg relative overflow-hidden group flex items-center justify-center"
             style={{
               background: "#020C1099",
               border: "1px solid",
@@ -313,142 +335,188 @@ const QuestionAnswer = ({ reportId, isReviewer, onRefresh }: QuestionAnswerProps
             </p>
           </div>
         ) : (
-          questions.filter(q => !q.parentId).map((question) => (
-            <div
-              key={question._id}
-              className="p-4 rounded-lg relative overflow-hidden"
-              style={{
-                background: "#020C1099",
-                border: "1px solid",
-                backdropFilter: "blur(80px)",
-                boxShadow: "0px 4px 50.5px 0px #96F1FF21 inset",
-              }}
-            >
-              <div className="absolute inset-0 bg-gradient-to-b from-[#4ECDC4]/5 to-transparent opacity-30" />
-              <div className="relative space-y-3">
-                {/* Question */}
-                <div className={`flex ${question.askedBy === user?.wallet?.address ? 'justify-end' : 'justify-start'}`}>
-                  <div className={`max-w-[80%] p-3 rounded-lg ${
-                    question.askedBy === user?.wallet?.address
-                      ? 'bg-[#4ECDC4]/20 rounded-tr-none'
-                      : 'bg-[#1A1B1E]/80 rounded-tl-none'
-                  }`}>
-                    <div className={`flex justify-between items-start gap-2 ${
-                      question.askedBy === user?.wallet?.address ? 'flex-row-reverse' : 'flex-row'
-                    }`}>
-                      <span className="text-xs text-[#4ECDC4]">
-                        {getQuestionLabel(question)}
-                      </span>
-                      <span className="text-xs text-gray-400">
-                        {new Date(question.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                      </span>
-                    </div>
-                    <p className={`text-sm mt-1 ${
-                      question.askedBy === user?.wallet?.address ? 'text-[#B0E9FF]' : 'text-white'
-                    }`}>
-                      {question.question}
-                    </p>
-                  </div>
-                </div>
-
-                {/* Answer */}
-                {question.answer && (
-                  <div className={`flex ${question.answeredBy === user?.wallet?.address ? 'justify-end' : 'justify-start'}`}>
-                    <div className={`max-w-[80%] p-3 rounded-lg ${
-                      question.answeredBy === user?.wallet?.address
-                        ? 'bg-[#4ECDC4]/20 rounded-tr-none'
-                        : 'bg-[#1A1B1E]/80 rounded-tl-none'
-                    }`}>
-                      <div className={`flex justify-between items-start gap-2 ${
-                        question.answeredBy === user?.wallet?.address ? 'flex-row-reverse' : 'flex-row'
-                      }`}>
+          questions
+            .filter((q) => !q.parentId)
+            .map((question) => (
+              <div
+                key={question._id}
+                className="p-4 rounded-lg relative overflow-hidden bg-[#4ECDC4]/10 border-gray-800 border max-h-[200px] overflow-y-auto scroll"
+                style={{
+                  background: "#020C1099",
+                  backdropFilter: "blur(80px)",
+                }}
+              >
+                <div className="relative space-y-3">
+                  {/* Question */}
+                  <div
+                    className={`flex ${
+                      question.askedBy === user?.wallet?.address
+                        ? "justify-end"
+                        : "justify-start"
+                    }`}
+                  >
+                    <div
+                      className={`max-w-[80%] p-3 rounded-lg ${
+                        question.askedBy === user?.wallet?.address
+                          ? "bg-[#4ECDC4]/20 rounded-tr-none"
+                          : "bg-[#1A1B1E]/80 rounded-tl-none"
+                      }`}
+                    >
+                      <div
+                        className={`flex justify-between items-start gap-2 ${
+                          question.askedBy === user?.wallet?.address
+                            ? "flex-row-reverse"
+                            : "flex-row"
+                        }`}
+                      >
                         <span className="text-xs text-[#4ECDC4]">
-                          {getAnswerLabel(question)}
+                          {getQuestionLabel(question)}
                         </span>
                         <span className="text-xs text-gray-400">
-                          {new Date(question.createdAt).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                          {new Date(question.createdAt).toLocaleTimeString([], {
+                            hour: "2-digit",
+                            minute: "2-digit",
+                          })}
                         </span>
                       </div>
-                      <p className={`text-sm mt-1 ${
-                        question.answeredBy === user?.wallet?.address ? 'text-[#B0E9FF]' : 'text-white'
-                      }`}>
-                        {question.answer}
+                      <p
+                        className={`text-sm mt-1 ${
+                          question.askedBy === user?.wallet?.address
+                            ? "text-[#B0E9FF]"
+                            : "text-white"
+                        }`}
+                      >
+                        {question.question}
                       </p>
                     </div>
                   </div>
-                )}
 
-                {/* Thread Messages */}
-                {renderThreadMessages(question)}
+                  {/* Answer */}
+                  {question.answer && (
+                    <div
+                      className={`flex ${
+                        question.answeredBy === user?.wallet?.address
+                          ? "justify-end"
+                          : "justify-start"
+                      }`}
+                    >
+                      <div
+                        className={`max-w-[80%] p-3 rounded-lg ${
+                          question.answeredBy === user?.wallet?.address
+                            ? "bg-[#4ECDC4]/20 rounded-tr-none"
+                            : "bg-[#1A1B1E]/80 rounded-tl-none"
+                        }`}
+                      >
+                        <div
+                          className={`flex justify-between items-start gap-2 ${
+                            question.answeredBy === user?.wallet?.address
+                              ? "flex-row-reverse"
+                              : "flex-row"
+                          }`}
+                        >
+                          <span className="text-xs text-[#4ECDC4]">
+                            {getAnswerLabel(question)}
+                          </span>
+                          <span className="text-xs text-gray-400">
+                            {new Date(question.createdAt).toLocaleTimeString(
+                              [],
+                              { hour: "2-digit", minute: "2-digit" }
+                            )}
+                          </span>
+                        </div>
+                        <p
+                          className={`text-sm mt-1 ${
+                            question.answeredBy === user?.wallet?.address
+                              ? "text-[#B0E9FF]"
+                              : "text-white"
+                          }`}
+                        >
+                          {question.answer}
+                        </p>
+                      </div>
+                    </div>
+                  )}
 
-                {/* Thread Message Input */}
-                {selectedQuestion?._id === question._id && question.answer && (
-                  <div className="mt-2 pl-4">
-                    <div className="flex gap-2">
-                      <input
-                        type="text"
-                        value={threadMessage}
-                        onChange={(e) => setThreadMessage(e.target.value)}
-                        placeholder="Add to thread..."
-                        className="flex-1 bg-[#1A1B1E] text-white rounded-lg px-3 py-1.5 text-sm border border-gray-800 focus:border-[#4ECDC4] focus:outline-none"
+                  {/* Thread Messages */}
+                  {renderThreadMessages(question)}
+
+                  {/* Thread Message Input */}
+                  {selectedQuestion?._id === question._id &&
+                    question.answer && (
+                      <div className="mt-2 pl-4">
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            value={threadMessage}
+                            onChange={(e) => setThreadMessage(e.target.value)}
+                            placeholder="Add to thread..."
+                            className="flex-1 bg-[#1A1B1E] text-white rounded-lg px-3 py-1.5 text-sm border border-gray-800 focus:border-[#4ECDC4] focus:outline-none"
+                          />
+                          <button
+                            onClick={handleThreadMessage}
+                            className="px-3 py-1.5 rounded-lg border border-[#ffffff] bg-[#1A1B1E] text-[#4ECDC4] hover:bg-[#2C2D31] text-sm"
+                          >
+                            Send
+                          </button>
+                        </div>
+                      </div>
+                    )}
+
+                  {/* Thread Actions */}
+                  <div className="flex justify-end gap-2">
+                    {question.answer && (
+                      <button
+                        onClick={() =>
+                          setSelectedQuestion(
+                            selectedQuestion?._id === question._id
+                              ? null
+                              : question
+                          )
+                        }
+                        className="text-sm text-[#4ECDC4] hover:text-[#45b8b0]"
+                      >
+                        {selectedQuestion?._id === question._id
+                          ? "Cancel"
+                          : "Continue to Thread >"}
+                      </button>
+                    )}
+                  </div>
+
+                  {/* Answer Input */}
+                  {canAnswerQuestion(question) && (
+                    <div className="flex items-end justify-between">
+                      <textarea
+                        value={answerMap[question._id] || ""}
+                        onChange={(e) =>
+                          setAnswerMap((prev) => ({
+                            ...prev,
+                            [question._id]: e.target.value,
+                          }))
+                        }
+                        placeholder="Type your answer..."
+                        className="text-sm w-[87%] bg-[#1A1B1E] text-white rounded-lg px-4 py-2 border border-gray-800 focus:border-[#4ECDC4] focus:outline-none"
+                        rows={1}
                       />
                       <button
-                        onClick={handleThreadMessage}
-                        className="px-3 py-1.5 rounded-lg border border-[#ffffff] bg-[#1A1B1E] text-[#4ECDC4] hover:bg-[#2C2D31] text-sm"
+                        onClick={() => handleAnswerQuestion(question._id)}
+                        className="px-3 py-1 rounded-lg relative overflow-hidden group"
+                        style={{
+                          background: "#020C1099",
+                          border: "1px solid",
+                          backdropFilter: "blur(80px)",
+                          boxShadow: "0px 4px 50.5px 0px #96F1FF21 inset",
+                        }}
                       >
-                        Send
+                        <div className="absolute inset-0 bg-gradient-to-b from-[#4ECDC4]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 px-2" />
+                        <span className="text-xs relative text-[#B0E9FF] text-nowrap">
+                          Submit
+                        </span>
                       </button>
                     </div>
-                  </div>
-                )}
-
-                {/* Thread Actions */}
-                <div className="flex justify-end gap-2">
-                  {question.answer && (
-                    <button
-                      onClick={() => setSelectedQuestion(selectedQuestion?._id === question._id ? null : question)}
-                      className="text-sm text-[#4ECDC4] hover:text-[#45b8b0]"
-                    >
-                      {selectedQuestion?._id === question._id ? "Cancel" : "Continue to Thread"}
-                    </button>
                   )}
                 </div>
-
-                {/* Answer Input */}
-                {canAnswerQuestion(question) && (
-                  <div className="space-y-2">
-                    <textarea
-                      value={answerMap[question._id] || ""}
-                      onChange={(e) =>
-                        setAnswerMap((prev) => ({
-                          ...prev,
-                          [question._id]: e.target.value,
-                        }))
-                      }
-                      placeholder="Type your answer..."
-                      className="w-full bg-[#1A1B1E] text-white rounded-lg px-4 py-2 border border-gray-800 focus:border-[#4ECDC4] focus:outline-none"
-                      rows={2}
-                    />
-                    <button
-                      onClick={() => handleAnswerQuestion(question._id)}
-                      className="px-4 py-2 rounded-lg relative overflow-hidden group"
-                      style={{
-                        background: "#020C1099",
-                        border: "1px solid",
-                        backdropFilter: "blur(80px)",
-                        boxShadow: "0px 4px 50.5px 0px #96F1FF21 inset",
-                      }}
-                    >
-                      <div className="absolute inset-0 bg-gradient-to-b from-[#4ECDC4]/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                      <span className="relative text-[#B0E9FF]">
-                        Submit Answer
-                      </span>
-                    </button>
-                  </div>
-                )}
               </div>
-            </div>
-          ))
+            ))
         )}
       </div>
     </div>

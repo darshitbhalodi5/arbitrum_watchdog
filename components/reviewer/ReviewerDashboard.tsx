@@ -395,23 +395,23 @@ const ReviewerDashboard = () => {
 
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 pb-0 font-secondary">
-      <div className="flex justify-between items-center mb-8">
-        <h1 className="text-5xl font-primary font-medium tracking-wider text-transparent bg-clip-text bg-gradient-to-b from-[#ffffff] from-[17.3%] to-[168.94%] to-[#000000]">
+      <div className="flex justify-between items-center gap-4 mb-8">
+        <h1 className="text-2xl sm:text-5xl font-primary font-medium tracking-wider text-transparent bg-clip-text bg-gradient-to-b from-[#ffffff] from-[17.3%] to-[168.94%] to-[#000000]">
           Reviewer Dashboard
         </h1>
-        <div className="flex items-center gap-4">
-          <span className="text-sm text-gray-400">
+        <div className="flex flex-col-reverse lg:flex-row items-end lg:items-center gap-2 lg:gap-4">
+          <span className="text-[8px] sm:text-sm text-gray-400 text-nowrap">
             Last refreshed - {lastRefreshed.toLocaleTimeString()}
           </span>
           <button
             onClick={handleRefresh}
             disabled={isRefreshing}
-            className="flex items-center gap-2 px-4 py-2 rounded-lg bg-[#1A1B1E] text-[#4ECDC4] hover:bg-[#2C2D31] transition-colors disabled:opacity-50"
+            className="flex items-center gap-2 px-2 py-2 text-[8px] sm:text-base sm:px-4 sm:py-2 rounded-lg bg-[#1A1B1E] text-[#4ECDC4] hover:bg-[#2C2D31] transition-colors disabled:opacity-50"
           >
             {isRefreshing ? (
               <>
                 <svg
-                  className="animate-spin w-4 h-4 rotate-180"
+                  className="animate-spin w-2 h-2 sm:w-4 sm:h-4 rotate-180"
                   fill="none"
                   stroke="currentColor"
                   viewBox="0 0 24 24"
@@ -450,7 +450,7 @@ const ReviewerDashboard = () => {
       <div className="flex flex-col lg:flex-row gap-6">
         {/* Reports List */}
         <div
-          className={`${selectedReport ? "lg:w-1/3" : "w-full"} ${
+          className={`${selectedReport ? "lg:w-[40%]" : "w-full"} ${
             selectedReport ? "hidden lg:block" : "block"
           }`}
         >
@@ -467,7 +467,7 @@ const ReviewerDashboard = () => {
             </div>
             <div
               className={`flex gap-4 items-center ${
-                selectedReport ? "flex-col" : "justify-between"
+                selectedReport ? "flex-col" : "justify-between flex-col md:flex-row"
               }`}
             >
               <StatusFilter
@@ -480,7 +480,7 @@ const ReviewerDashboard = () => {
                   onChange={(e) =>
                     setSortBy(e.target.value as "date" | "misuseRange")
                   }
-                  className="bg-[#1A1B1E] text-white rounded-lg px-4 py-2 pr-10 text-sm focus:ring-2 focus:ring-[#4ECDC4] outline-none appearance-none"
+                  className="bg-[#1A1B1E] text-white rounded-lg text-xs sm:text-sm px-2 sm:px-4 py-2 pr-6 sm:pr-10 focus:ring-2 focus:ring-[#4ECDC4] outline-none appearance-none"
                 >
                   <option value="date">Sort by Date</option>
                   <option value="misuseRange">Sort by Misuse Amount</option>
@@ -880,117 +880,6 @@ const ReviewerDashboard = () => {
       </div>
 
       {/* Telegram Prompt Modal verify report title */}
-      {/* {showTelegramPrompt && selectedReport && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50 backdrop-blur-sm">
-          <div
-            className="rounded-lg p-6 max-w-md w-full relative overflow-hidden bg-[#1A1B1E]"
-            style={{}}
-          >
-            <div className="relative">
-              <div className="flex justify-between items-start mb-8">
-                <h3 className="text-[#B0E9FF] font-bold tracking-wider text-xl">
-                  Verify Report Title
-                </h3>
-                <button
-                  onClick={() => {
-                    setShowTelegramPrompt(false);
-                    setTitleInput("");
-                    setTelegramError(null);
-                  }}
-                  className="hover:text-gray-400 text-[#4ECDC4] transition-colors"
-                >
-                  <svg
-                    className="w-6 h-6"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M6 18L18 6M6 6l12 12"
-                    />
-                  </svg>
-                </button>
-              </div>
-
-              <div className="mb-6">
-                <p className="text-gray-400 text-sm mb-4">
-                  To reveal the submitter&apos;s Telegram handle, please enter
-                  the exact report title for verification.
-                </p>
-
-                <div className=" mb-4">
-                  <p className="text-sm text-white mb-1">
-                    Current Report Title:
-                  </p>
-                  <p className="text-[#ffffff57] font-mono text-sm bg-[#2C2D31] rounded-lg p-3 ">
-                    {selectedReport.title}
-                  </p>
-                </div>
-                {telegramError && (
-                  <div className="bg-red-500/10 border border-red-500/20 rounded-lg p-3 mb-4">
-                    <p className="text-red-400 text-sm">{telegramError}</p>
-                  </div>
-                )}
-              </div>
-
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-[#4ECDC4] mb-2 text-sm">
-                    Enter Report Title:
-                  </label>
-                  <input
-                    type="text"
-                    value={titleInput}
-                    onChange={(e) => setTitleInput(e.target.value)}
-                    placeholder="Enter the exact report title"
-                    className="w-full bg-[#2C2D31] text-white rounded-lg px-4 py-3 border focus:border-[#4ECDC4] focus:outline-none text-sm"
-                  />
-                </div>
-
-                <div className="flex justify-end gap-3 mt-">
-                  <button
-                    onClick={() => {
-                      setShowTelegramPrompt(false);
-                      setTitleInput("");
-                      setTelegramError(null);
-                    }}
-                    className="px-4 py-2 text-white hover:text-[#4ECDC4] transition-colors text-sm"
-                  >
-                    Cancel
-                  </button>
-                  <button
-                    onClick={() =>
-                      handleTelegramReveal(
-                        selectedReport._id?.toString() || "",
-                        selectedReport.telegramHandle || "",
-                        selectedReport.title || ""
-                      )
-                    }
-                    disabled={isDecrypting || !titleInput.trim()}
-                    className="px-3 py-2 rounded-lg relative overflow-hidden group disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[#1A1B1E] text-[#4ECDC4] bg-[#2C2D31] hover:borderborder-[#4ECDC4]"
-                  >
-                    <span className="relative text-[#B0E9FF] text-sm flex items-center gap-2">
-                      {isDecrypting ? (
-                        <>
-                          <div className="w-4 h-4 border-2 border-t-[#4ECDC4] border-r-transparent border-b-transparent border-l-transparent rounded-full animate-spin"></div>
-                          Verifying...
-                        </>
-                      ) : (
-                        "Reveal Handle"
-                      )}
-                    </span>
-                  </button>
-                </div>
-              </div>
-              
-            </div>
-          </div>
-        </div>
-      )} */}
-
       {showTelegramPrompt && selectedReport && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 z-50 backdrop-blur-sm">
           <div

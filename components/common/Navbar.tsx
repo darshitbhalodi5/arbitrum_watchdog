@@ -53,19 +53,19 @@ export default function Navbar() {
     <nav className="p-[1px] bg-gradient-to-t from-[#77CFC7] to-[#868686] w-[99%] mx-auto rounded-xl my-2">
       <div className="bg-[#000000] w-full rounded-xl">
         <div className="bg-[#0B313C30] w-full rounded-xl">
-          <div className="mx-auto px-14 py-2 sm:px-6 lg:px-8">
+          <div className="mx-auto px-4 py-2 sm:px-6 lg:px-8">
             <div className="flex items-center justify-between h-16">
               <Link href="/" className="flex-shrink-0 flex items-center gap-3">
                 <Image
                   src={TruenceSymbol}
                   alt="Truence Symbol"
-                  className="object-contain w-auto h-[40px]"
+                  className="object-contain w-auto h-[30px] sm:h-[40px]"
                   priority
                 />
                 <Image
                   src={TruenceLogo}
                   alt="Truence Logo"
-                  className="object-contain w-auto h-[20px]"
+                  className="object-contain w-auto h-[15px] sm:h-[20px]"
                   priority
                 />
               </Link>
@@ -133,7 +133,7 @@ export default function Navbar() {
 
           {/* Mobile menu */}
           {isMobileMenuOpen && (
-            <div className="sm:hidden bg-[#1A1B1E] border-t border-[#4ECDC4]/20">
+            <div className="sm:hidden bg-[#1A1B1E] border-t border-[#4ECDC4]/20 rounded-b-xl">
               <div className="pt-2 pb-3 space-y-1">
                 <div
                   className={`flex items-center justify-between px-4 py-2 text-base font-medium ${

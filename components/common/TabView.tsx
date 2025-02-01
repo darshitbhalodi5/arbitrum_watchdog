@@ -12,7 +12,7 @@ const TabView = ({ tabs }: TabViewProps) => {
           <button
             key={tab.id}
             onClick={() => setActiveTab(tab.id)}
-            className={`px-4 py-2 text-sm font-light transition-colors relative ${
+            className={`text-[2vw] sm:text-base px-2 sm:px-4 py-2 font-light transition-colors relative ${
               activeTab === tab.id
                 ? "text-[#B0E9FF]"
                 : "text-gray-400 hover:text-[#B0E9FF]/70"
