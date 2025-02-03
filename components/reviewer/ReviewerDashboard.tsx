@@ -20,6 +20,7 @@ import BookmarkButton from "@/components/common/BookmarkButton";
 import { useBookmarks } from "@/hooks/useBookmarks"; // Adjust the import path as needed
 import { MisuseRange } from "@/types/report";
 import Loading from "../Loader";
+import StyledDropdown from '../common/StyledDropdown';
 
 const ReviewerDashboard = () => {
   const { user } = usePrivy();
@@ -393,6 +394,11 @@ const ReviewerDashboard = () => {
     }
   };
 
+  const sortOptions = [
+    { value: 'date', label: 'Sort by Date' },
+    { value: 'misuseRange', label: 'Sort by Misuse Amount' }
+  ];
+
   return (
     <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 sm:pb-1 pb-0 font-secondary">
       <div className="flex justify-between items-center gap-4 mb-8">
@@ -475,42 +481,44 @@ const ReviewerDashboard = () => {
                 onStatusChange={setSelectedStatus}
               />
               <div className="flex gap-2 relative">
-                <select
+                <StyledDropdown
                   value={sortBy}
-                  onChange={(e) =>
-                    setSortBy(e.target.value as "date" | "misuseRange")
-                  }
-                  className="bg-[#1A1B1E] text-white rounded-lg text-xs sm:text-sm px-2 sm:px-4 py-2 pr-6 sm:pr-10 focus:ring-2 focus:ring-[#4ECDC4] outline-none appearance-none"
-                >
-                  <option value="date">Sort by Date</option>
-                  <option value="misuseRange">Sort by Misuse Amount</option>
-                </select>
-                <div className="absolute inset-y-0 right-14 flex items-center pointer-events-none">
-                  <svg
-                    className="w-5 h-5 mt-[2px] text-white"
-                    fill="currentColor"
-                    viewBox="0 0 20 20"
-                  >
-                    <path
-                      fillRule="evenodd"
-                      d="M10 12a1 1 0 01-.707-.293l-3-3a1 1 0 011.414-1.414L10 9.586l2.293-2.293a1 1 0 011.414 1.414l-3 3A1 1 0 0110 12z"
-                      clipRule="evenodd"
-                    />
-                  </svg>
-                </div>
-
+                  onChange={(value) => setSortBy(value as "date" | "misuseRange")}
+                  options={sortOptions}
+                />
                 <button
-                  onClick={() =>
-                    setSortOrder((prev) => (prev === "desc" ? "asc" : "desc"))
-                  }
-                  className="bg-[#1A1B1E] text-white rounded-lg px-3 py-2 text-sm hover:bg-[#2C2D31]"
-                  title={
-                    sortOrder === "desc"
-                      ? "Highest/Newest First"
-                      : "Lowest/Oldest First"
-                  }
+                  onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
+                  className="bg-[#1A1B1E] text-white rounded-lg px-3 py-2 hover:border-[#4ECDC4] border border-gray-800 focus:outline-none transition-all duration-200"
                 >
-                  {sortOrder === "desc" ? "↓" : "↑"}
+                  {sortOrder === "asc" ? (
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M5 15l7-7 7 7"
+                      />
+                    </svg>
+                  ) : (
+                    <svg
+                      className="w-4 h-4"
+                      fill="none"
+                      stroke="currentColor"
+                      viewBox="0 0 24 24"
+                    >
+                      <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        strokeWidth={2}
+                        d="M19 9l-7 7-7-7"
+                      />
+                    </svg>
+                  )}
                 </button>
               </div>
             </div>

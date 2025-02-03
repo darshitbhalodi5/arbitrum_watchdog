@@ -6,6 +6,7 @@ import toast from "react-hot-toast";
 import { SubmitReportModalProps } from "@/types/report-submission";
 import { MisuseRange } from "@/types/report";
 import TelegramVerification from "../common/TelegramVerification";
+import StyledDropdown from '../common/StyledDropdown';
 
 const SubmitReportModal = ({
   isOpen,
@@ -29,6 +30,11 @@ const SubmitReportModal = ({
     "100-500k",
     "500k+",
   ];
+
+  const misuseRangeOptions = MISUSE_RANGES.map(range => ({
+    value: range,
+    label: `${range} ARB`
+  }));
 
   const handleVerifyTelegram = () => {
     if (!telegramHandle) {
@@ -197,18 +203,11 @@ const SubmitReportModal = ({
               <label className="block text-gray-300 mb-2 text-xs">
                 Misuse Range (ARB)
               </label>
-              <select
+              <StyledDropdown
                 value={misuseRange}
-                onChange={(e) => setMisuseRange(e.target.value as MisuseRange)}
-                className="w-full bg-[#1A1B1E] text-white rounded-lg px-3 sm:px-4 py-2 text-xs focus:ring-2 focus:ring-[#4ECDC4] outline-none"
-                required
-              >
-                {MISUSE_RANGES.map((range) => (
-                  <option key={range} value={range}>
-                    {range} ARB
-                  </option>
-                ))}
-              </select>
+                onChange={(value) => setMisuseRange(value as MisuseRange)}
+                options={misuseRangeOptions}
+              />
             </div>
 
             <div>
