@@ -298,11 +298,11 @@ const QuestionAnswer = ({
                 ? "Add follow-up question..."
                 : "Type your question here..."
             }
-            className="text-[10px] sm:text-xs flex-1 bg-[#1A1B1E] text-white rounded-lg px-4 py-2 border border-gray-800 focus:border-[#4ECDC4] focus:outline-none"
+            className="text-[13px] sm:text-s flex-1 bg-[#1A1B1E] text-white rounded-lg px-4 py-3 border border-gray-800 focus:border-[#4ECDC4] focus:outline-none"
           />
           <button
             onClick={handleAskQuestion}
-            className="text-[10px] sm:text-xs px-4 py-2 rounded-lg relative overflow-hidden group flex items-center justify-center"
+            className="text-[13px] sm:text-s px-4 py-3 rounded-lg relative overflow-hidden group flex items-center justify-center"
             style={{
               background: "#020C1099",
               border: "1px solid",
@@ -318,7 +318,7 @@ const QuestionAnswer = ({
           {selectedQuestion && (
             <button
               onClick={() => setSelectedQuestion(null)}
-              className="px-4 py-2 text-gray-400 hover:text-white"
+              className="px-4 py-3 text-gray-400 hover:text-white"
             >
               Cancel
             </button>

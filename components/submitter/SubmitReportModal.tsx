@@ -141,20 +141,20 @@ const SubmitReportModal = ({
 
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label className="block text-gray-300 mb-2 text-xs">
+              <label className="block text-gray-300 mb-2 text-s">
                 Report Title
               </label>
               <input
                 type="text"
                 value={title}
                 onChange={(e) => setTitle(e.target.value)}
-                className="w-full bg-[#1A1B1E] text-white rounded-lg px-3 sm:px-4 py-2 text-xs focus:ring-2 focus:ring-[#4ECDC4] outline-none"
+                className="w-full bg-[#1A1B1E] text-white rounded-lg px-3 sm:px-4 py-2 text-s focus:ring-2 focus:ring-[#4ECDC4] outline-none"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-gray-300 mb-2 text-xs">
+              <label className="block text-gray-300 mb-2 text-s">
                 Misuse Range (ARB)
               </label>
               <StyledDropdown
@@ -165,7 +165,7 @@ const SubmitReportModal = ({
             </div>
 
             <div>
-              <label className="block text-gray-300 mb-2 text-xs">
+              <label className="block text-gray-300 mb-2 text-s">
                 Telegram Account
               </label>
               <div className="space-y-3">
@@ -173,7 +173,7 @@ const SubmitReportModal = ({
                   <button
                     type="button"
                     onClick={() => setShowTelegramWidget(true)}
-                    className="px-4 py-2 rounded-lg bg-[#4ECDC4] text-black hover:bg-[#45b8b0] transition-colors text-xs"
+                    className="px-4 py-2 rounded-lg bg-[#4ECDC4] text-black hover:bg-[#45b8b0] transition-colors text-s"
                   >
                     Connect Telegram
                   </button>
@@ -234,14 +234,14 @@ const SubmitReportModal = ({
                     </button>
                   </div>
                 )}
-                <p className="text-xs sm:text-sm text-gray-400">
+                <p className="text-xs sm:text-sm text-gray-200">
                   Connect your Telegram for communication and payments.
                 </p>
               </div>
             </div>
 
             <div>
-              <label className="block text-gray-300 mb-2 text-xs">
+              <label className="block text-gray-300 mb-2 text-s">
                 Upload File
               </label>
               <input
@@ -263,14 +263,14 @@ const SubmitReportModal = ({
               <button
                 type="button"
                 onClick={onClose}
-                className="px-4 sm:px-6 py-2 rounded-lg text-gray-300 hover:text-white transition-colors text-xs"
+                className="px-4 sm:px-6 py-2 rounded-lg text-gray-300 hover:text-white transition-colors text-s"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="bg-gradient-to-r from-[#C3FEF8] to-[#D8D8D8] text-black px-4 py-2 rounded-lg hover:opacity-90 transition-all duration-200 shadow-lg disabled:opacity-50 text-xs"
+                className="bg-gradient-to-r from-[#C3FEF8] to-[#D8D8D8] text-black px-4 py-2 rounded-lg hover:opacity-90 transition-all duration-200 shadow-lg disabled:opacity-50 text-  s"
               >
                 {isSubmitting ? "Submitting..." : "Submit Report"}
               </button>
