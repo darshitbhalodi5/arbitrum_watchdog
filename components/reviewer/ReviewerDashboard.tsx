@@ -48,6 +48,19 @@ const ReviewerDashboard = () => {
   const [lastRefreshed, setLastRefreshed] = useState<Date>(new Date());
   const [allReport, setAllReport] = useState(false);
 
+  // Calculate report counts for each status
+  const reportCounts = useMemo(() => {
+    const approved = reports.filter(r => r.status === 'approved').length;
+    const rejected = reports.filter(r => r.status === 'rejected').length;
+    const pending = reports.filter(r => r.status === 'pending').length;
+    return {
+      all: reports.length,
+      approved,
+      rejected,
+      pending
+    };
+  }, [reports]);
+
   const {
     bookmarks: bookmarkedReports,
     toggleBookmark: handleToggleBookmark,
@@ -479,6 +492,7 @@ const ReviewerDashboard = () => {
               <StatusFilter
                 selectedStatus={selectedStatus}
                 onStatusChange={setSelectedStatus}
+                counts={reportCounts}
               />
               <div className="flex gap-2 relative">
                 <StyledDropdown

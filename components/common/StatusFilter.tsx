@@ -5,11 +5,18 @@ type Status = 'all' | 'approved' | 'rejected' | 'pending';
 interface StatusFilterProps {
   selectedStatus: Status;
   onStatusChange: (status: Status) => void;
+  counts: {
+    all: number;
+    approved: number;
+    rejected: number;
+    pending: number;
+  };
 }
 
 const StatusFilter: React.FC<StatusFilterProps> = ({
   selectedStatus,
   onStatusChange,
+  counts,
 }) => {
   return (
     <div className="flex gap-2 mx-auto">
@@ -21,7 +28,7 @@ const StatusFilter: React.FC<StatusFilterProps> = ({
             : 'bg-[#1A1B1E] text-gray-400 border border-gray-800 hover:border-[#4ECDC4]/30'
         }`}
       >
-        All
+        All ({counts.all})
       </button>
       <button
         onClick={() => onStatusChange('approved')}
@@ -31,7 +38,7 @@ const StatusFilter: React.FC<StatusFilterProps> = ({
             : 'bg-[#1A1B1E] text-gray-400 border border-gray-800 hover:border-[#4ECDC4]/30'
         }`}
       >
-        Approved
+        Approved ({counts.approved})
       </button>
       <button
         onClick={() => onStatusChange('rejected')}
@@ -41,7 +48,7 @@ const StatusFilter: React.FC<StatusFilterProps> = ({
             : 'bg-[#1A1B1E] text-gray-400 border border-gray-800 hover:border-[#FF6B6B]/30'
         }`}
       >
-        Rejected
+        Rejected ({counts.rejected})
       </button>
       <button
         onClick={() => onStatusChange('pending')}
@@ -51,7 +58,7 @@ const StatusFilter: React.FC<StatusFilterProps> = ({
             : 'bg-[#1A1B1E] text-gray-400 border border-gray-800 hover:border-yellow-500/30'
         }`}
       >
-        Pending
+        Pending ({counts.pending})
       </button>
     </div>
   );
