@@ -15,7 +15,7 @@ interface TelegramVerificationProps {
   onVerificationComplete: (success: boolean, username?: string) => void;
 }
 
-const TelegramVerification = ({ inputHandle, onVerificationComplete }: TelegramVerificationProps) => {
+const TelegramVerification = ({ onVerificationComplete }: TelegramVerificationProps) => {
   const widgetRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -31,8 +31,6 @@ const TelegramVerification = ({ inputHandle, onVerificationComplete }: TelegramV
 
     // Define the global callback function for Telegram widget
     window.onTelegramAuth = (user: TelegramUser) => {
-      // console.log('Telegram auth response:', user);
-
       if (!user.username) {
         console.error('No username found in Telegram response');
         toast.error('Please set a username in your Telegram account first');
@@ -40,30 +38,12 @@ const TelegramVerification = ({ inputHandle, onVerificationComplete }: TelegramV
         return;
       }
 
-      // Format handles for comparison
-      const formattedInputHandle = inputHandle.startsWith('@') ? inputHandle.slice(1) : inputHandle;
-      const telegramUsername = user.username.toLowerCase();
-      
-      // console.log('Comparing handles:', {
-      //   input: formattedInputHandle.toLowerCase(),
-      //   telegram: telegramUsername
-      // });
-
-      if (formattedInputHandle.toLowerCase() === telegramUsername) {
-        // console.log('Telegram handle verified successfully');
-        toast.success('Telegram handle verified successfully!');
-        onVerificationComplete(true, user.username);
-      } else {
-        console.error('Telegram handle mismatch');
-        toast.error('The provided handle does not match your Telegram account');
-        onVerificationComplete(false);
-      }
+      onVerificationComplete(true, user.username);
     };
 
     // Add script to widget container
     if (widgetRef.current) {
       widgetRef.current.appendChild(script);
-      // console.log('Telegram widget script added to container');
     }
 
     return () => {
@@ -76,7 +56,7 @@ const TelegramVerification = ({ inputHandle, onVerificationComplete }: TelegramV
       }
       window.onTelegramAuth = () => {};
     };
-  }, [inputHandle, onVerificationComplete]);
+  }, [onVerificationComplete]);
 
   return (
     <div className="flex flex-col items-start gap-2">

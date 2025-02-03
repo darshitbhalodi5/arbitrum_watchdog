@@ -7,7 +7,7 @@ interface IReport extends Document {
   basePaymentConfirmations: number;
   _id: string;
   title: string;
-  telegramHandle: string;
+  telegramHandle?: string;
   submitterAddress: string;
   fileUrl: string;
   status: "pending" | "approved" | "rejected";
@@ -53,7 +53,8 @@ const reportSchema = new mongoose.Schema(
     },
     telegramHandle: {
       type: String,
-      required: true,
+      required: false,
+      sparse: true
     },
     submitterAddress: {
       type: String,

@@ -714,7 +714,7 @@ const ReviewerDashboard = () => {
                           onTelegramReveal={(title) =>
                             handleTelegramReveal(
                               selectedReport._id as string,
-                              selectedReport.telegramHandle,
+                              selectedReport.telegramHandle!,
                               title
                             )
                           }

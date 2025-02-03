@@ -1,30 +1,39 @@
 import { NextResponse } from 'next/server';
 import { connect } from '@/lib/mongodb';
-import { ReportModel } from '@/models/Report';
+import { ReportModel, IReport } from '@/models/Report';
 import { uploadFile } from '@/lib/upload';
+import { MisuseRange } from '@/types/report';
 
 export async function POST(req: Request) {
     try {
         await connect();
 
         const formData = await req.formData();
+        console.log("Form Data inspection",formData)
         const title = formData.get('title') as string;
-        const telegramHandle = formData.get('telegramHandle') as string;
+        const telegramHandle = formData.get('telegramHandle')?.toString() || undefined;
         const submitterAddress = formData.get('submitterAddress') as string;
-        const misuseRange = formData.get('misuseRange') as string;
+        const misuseRange = formData.get('misuseRange') as MisuseRange;
         const file = formData.get('file') as File;
 
         // Upload file to S3
         const fileUrl = await uploadFile(file);
 
-        const report = await ReportModel.create({
+        // Create report data object with required fields
+        const reportData: Partial<IReport> = {
             title,
-            telegramHandle,
             submitterAddress,
             misuseRange,
             fileUrl,
-            status: 'pending',
-        });
+            status: 'pending' as const,
+        };
+
+        // Only add telegramHandle if it exists and is not empty
+        if (telegramHandle && telegramHandle.trim() !== '') {
+            reportData.telegramHandle = telegramHandle;
+        }
+
+        const report = await ReportModel.create(reportData);
 
         return NextResponse.json(report);
     } catch (error) {
