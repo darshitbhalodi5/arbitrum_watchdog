@@ -439,7 +439,7 @@ export default function LandingPage({ onRoleSelect }: LandingPageProps) {
       {/* Updated Footer */}
       <footer className="py-8 md:pt-24 md:pb-10 px-4 text-center text-xs md:text-base">
         <p className="text-[#ffffff] text-sm">
-          Copyright © 2024 Truence. All rights reserved.
+          Copyright © 2025 Truence. All rights reserved.
         </p>
       </footer>
     </div>
