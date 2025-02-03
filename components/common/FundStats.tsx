@@ -83,7 +83,7 @@ const FundStats: React.FC = () => {
             {formatCurrency(stats.basePaymentPaid)}
           </div>
           <div className="text-xs sm:text-sm text-gray-400 mt-1">
-            BASE PAYMENT PAID
+            BASE AMOUNT PAID
           </div>
         </div>
 
@@ -92,7 +92,7 @@ const FundStats: React.FC = () => {
             {formatCurrency(stats.additionalPaymentPaid)}
           </div>
           <div className="text-xs sm:text-sm text-gray-400 mt-1">
-            ADDITIONAL PAYMENT PAID
+            ADDITIONAL AMOUNT PAID
           </div>
         </div>
 
