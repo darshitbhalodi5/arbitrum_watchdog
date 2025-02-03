@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Image from 'next/image';
-import ArbiturmLogo from '@/public/assets/arb.png'
+import ArbitrumLogo from '@/public/assets/arbitrum-arb-logo.svg'
 
 const FundStats: React.FC = () => {
   const [isExpanded, setIsExpanded] = useState(true);
@@ -12,6 +12,7 @@ const FundStats: React.FC = () => {
         <span className="text-[#4ECDC4] text-2xl">$</span>
         <span className="text-[#4ECDC4] text-2xl">{amount}</span>
         <span className="text-[#4ECDC4] text-2xl">k</span>
+        <span className="text-[#4ECDC4] text-2xl mx-2">ARB</span>
       </div>
     );
   };
@@ -30,9 +31,9 @@ const FundStats: React.FC = () => {
     }`}>
       <div className={`flex items-center justify-between gap-4 ${isExpanded ? 'mb-8' : 'mb-0'}`}>
         <div className="flex items-center gap-4">
-          <div className="relative w-12 h-12">
+          <div className="relative w-24 h-12">
             <Image
-              src={ArbiturmLogo}
+              src={ArbitrumLogo}
               alt="Arbitrum Logo"
               fill
               className="object-contain"
