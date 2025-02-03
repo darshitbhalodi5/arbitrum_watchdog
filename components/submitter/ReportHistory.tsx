@@ -273,7 +273,7 @@ const ReportHistory = ({ walletAddress, onRefresh }: ReportHistoryProps) => {
                                     onClick={() =>
                                       handleTelegramToggle(
                                         selectedReport._id,
-                                        selectedReport.telegramHandle,
+                                        selectedReport.telegramHandle!,
                                         selectedReport.title
                                       )
                                     }
@@ -290,7 +290,7 @@ const ReportHistory = ({ walletAddress, onRefresh }: ReportHistoryProps) => {
                                     onClick={() =>
                                       handleTelegramToggle(
                                         selectedReport._id,
-                                        selectedReport.telegramHandle,
+                                        selectedReport.telegramHandle!,
                                         selectedReport.title
                                       )
                                     }
