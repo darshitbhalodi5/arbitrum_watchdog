@@ -471,68 +471,70 @@ const ReviewerDashboard = () => {
       
       <FundStats />
       
-      <div className="flex flex-col lg:flex-row gap-6">
+      {/* Fixed Filter Section */}
+      <div className="sticky top-0 z-10 bg-[#020C10] py-4 border-b border-gray-800">
+        <div className="flex items-center gap-3">
+          <SearchBar
+            searchQuery={searchQuery}
+            setSearchQuery={setSearchQuery}
+            placeholder="Search reports..."
+          />
+          <div className="flex-1">
+            <StatusFilter
+              selectedStatus={selectedStatus}
+              onStatusChange={setSelectedStatus}
+              counts={reportCounts}
+            />
+          </div>
+          <StyledDropdown
+            value={sortBy}
+            onChange={(value) => setSortBy(value as "date" | "misuseRange")}
+            options={sortOptions}
+          />
+          <button
+            onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
+            className="bg-[#1A1B1E] text-white rounded-lg px-3 py-2 hover:border-[#4ECDC4] border border-gray-800 focus:outline-none transition-all duration-200"
+          >
+            {sortOrder === "asc" ? (
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M5 15l7-7 7 7"
+                />
+              </svg>
+            ) : (
+              <svg
+                className="w-4 h-4"
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            )}
+          </button>
+        </div>
+      </div>
+
+      <div className="flex flex-col lg:flex-row gap-6 mt-4">
         {/* Reports List */}
         <div
           className={`${selectedReport ? "lg:w-[40%]" : "w-full"} ${
             selectedReport ? "hidden lg:block" : "block"
           }`}
         >
-          {/* Search and Filter Section */}
-          <div className="flex items-center gap-3 mb-4">
-          <SearchBar
-              searchQuery={searchQuery}
-              setSearchQuery={setSearchQuery}
-              placeholder="Search reports..."
-            />
-            <div className="flex-1">
-              <StatusFilter
-                selectedStatus={selectedStatus}
-                onStatusChange={setSelectedStatus}
-                counts={reportCounts}
-              />
-            </div>
-            <StyledDropdown
-              value={sortBy}
-              onChange={(value) => setSortBy(value as "date" | "misuseRange")}
-              options={sortOptions}
-            />
-            <button
-              onClick={() => setSortOrder(sortOrder === "asc" ? "desc" : "asc")}
-              className="bg-[#1A1B1E] text-white rounded-lg px-3 py-2 hover:border-[#4ECDC4] border border-gray-800 focus:outline-none transition-all duration-200"
-            >
-              {sortOrder === "asc" ? (
-                <svg
-                  className="w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M5 15l7-7 7 7"
-                  />
-                </svg>
-              ) : (
-                <svg
-                  className="w-4 h-4"
-                  fill="none"
-                  stroke="currentColor"
-                  viewBox="0 0 24 24"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M19 9l-7 7-7-7"
-                  />
-                </svg>
-              )}
-            </button>
-          </div>
-
           <div className="space-y-4 max-h-[54vh] overflow-y-auto scroll">
             {sortedReports.map((report) => (
               <button

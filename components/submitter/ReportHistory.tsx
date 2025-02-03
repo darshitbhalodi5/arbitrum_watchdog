@@ -250,114 +250,101 @@ const ReportHistory = ({ walletAddress, onRefresh }: ReportHistoryProps) => {
                   id: "details",
                   label: "Report Details",
                   content: (
-                    <>
-                      <div className="space-y-4">
-                        <div className="space-y-2">
-                          <div className="flex items-center justify-between flex-wrap">
-                            <span className="text-gray-400 text-nowrap text-xs sm:text-base">
-                              Wallet Address:
+                    <div className="space-y-4">
+                      <div className="flex flex-wrap items-center">
+                        <span className="text-gray-400">Submitter:</span>
+                        <span className="ml-2 text-white font-mono">
+                          {selectedReport.submitterAddress}
+                        </span>
+                      </div>
+
+                      <div>
+                        <span className="text-gray-400">Misuse Amount:</span>
+                        <span className="ml-2 text-[#4ECDC4] font-mono">
+                          {selectedReport.misuseRange} ARB
+                        </span>
+                      </div>
+
+                      {/* Telegram Handle Section */}
+                      <div>
+                        <span className="text-gray-400">Your Telegram:</span>
+                        {selectedReport.telegramHandle ? (
+                          <div className="flex items-center gap-2 mt-1">
+                            <span className="text-[#4ECDC4] font-mono">
+                              {decryptedHandles[selectedReport._id] || "●●●●●●●●"}
                             </span>
-                            <span className="text-white text-[2.6vw] sm:text-base">
-                              {selectedReport.submitterAddress}
-                            </span>
-                          </div>
-                          <div className="flex items-center justify-between">
-                            <span className="text-gray-400 text-xs sm:text-base">Telegram:</span>
-                            <div className="flex items-center gap-2 text-xs sm:text-base">
-                              {decryptedHandles[selectedReport._id] ? (
-                                <div className="flex items-center gap-2">
-                                  <span className="text-[#4ECDC4]">
-                                    {decryptedHandles[selectedReport._id]}
-                                  </span>
-                                  <button
-                                    onClick={() =>
-                                      handleTelegramToggle(
-                                        selectedReport._id,
-                                        selectedReport.telegramHandle!,
-                                        selectedReport.title
-                                      )
-                                    }
-                                    className="p-1 hover:bg-gray-700 rounded-full"
-                                    title="Hide telegram handle"
-                                  >
-                                    <EyeSlashIcon className="w-5 h-5 text-gray-400 hover:text-gray-300" />
-                                  </button>
-                                </div>
-                              ) : (
-                                <>
-                                  <span>••••••••</span>
-                                  <button
-                                    onClick={() =>
-                                      handleTelegramToggle(
-                                        selectedReport._id,
-                                        selectedReport.telegramHandle!,
-                                        selectedReport.title
-                                      )
-                                    }
-                                    className="p-1 hover:bg-gray-700 rounded-full"
-                                    title="Show telegram handle"
-                                  >
-                                    <EyeIcon className="w-5 h-5 text-gray-400 hover:text-gray-300" />
-                                  </button>
-                                </>
-                              )}
-                            </div>
-                          </div>
-                          <div className="flex items-center justify-between">
-                            <span className="text-gray-400 text-xs sm:text-base">
-                              Submitted Date:
-                            </span>
-                            <span className="text-white text-xs sm:text-base">
-                              {new Date(
-                                selectedReport.createdAt
-                              ).toLocaleDateString()}
-                            </span>
-                          </div>
-                          <div className="flex items-center justify-between">
-                            <span className="text-gray-400 text-xs sm:text-base">Report File:</span>
                             <button
-                              onClick={(e) =>
-                                handleFileView(selectedReport._id, e)
+                              onClick={() =>
+                                selectedReport.telegramHandle && handleTelegramToggle(
+                                  selectedReport._id,
+                                  selectedReport.telegramHandle,
+                                  selectedReport.title
+                                )
                               }
-                              className="text-[#4ECDC4] text-xs sm:text-base hover:underline focus:outline-none inline-flex items-center gap-2"
+                              className="p-1 hover:bg-gray-700 rounded-full transition-colors"
                             >
-                              <svg
-                                className="w-4 h-4"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                stroke="currentColor"
-                              >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  strokeWidth={2}
-                                  d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"
-                                />
-                              </svg>
-                              Download File
+                              {decryptedHandles[selectedReport._id] ? (
+                                <EyeSlashIcon className="w-4 h-4 text-gray-400" />
+                              ) : (
+                                <EyeIcon className="w-4 h-4 text-gray-400" />
+                              )}
                             </button>
                           </div>
-                        </div>
-                        {selectedReport.status === "approved" && (
-                          <div className="mt-4">
-                            <ProgressBar
-                              report={selectedReport}
-                              onKycVerify={async () => {
-                                try {
-                                  fetchReports();
-                                } catch (error) {
-                                  console.error(
-                                    "Error fetching reports after KYC:",
-                                    error
-                                  );
-                                }
-                              }}
-                              isSubmitter={true}
-                            />
+                        ) : (
+                          <div className="flex items-center gap-2 mt-1 text-gray-500">
+                            <svg
+                              className="w-4 h-4"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke="currentColor"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"
+                              />
+                            </svg>
+                            <span className="text-sm">Not provided</span>
                           </div>
                         )}
                       </div>
-                    </>
+
+                      <div>
+                        <button
+                          onClick={(e) => handleFileView(selectedReport._id, e)}
+                          className="text-[#4ECDC4] hover:underline focus:outline-none inline-flex items-center gap-2"
+                        >
+                          <svg
+                            className="w-4 h-4"
+                            fill="none"
+                            viewBox="0 0 24 24"
+                            stroke="currentColor"
+                          >
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"
+                            />
+                            <path
+                              strokeLinecap="round"
+                              strokeLinejoin="round"
+                              strokeWidth={2}
+                              d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"
+                            />
+                          </svg>
+                          View Submitted File
+                        </button>
+                      </div>
+
+                      {selectedReport.status === "approved" && (
+                        <ProgressBar
+                          report={selectedReport}
+                          isSubmitter={true}
+                        />
+                      )}
+                    </div>
                   ),
                 },
                 {
